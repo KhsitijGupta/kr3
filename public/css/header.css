@@ -1,0 +1,57 @@
+@charset "UTF-8";
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+/* header css */
+.headerContact{
+    color: #ffffff;
+    background-color:  #12294C;
+}
+
+.headerIcons i, .loginBox{
+    text-decoration: none;
+    color: #ffffff;
+}
+
+/* header hide and show scrolling css */
+.hide-navbar1 {
+    top: -8em;
+    position: fixed;
+    z-index: 3;
+    width:100%;
+    transition: top 0.3s ease;
+}
+
+.show-navbar1 {
+    top: 0;
+    width:100%;
+    position: fixed;
+    z-index: 3;
+    transition: top 0.3s ease;
+}
+.home-show {
+    top: 0;
+    width:100%;
+    position: relative;
+    z-index: 3;
+    transition: top 0.3s ease;
+}
+
+/* bluestrip */
+@media screen and (max-width: 768px)  {
+    .headerIcons{
+        display: none;
+    }
+
+    .loginBox{
+        position: relative;
+        right: 10%;
+    }
+}

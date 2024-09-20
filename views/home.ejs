@@ -1,0 +1,88 @@
+<% layout("/layouts/boilerplate") %>
+
+<body>
+
+
+<!-- hero section -->
+<section>
+    <div class="hero-content">
+       <h4> Hello !</h4>
+       <h2>Start Your Journey Today</h2>
+       <p>Discover the power of consistency and perfection through dedicated practice. Embrace the journey of continual improvement, and watch as your commitment transforms potential into excellence.</p>
+    </div>
+    <img src="/images/hero2.png" alt="" class="hero-content-img" >
+</section>
+<!-- search for exams -->
+<section id="searchSection">
+    <video width="100%" autoplay muted loop >
+        <source src="/videos/search_course.mp4">
+    </video>
+    <div class="searchCourse">
+        <h1>Search For Courses</h1>
+        <h5>Fill the fields to seek for courses</h5>
+        <div class="courseBox">
+            <select name="" id="courseOptions">
+                <option value="">Categories</option>
+                <option value="upsc">UPSC</option>
+                <option value="ssc_jee">SSC JEE</option>
+            </select>
+            <select name="" id="courseOptions">
+                <option value="">Duration</option>
+                <option value="upsc">UPSC</option>
+                <option value="ssc_jee">SSC JEE</option>
+            </select>
+            <select name="" id="courseOptions">
+                <option value="">Level</option>
+                <option value="upsc">UPSC</option>
+                <option value="ssc_jee">SSC JEE</option>
+            </select>
+            <select name="" id="courseOptions">
+                <option value="">Location</option>
+                <option value="upsc">UPSC</option>
+                <option value="ssc_jee">SSC JEE</option>
+            </select>
+            <select name="" id="courseOptions">
+                <option value="">Keywords</option>
+                <option value="upsc">UPSC</option>
+                <option value="ssc_jee">SSC JEE</option>
+            </select>
+        </div>
+        <button class="btn bg-warning px-5"><b>Search</b></button>
+    </div>
+    <!-- <iframe   height="300px" width="100%" autoplay="autoplay" muted></iframe> -->
+</section>
+
+
+<!--  contact us -->
+<section class="uf-contact-form-01 mx-auto" id="contact">
+    <div class="container">
+      <div class="row justify-content-center bg-white rounded-4 shadow py-5 gx-5 px-lg-5">
+        <div class="col-md-6 text-center">
+          <h2 class="uf-ct-01-text-primary text-uppercase fw-bold">Contact Us</h2>
+          <img src="/images/plane.jpg" alt="" class="uf-img-contact-form-01 pt-4 d-md-block d-none">
+        </div>
+        <div class="col-md-6">
+          <form id="contactForm" onsubmit="sendWhatsAppMessage(event)">
+            <div class="mb-3">
+              <label for="uf-imail" class="form-label">Email address</label>
+              <input type="email" class="form-control" id="uf-imail" aria-describedby="emailHelp">
+              <div id="emailHelp" class="form-text uf-ct-01-text-primary">We'll never share your email with anyone else.</div>
+            </div>
+            <div class="mb-3">
+              <label for="uf-iname" class="form-label">Your name</label>
+              <input type="text" class="form-control" id="uf-iname">
+            </div>
+            <div class="mb-3">
+              <label for="uf-itextarea" class="form-label">Your message</label>
+              <textarea class="form-control" id="uf-itextarea" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-lg uf-ct-01-btn-primary">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+</body>

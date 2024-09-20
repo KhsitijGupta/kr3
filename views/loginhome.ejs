@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Practise</title>
+    <!-- Page css link -->
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="/css/hero-section.css">
+    <link rel="stylesheet" href="/css/contact_us .css">
+    <!-- Bootstrap cdn  -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!--font-awesome linking-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <header class="home-show" id="navbar">
+        <div class="headerContact">
+            <div class="row p-2">
+                <div class="col ms-5 headerIcons">
+                    <i class="fas fa-phone-volume"></i> <span> +91 xxxxxxxxxx</span>
+                    <i class="far fa-envelope-open ms-4 me-1"></i> <span> example@gmail.com</span>
+                </div>
+                <div class="col"></div>
+                <div class="col d-lg-flex gap-4 justify-content-center align-items-center headerIcons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+                <div class="col-2 d-flex justify-content-center">
+                    <%=user.FULLNAME%>
+                </div>
+            </div>
+        </div>
+        <nav class="navbar navbar-expand-lg navbar-light bg-white border">
+            <div class="container">
+                <a class="navbar-brand" href="/"><img src="/images/logo.png" alt="" height="30px" width="70px"></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/aptitude">Test</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link " href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Categories <i class="fas fa-angle-down"></i>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <li><a class="dropdown-item" href="#">Action</a></li>
+                            <li><a class="dropdown-item" href="#">Another action</a></li>
+                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link " href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Services <i class="fas fa-angle-down"></i>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <li><a class="dropdown-item" href="#">Action</a></li>
+                            <li><a class="dropdown-item" href="#">Another action</a></li>
+                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link " href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Explore <i class="fas fa-angle-down"></i>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <li><a class="dropdown-item" href="#">Action</a></li>
+                            <li><a class="dropdown-item" href="#">Another action</a></li>
+                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="#contact">Contact Us</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+      </nav>
+      </header>
+
+<!-- hero section -->
+<section>
+    <div class="hero-content">
+       <h4> Hello !</h4>
+       <h2>Start Your Journey Today</h2>
+       <p>Discover the power of consistency and perfection through dedicated practice. Embrace the journey of continual improvement, and watch as your commitment transforms potential into excellence.</p>
+    </div>
+    <img src="/images/hero2.png" alt="" class="hero-content-img" >
+</section>
+<!-- search for exams -->
+<section id="searchSection">
+    <video width="100%" autoplay muted loop >
+        <source src="/videos/search_course.mp4">
+    </video>
+    <div class="searchCourse">
+        <h1>Search For Courses</h1>
+        <h5>Fill the fields to seek for courses</h5>
+        <div class="courseBox">
+            <select name="" id="courseOptions">
+                <option value="">Categories</option>
+                <option value="upsc">UPSC</option>
+                <option value="ssc_jee">SSC JEE</option>
+            </select>
+            <select name="" id="courseOptions">
+                <option value="">Duration</option>
+                <option value="upsc">UPSC</option>
+                <option value="ssc_jee">SSC JEE</option>
+            </select>
+            <select name="" id="courseOptions">
+                <option value="">Level</option>
+                <option value="upsc">UPSC</option>
+                <option value="ssc_jee">SSC JEE</option>
+            </select>
+            <select name="" id="courseOptions">
+                <option value="">Location</option>
+                <option value="upsc">UPSC</option>
+                <option value="ssc_jee">SSC JEE</option>
+            </select>
+            <select name="" id="courseOptions">
+                <option value="">Keywords</option>
+                <option value="upsc">UPSC</option>
+                <option value="ssc_jee">SSC JEE</option>
+            </select>
+        </div>
+        <button class="btn bg-warning px-5"><b>Search</b></button>
+    </div>
+    <!-- <iframe   height="300px" width="100%" autoplay="autoplay" muted></iframe> -->
+</section>
+
+
+<!--  contact us -->
+<section class="uf-contact-form-01 mx-auto" id="contact">
+    <div class="container">
+      <div class="row justify-content-center bg-white rounded-4 shadow py-5 gx-5 px-lg-5">
+        <div class="col-md-6 text-center">
+          <h2 class="uf-ct-01-text-primary text-uppercase fw-bold">Contact Us</h2>
+          <img src="/images/plane.jpg" alt="" class="uf-img-contact-form-01 pt-4 d-md-block d-none">
+        </div>
+        <div class="col-md-6">
+          <form id="contactForm" onsubmit="sendWhatsAppMessage(event)">
+            <div class="mb-3">
+              <label for="uf-imail" class="form-label">Email address</label>
+              <input type="email" class="form-control" id="uf-imail" aria-describedby="emailHelp">
+              <div id="emailHelp" class="form-text uf-ct-01-text-primary">We'll never share your email with anyone else.</div>
+            </div>
+            <div class="mb-3">
+              <label for="uf-iname" class="form-label">Your name</label>
+              <input type="text" class="form-control" id="uf-iname">
+            </div>
+            <div class="mb-3">
+              <label for="uf-itextarea" class="form-label">Your message</label>
+              <textarea class="form-control" id="uf-itextarea" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-lg uf-ct-01-btn-primary">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <footer class="custom-footer">
+    <div class="container-fluid p-5">
+        <div class="row pb-5">
+            <!-- Footer Logo & Description -->
+            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                <div class="footer-logo">
+                    <a href="/"><img class="pb-3" src="/images/white_logo.png" alt="" height="80px" width="220px">
+                    </a>
+                    <!-- <h1 class="display-3 pb-3">KR3</h1> -->
+                </div>
+                <div class="footer-col1-content">
+                    <p>There anyone who loves pursues not some great to have pleasure</p>
+                    <p>We are an immigration company pulling words and phrases from the humanitarian sector to come up with winning chunks of lorem.</p>
+                </div>
+                <div class="footer-social-media d-flex gap-3 footerIcons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>  
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                <h3 class="ps-3 p-2">Users</h3>
+                <ul class="ps-4 d-flex flex-column gap-2">
+                    <li>Students</li>
+                    <li>Schools</li>
+                    <li>Colleges</li>
+                    <li>Training Institutes</li>
+                    <li>Self</li>
+                </ul>
+            </div>
+            
+            <!-- Exams Section -->
+            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                <h4 class="ps-3 p-2">Exams</h4>
+                <ul class="ps-4 d-flex flex-column gap-2">
+                    <li>SSC GD</li>
+                    <li>SSC CGL</li>
+                    <li>SSC Stenographer</li>
+                    <li>MTS</li>
+                    <li>UPSC</li>
+                </ul>
+            </div>
+            
+            <!-- News & Updates Section -->
+            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                <h4 class="ps-3 p-2">News Updates</h4>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Animi.</p>
+                <div class="d-flex pt-3">
+                    <input type="email" name="email" placeholder="Your Email" class="form-control me-2" required>
+                    <button type="submit" class="btn bg-danger text-white">
+                        <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <!-- Footer Bottom Section -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center ">
+            <div class="copyright mb-2 mb-md-0">
+                Copyright © KR3-Team. All rights reserved.
+            </div>
+            <div class="footer-imp-links">
+                <a href="#">Privacy Policy</a> / <a href="#">Terms & Conditions</a>
+            </div>
+        </div>
+    </div>
+    <a href="/adminLogin"><button id="adminButton"></button></a>
+
+</footer>
+
+    <!-- javaScript link  -->
+    <script src="/js/script.js"></script>
+    <!-- bootstrap cdn -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Done by Rahul kumar -->
+    <script>
+        function sendWhatsAppMessage(event) {
+          event.preventDefault(); // Prevent the default form submission
+        
+          // Retrieve form values
+          const name = encodeURIComponent(document.getElementById('uf-iname').value.trim());
+          const email = encodeURIComponent(document.getElementById('uf-imail').value.trim());
+          const message = encodeURIComponent(document.getElementById('uf-itextarea').value.trim());
+        
+          // Define phone number and WhatsApp link
+          const phoneNumber = '+919993534374';
+          const whatsappLink = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=Hi%20there%20👋,%0A%0AI'm%20${name}.%0AI%20wanted%20to%20get%20in%20touch%20regarding%20your%20service%20or%20product.%0A%0AHere%20are%20my%20details:%0A%0A📧%20Email:%20${email}%0A💬%20Message:%20${message}.%0A%0AThank%20you%20and%20I%20look%20forward%20to%20hearing%20from%20you%20soon%20😊!`;
+        
+          // Open WhatsApp link in a new tab
+          window.open(whatsappLink, '_blank');
+        }
+        </script>
+</body>
+</html>
