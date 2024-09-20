@@ -35,7 +35,7 @@ const connection=mysql.createConnection({
     host: "localhost",
     user:"root",
     database:"KR3Database",
-    password:"MYSQL@123"
+    password:""
   });
 
 app.get("/",(req,res)=>{
@@ -287,7 +287,7 @@ app.delete("/manageQuestions/:id",async(req,res)=>{
     }
 });
 
-app.get("/tables", (req, res) => {
+app.get("/courseCategories", (req, res) => {
     // Check if the user is an admin
     if (req.session && req.session.admin) {
         const query = "SHOW TABLES";
@@ -305,7 +305,7 @@ app.get("/tables", (req, res) => {
             );
 
             // Render a view to display the filtered tables
-            res.render("admin/tables.ejs", { tables: filteredTables });
+            res.render("admin/courseCategories.ejs", { tables: filteredTables });
         });
     } else {
         res.redirect("/adminLogin");
