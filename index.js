@@ -175,8 +175,38 @@ app.get('/aptitude', (req, res) => {
 });
 
 app.get("/uploadQuestions",(req, res ) => {
+    // Check if the user is an admin
     if (req.session && req.session.admin) {
-        res.render("admin/uploadQuestions.ejs");
+        const query = "SHOW TABLES";
+
+        connection.query(query, (err, results) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).send("Error retrieving tables.");
+            }
+
+            // Filter out unwanted tables
+            const filteredTables = results
+                .map(table => {
+                    // Split the table name by underscore
+                    const splitTableName = table.Tables_in_kr3database.split('_');
+
+                    // Check if "questions" is part of the split table name
+                    const containsQuestions = splitTableName.includes("questions");
+
+                    // Return both the original table name and whether it contains "questions"
+                    return { 
+                        originalTableName: table.Tables_in_kr3database, 
+                        splitTableName, 
+                        containsQuestions 
+                    };
+                });
+
+            // Render a view to display only tables containing "questions"
+            const tablesWithQuestions = filteredTables.filter(table => table.containsQuestions);
+
+            res.render("admin/uploadQuestions.ejs", { tables: tablesWithQuestions });
+        });
     } else {
         res.redirect("/adminLogin"); 
     }
@@ -299,18 +329,36 @@ app.get("/courseCategories", (req, res) => {
             }
 
             // Filter out unwanted tables
-            const filteredTables = results.filter(table => 
-                table.Tables_in_kr3database !== 'admin_profile' && 
-                table.Tables_in_kr3database !== 'users'
-            );
+            const filteredTables = results
+                // .filter(table => 
+                //     table.Tables_in_kr3database !== 'admin_profile' && 
+                //     table.Tables_in_kr3database !== 'users'
+                // )
+                .map(table => {
+                    // Split the table name by underscore
+                    const splitTableName = table.Tables_in_kr3database.split('_');
 
-            // Render a view to display the filtered tables
-            res.render("admin/courseCategories.ejs", { tables: filteredTables });
+                    // Check if "questions" is part of the split table name
+                    const containsQuestions = splitTableName.includes("questions");
+
+                    // Return both the original table name and whether it contains "questions"
+                    return { 
+                        originalTableName: table.Tables_in_kr3database, 
+                        splitTableName, 
+                        containsQuestions 
+                    };
+                });
+
+            // Render a view to display only tables containing "questions"
+            const tablesWithQuestions = filteredTables.filter(table => table.containsQuestions);
+
+            res.render("admin/courseCategories.ejs", { tables: tablesWithQuestions });
         });
     } else {
         res.redirect("/adminLogin");
     }
 });
+
 
 
 app.listen(8080,()=>{

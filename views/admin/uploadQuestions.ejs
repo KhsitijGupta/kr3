@@ -92,9 +92,9 @@
                     <label for="subjects" class="form-label">Subjects Name</label>
                     <select class="form-control" name="subjects" id="subjects" required>
                         <option>--Select Subjects Name--</option>
-                        <option value="aptitude_questions">Aptitude</option>
-                        <option value="maths_questions">Maths</option>
-                        <option value="english_questions">English</option>
+                        <% tables.forEach(table => { %>
+                        <option value="<%= table.originalTableName%>"><%= table.originalTableName.replace(/_/g, ' ').toUpperCase() %></option>
+                        <%})%>
                     </select>
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>

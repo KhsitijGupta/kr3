@@ -23,7 +23,9 @@
             margin-right: 5px;
         }
         #allCourse {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            height: fit-content;
             gap: 40px;
         }
         #createTableIcon {
@@ -74,7 +76,7 @@
                 <% tables.forEach(table => { %>
                     <div class="row h-100">
                         <div class="card">
-                            <h6 class="text-center py-2 fw-bold"><%= table.Tables_in_kr3database.replace(/_/g, ' ').toUpperCase() %></h6>
+                            <h6 class="text-center py-2 fw-bold"><%= table.originalTableName.replace(/_/g, ' ').toUpperCase() %></h6>
                             <div class="d-flex justify-content-between px-2 fw-bold">
                                 <div class="text-center">Easy <div> 34 </div></div>
                                 <div class="text-center">Medium <div> 22 </div></div>
