@@ -105,7 +105,12 @@
                         <h6 class="text-center py-2 fw-bold">Delete Subject Table</h6>
                         <form action="/courseCategories" method="POST" id="TableForm">
                             <button type="submit"  class="border border-0 bg-transparent"><i class="fas fa-trash-alt" ></i></button>
-                            <input type="text" name="deleteTable" placeholder="Enter Subject Name" required>
+                            <select class="form-control py-0" name="deleteTable">
+                                <option>--- Choose Table ---</option>
+                                <% tables.forEach(table => { %>
+                                <option><%= table.originalTableName.replace(/_/g, ' ').toUpperCase() %></option>
+                                <%})%>
+                            </select>
                         </form>
                     </div>
                 </div>

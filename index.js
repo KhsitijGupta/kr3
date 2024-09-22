@@ -214,7 +214,8 @@ app.get("/uploadQuestions",(req, res ) => {
 
 app.post('/uploadQuestions', (req, res) => {
     let data =  req.body;
-    let sqlQuery = "INSERT INTO aptitude_questions (question_text, option_a, option_b, option_c, option_d, correct_option, difficulty_level) VALUES(?,?,?,?,?,?,?)";
+    // console.log(data)
+    let sqlQuery = "INSERT INTO "+data.subjects+" (question_text, option_a, option_b, option_c, option_d, correct_option, difficulty_level) VALUES(?,?,?,?,?,?,?)";
     let val = [data.questionText, data.optionA, data.optionB, data.optionC, data.optionD, data.correctOption, data.difficultyLevel];
     try{
     connection.query(sqlQuery, val,(err,result)=>{
@@ -361,7 +362,7 @@ app.get("/courseCategories", (req, res) => {
 
 app.post('/courseCategories', (req, res) => {
     let data =  req.body;
-    // console.log(data)
+    // console.log(data) how to manage and avoid re-enter same name
     if(Object.keys(data) == "newTable"){
         let reqData = data.newTable.replace(/ /g,"").toLowerCase()+"_questions";
         let createQuery = "CREATE TABLE "+reqData+" (question_id INT AUTO_INCREMENT PRIMARY KEY, question_text VARCHAR(255) NOT NULL, option_a VARCHAR(100) NOT NULL, option_b VARCHAR(100) NOT NULL, option_c VARCHAR(100) NOT NULL, option_d VARCHAR(100) NOT NULL, correct_option CHAR(1) NOT NULL, difficulty_level VARCHAR(50), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);";
@@ -375,7 +376,7 @@ app.post('/courseCategories', (req, res) => {
             console.log(err);
         }
     }else if(Object.keys(data) == "deleteTable"){
-        let reqData = data.deleteTable.replace(/ /g,"").toLowerCase()+"_questions";
+        let reqData = data.deleteTable.replace(/ /g,"_").toLowerCase();
         
         let deleteQuery = "DROP TABLE "+reqData+";";
         try{
