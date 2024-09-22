@@ -359,6 +359,39 @@ app.get("/courseCategories", (req, res) => {
     }
 });
 
+app.post('/courseCategories', (req, res) => {
+    let data =  req.body;
+    // console.log(data)
+    if(Object.keys(data) == "newTable"){
+        let reqData = data.newTable.replace(/ /g,"").toLowerCase()+"_questions";
+        let createQuery = "CREATE TABLE "+reqData+" (question_id INT AUTO_INCREMENT PRIMARY KEY, question_text VARCHAR(255) NOT NULL, option_a VARCHAR(100) NOT NULL, option_b VARCHAR(100) NOT NULL, option_c VARCHAR(100) NOT NULL, option_d VARCHAR(100) NOT NULL, correct_option CHAR(1) NOT NULL, difficulty_level VARCHAR(50), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);";
+        try{
+        connection.query(createQuery, (err,result)=>{
+            if(err) throw err;
+                res.send("created successfully")
+        })
+        }catch(err){
+            res.send("err in db");
+            console.log(err);
+        }
+    }else if(Object.keys(data) == "deleteTable"){
+        let reqData = data.deleteTable.replace(/ /g,"").toLowerCase()+"_questions";
+        
+        let deleteQuery = "DROP TABLE "+reqData+";";
+        try{
+            connection.query(deleteQuery, (err,result)=>{
+                if(err) throw err;
+                    res.send("deleted successfully")
+            })
+            }catch(err){
+                res.send("err in db");
+                console.log(err);
+            }
+    }else{
+            res.send("Table not found!");
+    }
+});
+
 
 
 app.listen(8080,()=>{
