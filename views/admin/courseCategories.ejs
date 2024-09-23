@@ -81,7 +81,8 @@
                 <% tables.forEach(table => { %>
                     <div class="row h-100">
                         <div class="card">
-                            <h6 class="text-center py-2 fw-bold"><%= table.originalTableName.replace(/_/g, ' ').toUpperCase() %></h6>
+                            <h6 class="text-center py-2 fw-bold">
+                                <%= table.originalTableName.replace(/_/g, ' ').toUpperCase() %></h6>
                             <div class="d-flex justify-content-between px-2 fw-bold">
                                 <div class="text-center">Easy <div> 34 </div></div>
                                 <div class="text-center">Medium <div> 22 </div></div>
@@ -103,8 +104,9 @@
                 <div class="row h-100">
                     <div class="card d-flex flex-column align-items-center">
                         <h6 class="text-center py-2 fw-bold">Delete Subject Table</h6>
-                        <form action="/courseCategories" method="POST" id="TableForm">
-                            <button type="submit"  class="border border-0 bg-transparent"><i class="fas fa-trash-alt" ></i></button>
+                        <form action="/courseCategories/delete" method="POST" id="TableForm">
+                            <button type="submit"  class="border border-0 bg-transparent">
+                                <i class="fas fa-trash-alt" ></i></button>
                             <select class="form-control py-0" name="deleteTable">
                                 <option>--- Choose Table ---</option>
                                 <% tables.forEach(table => { %>

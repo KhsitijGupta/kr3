@@ -7,6 +7,10 @@ const ejsMate = require("ejs-mate")
 const mysql = require("mysql2");
 const session = require("express-session");
 const { log } = require("console");
+const questionSchema = require("./questionSchema")
+const deletetableSchema = require("./deletetableSchema")
+const wrapAsync= require("./utils/wrapAsync.js")
+const ExpressError = require("./utils/ExpressError.js")
 
 app.use(session({
     secret: 'KR3Secret@', // Change this to a strong secret key
@@ -35,40 +39,69 @@ const connection=mysql.createConnection({
     host: "localhost",
     user:"root",
     database:"KR3Database",
-    password:""
+    password:"MYSQL@123"
   });
 
 app.get("/",(req,res)=>{
     res.render("home.ejs");
 })
 
-
-app.post('/register', (req, res) => {
-    let data =  req.body;
-    console.log(new Date());
-    if(data.password == data.con_password){
-        let sql = "INSERT INTO users(FULLNAME, EMAIL, PASSWORD) VALUES (?, ?, ?,?,?)";
-        let values = [data.name, data.email, data.password];
-        try{
-            connection.query(sql, values,(err,result)=>{
-                if(err) throw err;
-                 res.redirect("/login")
-    
-            })
-        }catch(err){
-            res.send("err in db");
-            console.log(err);
+const validatequestion=(req ,res ,next)=>{
+    let {error} = questionSchema.validate(req.body);
+        if(error){
+            let errmsg = error.details.map((el)=>el.message).join(",");
+            res.send(errmsg)
         }
+        else{
+            next();
+        }
+};
+const validateTableName=(req ,res ,next)=>{
+    let {error} = deletetableSchema.validate(req.body);
+        if(error){
+            let errmsg = error.details.map((el)=>el.message).join(",");
+            res.send(errmsg)
+        }
+        else{
+            next();
+        }
+};
+
+app.post('/register', wrapAsync(async (req, res) => {
+    let data = req.body;
+
+    if (data.password !== data.con_password) {
+        return res.render("error.ejs", {
+            statusCode: 400,
+            message: "Passwords do not match."
+        });
     }
-    
-});
+
+    let sql = "INSERT INTO users(FULLNAME, EMAIL, PASSWORD) VALUES (?,?,?)";
+    let values = [data.name, data.email, data.password];
+
+    try {
+        connection.query(sql, values, (err, result) => {
+            if (err) {
+                let { statusCode = 500, message = "Something went wrong" } = err;
+                return res.render("error.ejs", { statusCode, message });
+            }
+            // Redirect only if there are no errors
+            res.redirect("/login");
+        });
+    } catch (err) {
+        let { statusCode = 500, message = "Something went wrong" } = err;
+        res.render("error.ejs", { statusCode, message });
+    }
+}));
+
 
 app.get("/login",(req, res ) => {
     
     res.render("login.ejs");
 });
 
-app.post('/login', (req, res) => {
+app.post('/login',wrapAsync(async(req, res) => {
     let data = req.body;
     let sql = "SELECT * FROM users WHERE EMAIL = ?";
     let values = [data.email];
@@ -95,9 +128,12 @@ app.post('/login', (req, res) => {
             return res.status(400).send('Invalid email or password');
         }
     });
-});
+}));
+
+
+
 // Admin Login Route
-app.post('/adminLogin', (req, res) => {
+app.post('/adminLogin', wrapAsync(async(req, res) => {
     let data = req.body;
     let sql = "SELECT * FROM admin_profile WHERE username = ?";
     let values = [data.username];
@@ -124,7 +160,7 @@ app.post('/adminLogin', (req, res) => {
             return res.status(400).send('Invalid username or password');
         }
     });
-});
+}));
 
 
 
@@ -140,9 +176,6 @@ function isAdmin(req, res, next) {
 app.get("/adminDashboard", isAdmin, (req, res) => {
     res.render("admin/admin.ejs");
 });
-
- 
-
 
 app.get("/logined",(req, res ) => {
      
@@ -161,20 +194,22 @@ app.get('/logout', (req, res) => {
         res.redirect('/');  
     });
 });
-app.get('/aptitude', (req, res) => {
+app.get('/aptitude', wrapAsync(async(req, res) => {
     const sql = "SELECT * FROM aptitude_questions"; // Query to select all aptitude questions
     
     connection.query(sql, (err, results) => {
         if (err) {
-            console.error("Error fetching aptitude questions:", err);
-            return res.status(500).send("Database error");
+            let { statusCode = 500, message = "Something went wrong" } = err;
+            res.render("error.ejs", { statusCode, message });
+            //console.error("Error fetching aptitude questions:", err);
+            //return res.status(500).send("Database error");
         }
         
         res.render("tests/aptitude.ejs", { questions: results });
     });
-});
+}));
 
-app.get("/uploadQuestions",(req, res ) => {
+app.get("/uploadQuestions",wrapAsync(async(req, res ) => {
     // Check if the user is an admin
     if (req.session && req.session.admin) {
         const query = "SHOW TABLES";
@@ -210,9 +245,17 @@ app.get("/uploadQuestions",(req, res ) => {
     } else {
         res.redirect("/adminLogin"); 
     }
-});
+}));
 
-app.post('/uploadQuestions', (req, res) => {
+app.post('/uploadQuestions', validatequestion , async(req, res) => {
+    const query = "SHOW TABLES";
+
+        connection.query(query, (err, results) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).send("Error retrieving tables.");
+            }
+        });
     let data =  req.body;
     // console.log(data)
     let sqlQuery = "INSERT INTO "+data.subjects+" (question_text, option_a, option_b, option_c, option_d, correct_option, difficulty_level) VALUES(?,?,?,?,?,?,?)";
@@ -220,7 +263,8 @@ app.post('/uploadQuestions', (req, res) => {
     try{
     connection.query(sqlQuery, val,(err,result)=>{
         if(err) throw err;
-            res.send("successfully uploaded")
+        //res.send("<>alert('successfully uploaded');</script>");
+        res.send("successfully uploaded");
     })
     }catch(err){
         res.send("err in db");
@@ -228,7 +272,7 @@ app.post('/uploadQuestions', (req, res) => {
     }
 });
 
-app.get("/manageQuestions",(req, res ) => {
+app.get("/manageQuestions",wrapAsync(async(req, res ) => {
     if (req.session && req.session.admin) {
         const sql = "SELECT * FROM aptitude_questions"; // Query to select all aptitude questions
     
@@ -243,9 +287,9 @@ app.get("/manageQuestions",(req, res ) => {
     } else {
         res.redirect("/adminLogin"); 
     }
-});
+}));
 
-app.get("/allUsres",(req, res ) => {
+app.get("/allUsres",wrapAsync(async(req, res ) => {
     if (req.session && req.session.admin) {
         const sql = "SELECT * FROM users ORDER BY ID DESC"; 
     
@@ -262,9 +306,9 @@ app.get("/allUsres",(req, res ) => {
     {
         res.redirect("/adminLogin"); 
     }
-});
+}));
 
-app.get("/manageQuestions/:id/edit",async(req,res)=>{
+app.get("/manageQuestions/:id/edit", wrapAsync(async(req,res)=>{
     let {id} = req.params;
         if (req.session && req.session.admin) {
        const sql = "SELECT * from  aptitude_questions where question_id = ?"; 
@@ -281,9 +325,9 @@ app.get("/manageQuestions/:id/edit",async(req,res)=>{
 } else {
     res.redirect("/adminLogin"); 
 }
-});
+}));
 
-app.put("/manageQuestions/:id",async(req,res)=>{
+app.put("/manageQuestions/:id",wrapAsync(async(req,res)=>{
     let {id} =req.params;
     let data = req.body;
     console.log([id])
@@ -298,11 +342,11 @@ app.put("/manageQuestions/:id",async(req,res)=>{
     {
         res.redirect("/adminLogin"); 
     }
-});
+}));
 
 
 
-app.delete("/manageQuestions/:id",async(req,res)=>{
+app.delete("/manageQuestions/:id",wrapAsync(async(req,res)=>{
     let {id} =req.params;
      if (req.session && req.session.admin) {     
         let deleteSql = "DELETE FROM aptitude_questions WHERE question_id = ? ";
@@ -316,9 +360,9 @@ app.delete("/manageQuestions/:id",async(req,res)=>{
     {
         res.redirect("/adminLogin"); 
     }
-});
+}));
 
-app.get("/courseCategories", (req, res) => {
+app.get("/courseCategories", wrapAsync(async(req, res) => {
     // Check if the user is an admin
     if (req.session && req.session.admin) {
         const query = "SHOW TABLES";
@@ -358,24 +402,13 @@ app.get("/courseCategories", (req, res) => {
     } else {
         res.redirect("/adminLogin");
     }
-});
+}));
 
-app.post('/courseCategories', (req, res) => {
+
+
+app.post('/courseCategories/delete',validateTableName, wrapAsync(async(req, res) => {
     let data =  req.body;
-    // console.log(data) how to manage and avoid re-enter same name
-    if(Object.keys(data) == "newTable"){
-        let reqData = data.newTable.replace(/ /g,"").toLowerCase()+"_questions";
-        let createQuery = "CREATE TABLE "+reqData+" (question_id INT AUTO_INCREMENT PRIMARY KEY, question_text VARCHAR(255) NOT NULL, option_a VARCHAR(100) NOT NULL, option_b VARCHAR(100) NOT NULL, option_c VARCHAR(100) NOT NULL, option_d VARCHAR(100) NOT NULL, correct_option CHAR(1) NOT NULL, difficulty_level VARCHAR(50), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);";
-        try{
-        connection.query(createQuery, (err,result)=>{
-            if(err) throw err;
-                res.send("created successfully")
-        })
-        }catch(err){
-            res.send("err in db");
-            console.log(err);
-        }
-    }else if(Object.keys(data) == "deleteTable"){
+    if(Object.keys(data) == "deleteTable"){
         let reqData = data.deleteTable.replace(/ /g,"_").toLowerCase();
         
         let deleteQuery = "DROP TABLE "+reqData+";";
@@ -388,12 +421,69 @@ app.post('/courseCategories', (req, res) => {
                 res.send("err in db");
                 console.log(err);
             }
-    }else{
-            res.send("Table not found!");
     }
-});
+    else{
+        res.send("Table not found!");
+    }
+}));
 
 
+
+app.post('/courseCategories', wrapAsync(async(req, res) => {
+    let data = req.body;
+    let reqData = data.newTable.replace(/ /g, "").toLowerCase() + "_questions";
+    const query = "SHOW TABLES";
+    
+    connection.query(query, (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send("Error retrieving tables.");
+        }
+
+        // Convert the array of results into an array of table names
+        let arrOfDbTable = results.map(row => Object.values(row)[0]);
+        if (arrOfDbTable.includes(reqData)) {
+            return res.send("Table already exists");
+        } else {
+            // Ensure the 'newTable' key exists in the data
+            if (Object.keys(data).includes("newTable")) {
+                let createQuery = `CREATE TABLE ${reqData} (
+                    question_id INT AUTO_INCREMENT PRIMARY KEY,
+                    question_text VARCHAR(255) NOT NULL,
+                    option_a VARCHAR(100) NOT NULL,
+                    option_b VARCHAR(100) NOT NULL,
+                    option_c VARCHAR(100) NOT NULL,
+                    option_d VARCHAR(100) NOT NULL,
+                    correct_option CHAR(1) NOT NULL,
+                    difficulty_level VARCHAR(50),
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );`;
+                
+                try {
+                    connection.query(createQuery, (err, result) => {
+                        if (err) throw err;
+                        res.send("Table created successfully");
+                    });
+                } catch (err) {
+                    res.status(500).send("Error creating table");
+                    console.log(err);
+                }
+            } else {
+                res.status(400).send("Invalid data: 'newTable' key is missing");
+            }
+        }
+    });
+}));
+
+
+app.get("*", (req, res , next) => {
+    next(new ExpressError(404,"Page not found"));
+})
+app.use((err, req, res , next)=>{
+    let {statusCode=500 , message="Something went wrong"} = err;
+    res.render("error.ejs",{statusCode , message})
+    // res.status(statusCode).send(message);
+})
 
 app.listen(8080,()=>{
     console.log("app is listening on 8080");

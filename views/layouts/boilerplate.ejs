@@ -44,6 +44,20 @@
           window.open(whatsappLink, '_blank');
         }
         </script>
+        <script>
+            let clickCount = 0;
         
+            document.getElementById('adminButton').addEventListener('click', (event) => {
+                clickCount++;
+        
+                if (clickCount === 1) {
+                    document.getElementById('status').textContent = 'You can now access admin login!';
+                    document.getElementById('adminButton').disabled = false;
+                    document.getElementById('adminLink').href = '/adminLogin'; 
+                } else {
+                    event.preventDefault(); // Prevent default action until the 7th click
+                }
+            });
+        </script>
 </body>
 </html>
