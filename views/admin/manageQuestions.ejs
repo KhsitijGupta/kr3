@@ -101,30 +101,20 @@
             <div class="d-flex shadow-sm p-2 border">
                 <div><h5>Filters</h5></div>
                 <div class="ms-auto filter">
-                    <select name="" id="">
-                        <option value="">Categories</option>
-                        <option value="">SSC GD</option>
-                        <option value="">SSC MTS</option>
-                        <option value="">UPSC</option>
-                    </select>
-                    <select name="" id="">
-                        <option value="">Subject</option>
-                        <option value="Aptitude">Aptitude</option>
-                        <option value="Maths">Maths</option>
-                        <option value="English">English</option>
-                    </select>
-                    <select name="" id="">
-                        <option value="">Difficulty Level</option>
-                        <option value="Easy">Easy</option>
-                        <option value="Medium">Medium</option>
-                        <option value="Hard">Hard</option>
-                    </select>
-                    <select name="" id="">
-                        <option value="">Categories</option>
-                        <option value="">SSC GD</option>
-                        <option value="">SSC MTS</option>
-                        <option value="">UPSC</option>
-                    </select>
+                    <form method="GET" action="/filtermanageQuestions"> 
+                        <select name="subject" id="subject">
+                            <% tables.forEach(table => { %>
+                                <option><%= table.originalTableName.replace(/_/g, ' ').toUpperCase() %></option>
+                            <%})%>  
+                        </select>
+                        <select name="difficulty" id="difficulty">
+                            <!-- <option value="">Difficulty Level</option> -->
+                            <option value="Easy">Easy</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Hard">Hard</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                    </form>
                 </div>
             </div>
             <h1>All Questions</h1>
@@ -151,20 +141,6 @@
                 </div>
                 <% }); %>
             </div>
-            <!-- <ul>
-                <% questions.forEach(function(question) { %>
-                    <li>
-                        <h2><%= question.question_text %></h2>
-                        <ul class="options">
-                            <li>A. <%= question.option_a %></li>
-                            <li>B. <%= question.option_b %></li>
-                            <li>C. <%= question.option_c %></li>
-                            <li>D. <%= question.option_d %></li>
-                        </ul>
-                        <hr>
-                    </li>
-                <% }); %>
-            </ul> -->
         </div>
     </div>
     <!-- bootstrap cdn -->

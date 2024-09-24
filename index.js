@@ -186,6 +186,8 @@ app.get("/adminLogin",(req, res ) => {
      
     res.render("admin/adminLogin.ejs");
 });
+
+
 app.get('/logout', (req, res) => {
     req.session.destroy(err => {
         if (err) {
@@ -194,8 +196,12 @@ app.get('/logout', (req, res) => {
         res.redirect('/');  
     });
 });
+
+
+
+
 app.get('/aptitude', wrapAsync(async(req, res) => {
-    const sql = "SELECT * FROM aptitude_questions"; // Query to select all aptitude questions
+    const sql = "SELECT * FROM aptitude_questions ORDER BY RAND() LIMIT 25"; 
     
     connection.query(sql, (err, results) => {
         if (err) {
@@ -208,6 +214,8 @@ app.get('/aptitude', wrapAsync(async(req, res) => {
         res.render("tests/aptitude.ejs", { questions: results });
     });
 }));
+
+
 
 app.get("/uploadQuestions",wrapAsync(async(req, res ) => {
     // Check if the user is an admin
@@ -272,22 +280,6 @@ app.post('/uploadQuestions', validatequestion , async(req, res) => {
     }
 });
 
-app.get("/manageQuestions",wrapAsync(async(req, res ) => {
-    if (req.session && req.session.admin) {
-        const sql = "SELECT * FROM aptitude_questions"; // Query to select all aptitude questions
-    
-    connection.query(sql, (err, results) => {
-        if (err) {
-            console.error("Error fetching aptitude questions:", err);
-            return res.status(500).send("Database error");
-        }
-        
-        res.render("admin/manageQuestions.ejs", { questions: results });
-    });
-    } else {
-        res.redirect("/adminLogin"); 
-    }
-}));
 
 app.get("/allUsres",wrapAsync(async(req, res ) => {
     if (req.session && req.session.admin) {
@@ -302,11 +294,121 @@ app.get("/allUsres",wrapAsync(async(req, res ) => {
             res.render("admin/allUser.ejs", { users });
         });
     }
-     else
+    else
     {
         res.redirect("/adminLogin"); 
     }
 }));
+
+app.get("/manageQuestions",wrapAsync(async(req, res ) => {
+    if (req.session && req.session.admin) {
+        const query = "SHOW TABLES";
+        let tablesWithQuestions;
+        try {
+            const tablesResults = await new Promise((resolve, reject) => {
+                connection.query(query, (err, results) => {
+                    if (err) reject(err);
+                    else resolve(results);
+                });
+            });
+
+            // Process the results from the first query
+            const filteredTables = tablesResults
+                .map(table => {
+                    const splitTableName = table.Tables_in_kr3database.split('_');
+                    const containsQuestions = splitTableName.includes("questions");
+                    return { 
+                        originalTableName: table.Tables_in_kr3database, 
+                        splitTableName, 
+                        containsQuestions 
+                    };
+                });
+            
+            // Filter tables containing 'questions'
+             tablesWithQuestions = filteredTables.filter(table => table.containsQuestions);
+            }catch
+            {
+
+            }
+        const sql = "SELECT * FROM aptitude_questions"; // Query to select all aptitude questions
+    
+    connection.query(sql, (err, results) => {
+        if (err) {
+            console.error("Error fetching aptitude questions:", err);
+            return res.status(500).send("Database error");
+        }
+        
+        res.render("admin/manageQuestions.ejs", { questions: results, tables : tablesWithQuestions });
+    });
+    } else {
+        res.redirect("/adminLogin"); 
+    }
+}));
+
+app.get("/filtermanageQuestions", wrapAsync(async (req, res) => {
+    if (req.session && req.session.admin) {
+        const query = "SHOW TABLES";
+        let tablesWithQuestions;
+        try {
+            const tablesResults = await new Promise((resolve, reject) => {
+                connection.query(query, (err, results) => {
+                    if (err) reject(err);
+                    else resolve(results);
+                });
+            });
+
+            // Process the results from the first query
+            const filteredTables = tablesResults
+                .map(table => {
+                    const splitTableName = table.Tables_in_kr3database.split('_');
+                    const containsQuestions = splitTableName.includes("questions");
+                    return { 
+                        originalTableName: table.Tables_in_kr3database, 
+                        splitTableName, 
+                        containsQuestions 
+                    };
+                });
+            
+            // Filter tables containing 'questions'
+             tablesWithQuestions = filteredTables.filter(table => table.containsQuestions);
+            }catch
+            {
+
+            }
+        const { subject, difficulty } = req.query; // Get selected subject (table) and difficulty from the form
+        
+        // Make sure to convert the subject back to the original table name
+        const tableName = subject.replace(/ /g, '_').toLowerCase(); // Convert the subject to the table format
+        
+        let sql = `SELECT * FROM ??`; // Base query to select from the table
+        const queryParams = [tableName];
+        // If difficulty is selected, add it as a filter in the query
+        if (difficulty) {
+            sql += ` WHERE difficulty_level = ?`;
+            queryParams.push(difficulty);
+        }
+        
+        try {
+            const questions = await new Promise((resolve, reject) => {
+                connection.query(sql, queryParams, (err, results) => {
+                    if (err) reject(err);
+                    else resolve(results);
+                });
+            });
+
+            // Render the manageQuestions page with the filtered questions
+            res.render("admin/manageQuestions.ejs", { questions, tables: [] , tables : tablesWithQuestions}); // Pass the filtered questions to the template
+        } catch (err) {
+            console.error("Error fetching filtered questions:", err);
+            return res.status(500).send("Database error while fetching filtered questions");
+        }
+    } else {
+        res.redirect("/adminLogin");
+    }
+}));
+
+
+
 
 app.get("/manageQuestions/:id/edit", wrapAsync(async(req,res)=>{
     let {id} = req.params;
@@ -343,8 +445,7 @@ app.put("/manageQuestions/:id",wrapAsync(async(req,res)=>{
         res.redirect("/adminLogin"); 
     }
 }));
-
-
+  
 
 app.delete("/manageQuestions/:id",wrapAsync(async(req,res)=>{
     let {id} =req.params;
@@ -362,31 +463,77 @@ app.delete("/manageQuestions/:id",wrapAsync(async(req,res)=>{
     }
 }));
 
-app.get("/courseCategories", wrapAsync(async(req, res) => {
-    // Check if the user is an admin
+// app.get("/courseCategories", wrapAsync(async(req, res) => {
+//     // Check if the user is an admin
+//     if (req.session && req.session.admin) {
+//         const query = "SHOW TABLES";
+//         //let easyct;
+//         connection.query(query, (err, results) => {
+//             if (err) {
+//                 console.error(err);
+//                 return res.status(500).send("Error retrieving tables.");
+//             }
+
+//             // Filter out unwanted tables
+//             const filteredTables = results
+//                 // .filter(table => 
+//                 //     table.Tables_in_kr3database !== 'admin_profile' && 
+//                 //     table.Tables_in_kr3database !== 'users'
+//                 // )
+//                 .map(table => {
+//                     // Split the table name by underscore
+//                     const splitTableName = table.Tables_in_kr3database.split('_');
+
+//                     // Check if "questions" is part of the split table name
+//                     const containsQuestions = splitTableName.includes("questions");
+
+//                     // Return both the original table name and whether it contains "questions"
+//                     return { 
+//                         originalTableName: table.Tables_in_kr3database, 
+//                         splitTableName, 
+//                         containsQuestions 
+//                     };
+//                 });
+
+//             // Render a view to display only tables containing "questions"
+//             const tablesWithQuestions = filteredTables.filter(table => table.containsQuestions);
+
+//             res.render("admin/courseCategories.ejs", { tables: tablesWithQuestions , easy:easy[0] } );
+//         });
+//         const easy = "SELECT count(question_id) as easyCount FROM aptitude_questions where difficulty_level = 'Easy' ;";
+        
+//         connection.query(easy, (err, easy) => {
+//              //easyct={ escount:easy[0].easyCount};
+//             console.error(easy[0].easyCount);
+//             if (err) {
+//                 console.error(err);
+//                 return res.status(500).send("Error retrieving tables.");
+//             }
+//         });
+//     } else {
+//         res.redirect("/adminLogin");
+//     }
+// }));
+
+
+app.get("/courseCategories", wrapAsync(async (req, res) => {
     if (req.session && req.session.admin) {
+        // First query to fetch the list of tables
         const query = "SHOW TABLES";
 
-        connection.query(query, (err, results) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).send("Error retrieving tables.");
-            }
+        try {
+            const tablesResults = await new Promise((resolve, reject) => {
+                connection.query(query, (err, results) => {
+                    if (err) reject(err);
+                    else resolve(results);
+                });
+            });
 
-            // Filter out unwanted tables
-            const filteredTables = results
-                // .filter(table => 
-                //     table.Tables_in_kr3database !== 'admin_profile' && 
-                //     table.Tables_in_kr3database !== 'users'
-                // )
+            // Process the results from the first query
+            const filteredTables = tablesResults
                 .map(table => {
-                    // Split the table name by underscore
                     const splitTableName = table.Tables_in_kr3database.split('_');
-
-                    // Check if "questions" is part of the split table name
                     const containsQuestions = splitTableName.includes("questions");
-
-                    // Return both the original table name and whether it contains "questions"
                     return { 
                         originalTableName: table.Tables_in_kr3database, 
                         splitTableName, 
@@ -394,11 +541,59 @@ app.get("/courseCategories", wrapAsync(async(req, res) => {
                     };
                 });
 
-            // Render a view to display only tables containing "questions"
+            // Filter tables containing 'questions'
             const tablesWithQuestions = filteredTables.filter(table => table.containsQuestions);
 
-            res.render("admin/courseCategories.ejs", { tables: tablesWithQuestions });
-        });
+            // Create an array of promises for each table's easy, medium, and hard question count queries
+            const difficultyCountsPromises = tablesWithQuestions.map(table => {
+                const tableName = table.originalTableName;
+
+                // Queries for Easy, Medium, and Hard question counts
+                const easyQuery = `SELECT count(question_id) as easyCount FROM ${tableName} WHERE difficulty_level = 'Easy';`;
+                const mediumQuery = `SELECT count(question_id) as mediumCount FROM ${tableName} WHERE difficulty_level = 'Medium';`;
+                const hardQuery = `SELECT count(question_id) as hardCount FROM ${tableName} WHERE difficulty_level = 'Hard';`;
+
+                // Execute all queries for this table
+                return Promise.all([
+                    new Promise((resolve, reject) => {
+                        connection.query(easyQuery, (err, results) => {
+                            if (err) reject(err);
+                            else resolve({ tableName, easyCount: results[0].easyCount });
+                        });
+                    }),
+                    new Promise((resolve, reject) => {
+                        connection.query(mediumQuery, (err, results) => {
+                            if (err) reject(err);
+                            else resolve({ tableName, mediumCount: results[0].mediumCount });
+                        });
+                    }),
+                    new Promise((resolve, reject) => {
+                        connection.query(hardQuery, (err, results) => {
+                            if (err) reject(err);
+                            else resolve({ tableName, hardCount: results[0].hardCount });
+                        });
+                    })
+                ]);
+            });
+
+            // Execute all the promises and structure the results
+            const difficultyCountsResults = await Promise.all(difficultyCountsPromises);
+
+            // Combine results for each table
+            const combinedDifficultyCounts = difficultyCountsResults.map(countsArray => {
+                const easyCount = countsArray[0].easyCount;
+                const mediumCount = countsArray[1].mediumCount;
+                const hardCount = countsArray[2].hardCount;
+                const tableName = countsArray[0].tableName; // Table name will be the same across all counts
+                return { tableName, easyCount, mediumCount, hardCount };
+            });
+
+            // Render the view with the tables and difficulty question counts
+            res.render("admin/courseCategories.ejs", { tables: tablesWithQuestions, difficultyCounts: combinedDifficultyCounts });
+        } catch (err) {
+            console.error(err);
+            return res.status(500).send("Error retrieving data.");
+        }
     } else {
         res.redirect("/adminLogin");
     }
@@ -426,7 +621,6 @@ app.post('/courseCategories/delete',validateTableName, wrapAsync(async(req, res)
         res.send("Table not found!");
     }
 }));
-
 
 
 app.post('/courseCategories', wrapAsync(async(req, res) => {
@@ -478,12 +672,14 @@ app.post('/courseCategories', wrapAsync(async(req, res) => {
 
 app.get("*", (req, res , next) => {
     next(new ExpressError(404,"Page not found"));
-})
+});
+
+
 app.use((err, req, res , next)=>{
     let {statusCode=500 , message="Something went wrong"} = err;
     res.render("error.ejs",{statusCode , message})
     // res.status(statusCode).send(message);
-})
+});
 
 app.listen(8080,()=>{
     console.log("app is listening on 8080");

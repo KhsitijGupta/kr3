@@ -78,20 +78,29 @@
         <div class="right_side_panel p-5 d-block">
             <h3 class="my-4">Subject Available</h3>
             <div id="allCourse">
-                <% tables.forEach(table => { %>
+
+                <% difficultyCounts.forEach(counts => { %>
                     <div class="row h-100">
                         <div class="card">
                             <h6 class="text-center py-2 fw-bold">
-                                <%= table.originalTableName.replace(/_/g, ' ').toUpperCase() %></h6>
+                                <%= counts.tableName.replace(/_/g, ' ').toUpperCase() %>
+                            </h6>
                             <div class="d-flex justify-content-between px-2 fw-bold">
-                                <div class="text-center">Easy <div> 34 </div></div>
-                                <div class="text-center">Medium <div> 22 </div></div>
-                                <div class="text-center">Hard <div> 32 </div></div>
+                                <div class="text-center">Easy 
+                                    <div> <%= counts.easyCount %> </div>
+                                </div>
+                                <div class="text-center">Medium 
+                                    <div> <%= counts.mediumCount %> </div>
+                                </div>
+                                <div class="text-center">Hard 
+                                    <div> <%= counts.hardCount %> </div>
+                                </div>
                             </div>
-                            <a href="#" class="text-decoration-none ">view</a>
+                            <a href="#" class="text-decoration-none">view</a>
                         </div>
                     </div>
-                <%})%>
+                <% }) %>
+                
                 <div class="row h-100">
                     <div class="card d-flex flex-column align-items-center">
                         <h6 class="text-center py-2 fw-bold">Create New Subject</h6>
