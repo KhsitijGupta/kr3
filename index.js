@@ -39,7 +39,7 @@ const connection=mysql.createConnection({
     host: "localhost",
     user:"root",
     database:"KR3Database",
-    password:"MYSQL@123"
+    password:""
   });
 
 app.get("/",(req,res)=>{
@@ -463,7 +463,7 @@ app.delete("/manageQuestions/:id",wrapAsync(async(req,res)=>{
     }
 }));
 
-// app.get("/courseCategories", wrapAsync(async(req, res) => {
+// app.get("/manageSubjects", wrapAsync(async(req, res) => {
 //     // Check if the user is an admin
 //     if (req.session && req.session.admin) {
 //         const query = "SHOW TABLES";
@@ -498,7 +498,7 @@ app.delete("/manageQuestions/:id",wrapAsync(async(req,res)=>{
 //             // Render a view to display only tables containing "questions"
 //             const tablesWithQuestions = filteredTables.filter(table => table.containsQuestions);
 
-//             res.render("admin/courseCategories.ejs", { tables: tablesWithQuestions , easy:easy[0] } );
+//             res.render("admin/manageSubjects.ejs", { tables: tablesWithQuestions , easy:easy[0] } );
 //         });
 //         const easy = "SELECT count(question_id) as easyCount FROM aptitude_questions where difficulty_level = 'Easy' ;";
         
@@ -516,7 +516,7 @@ app.delete("/manageQuestions/:id",wrapAsync(async(req,res)=>{
 // }));
 
 
-app.get("/courseCategories", wrapAsync(async (req, res) => {
+app.get("/manageSubjects", wrapAsync(async (req, res) => {
     if (req.session && req.session.admin) {
         // First query to fetch the list of tables
         const query = "SHOW TABLES";
@@ -589,7 +589,7 @@ app.get("/courseCategories", wrapAsync(async (req, res) => {
             });
 
             // Render the view with the tables and difficulty question counts
-            res.render("admin/courseCategories.ejs", { tables: tablesWithQuestions, difficultyCounts: combinedDifficultyCounts });
+            res.render("admin/manageSubjects.ejs", { tables: tablesWithQuestions, difficultyCounts: combinedDifficultyCounts });
         } catch (err) {
             console.error(err);
             return res.status(500).send("Error retrieving data.");
@@ -601,7 +601,7 @@ app.get("/courseCategories", wrapAsync(async (req, res) => {
 
 
 
-app.post('/courseCategories/delete',validateTableName, wrapAsync(async(req, res) => {
+app.post('/manageSubjects/delete',validateTableName, wrapAsync(async(req, res) => {
     let data =  req.body;
     if(Object.keys(data) == "deleteTable"){
         let reqData = data.deleteTable.replace(/ /g,"_").toLowerCase();
@@ -623,7 +623,7 @@ app.post('/courseCategories/delete',validateTableName, wrapAsync(async(req, res)
 }));
 
 
-app.post('/courseCategories', wrapAsync(async(req, res) => {
+app.post('/manageSubjects', wrapAsync(async(req, res) => {
     let data = req.body;
     let reqData = data.newTable.replace(/ /g, "").toLowerCase() + "_questions";
     const query = "SHOW TABLES";
@@ -668,6 +668,163 @@ app.post('/courseCategories', wrapAsync(async(req, res) => {
         }
     });
 }));
+
+app.get("/manageTests", wrapAsync(async (req, res) => {
+    if (req.session && req.session.admin) {
+        // First query to fetch the list of tables
+        const query = "SHOW TABLES";
+
+        try {
+            const tablesResults = await new Promise((resolve, reject) => {
+                connection.query(query, (err, results) => {
+                    if (err) reject(err);
+                    else resolve(results);
+                });
+            });
+
+            // Process the results from the first query
+            const filteredTables = tablesResults
+                .map(table => {
+                    const splitTableName = table.Tables_in_kr3database.split('_');
+                    const containsQuestions = splitTableName.includes("test");
+                    return { 
+                        originalTableName: table.Tables_in_kr3database, 
+                        splitTableName, 
+                        containsQuestions 
+                    };
+                });
+
+            // Filter tables containing 'questions'
+            const tablesWithQuestions = filteredTables.filter(table => table.containsQuestions);
+
+            // Create an array of promises for each table's easy, medium, and hard question count queries
+            const difficultyCountsPromises = tablesWithQuestions.map(table => {
+                const tableName = table.originalTableName;
+
+                // Queries for Easy, Medium, and Hard question counts
+                const easyQuery = `SELECT count(question_id) as easyCount FROM ${tableName} WHERE difficulty_level = 'Easy';`;
+                const mediumQuery = `SELECT count(question_id) as mediumCount FROM ${tableName} WHERE difficulty_level = 'Medium';`;
+                const hardQuery = `SELECT count(question_id) as hardCount FROM ${tableName} WHERE difficulty_level = 'Hard';`;
+
+                // Execute all queries for this table
+                return Promise.all([
+                    new Promise((resolve, reject) => {
+                        connection.query(easyQuery, (err, results) => {
+                            if (err) reject(err);
+                            else resolve({ tableName, easyCount: results[0].easyCount });
+                        });
+                    }),
+                    new Promise((resolve, reject) => {
+                        connection.query(mediumQuery, (err, results) => {
+                            if (err) reject(err);
+                            else resolve({ tableName, mediumCount: results[0].mediumCount });
+                        });
+                    }),
+                    new Promise((resolve, reject) => {
+                        connection.query(hardQuery, (err, results) => {
+                            if (err) reject(err);
+                            else resolve({ tableName, hardCount: results[0].hardCount });
+                        });
+                    })
+                ]);
+            });
+
+            // Execute all the promises and structure the results
+            const difficultyCountsResults = await Promise.all(difficultyCountsPromises);
+
+            // Combine results for each table
+            const combinedDifficultyCounts = difficultyCountsResults.map(countsArray => {
+                const easyCount = countsArray[0].easyCount;
+                const mediumCount = countsArray[1].mediumCount;
+                const hardCount = countsArray[2].hardCount;
+                const tableName = countsArray[0].tableName; // Table name will be the same across all counts
+                return { tableName, easyCount, mediumCount, hardCount };
+            });
+
+            // Render the view with the tables and difficulty question counts
+            res.render("admin/manageTest.ejs", { tables: tablesWithQuestions, difficultyCounts: combinedDifficultyCounts });
+        } catch (err) {
+            console.error(err);
+            return res.status(500).send("Error retrieving data.");
+        }
+    } else {
+        res.redirect("/adminLogin");
+    }
+}));
+
+
+
+app.post('/manageTests/delete',validateTableName, wrapAsync(async(req, res) => {
+    let data =  req.body;
+    if(Object.keys(data) == "deleteTable"){
+        let reqData = data.deleteTable.replace(/ /g,"_").toLowerCase();
+        
+        let deleteQuery = "DROP TABLE "+reqData+";";
+        try{
+            connection.query(deleteQuery, (err,result)=>{
+                if(err) throw err;
+                    res.send("deleted successfully")
+            })
+            }catch(err){
+                res.send("err in db");
+                console.log(err);
+            }
+    }
+    else{
+        res.send("Table not found!");
+    }
+}));
+
+app.post('/manageTests', wrapAsync(async(req, res) => {
+    let data = req.body;
+    let reqData = data.newTable.replace(/ /g, "").toLowerCase() + "_test";
+    const query = "SHOW TABLES";
+    
+    connection.query(query, (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send("Error retrieving tables.");
+        }
+
+        // Convert the array of results into an array of table names
+        let arrOfDbTable = results.map(row => Object.values(row)[0]);
+        if (arrOfDbTable.includes(reqData)) {
+            return res.send("Table already exists");
+        } else {
+            // Ensure the 'newTable' key exists in the data
+            if (Object.keys(data).includes("newTable")) {
+                let createQuery = `CREATE TABLE ${reqData} (
+                    question_id INT AUTO_INCREMENT PRIMARY KEY,
+                    question_text VARCHAR(255) NOT NULL,
+                    option_a VARCHAR(100) NOT NULL,
+                    option_b VARCHAR(100) NOT NULL,
+                    option_c VARCHAR(100) NOT NULL,
+                    option_d VARCHAR(100) NOT NULL,
+                    correct_option CHAR(1) NOT NULL,
+                    difficulty_level VARCHAR(50),
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );`;
+                
+                try {
+                    connection.query(createQuery, (err, result) => {
+                        if (err) throw err;
+                        res.send("Table created successfully");
+                    });
+                } catch (err) {
+                    res.status(500).send("Error creating table");
+                    console.log(err);
+                }
+            } else {
+                res.status(400).send("Invalid data: 'newTable' key is missing");
+            }
+        }
+    });
+}));
+
+app.get("/courseCategories",(req, res ) => {
+     
+    res.render("admin/courseCategories.ejs");
+});
 
 
 app.get("*", (req, res , next) => {

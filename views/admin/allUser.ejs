@@ -26,6 +26,9 @@
         }
 
 
+        td{
+            padding: 5px;
+        }
         th {
             padding: 12px;
             background-color: #c9caf0e7;
@@ -59,9 +62,10 @@
                 <a href="/adminDashboard"><li><i class="fas fa-th"></i> Dashboard</li></a>
                 <a href="/allUsres"><li><i class="fas fa-users"></i> All Users</li></a>
                 <a href="/courseCategories"><li><i class="fab fa-react"></i> Course Categories</li></a>
+                <a href="/manageSubjects"><li><i class="fas fa-book"></i> Manage Subjects</li></a>
                 <a href="/uploadQuestions"><li><i class="fas fa-upload"></i> Upload Questions</li></a>
                 <a href="/manageQuestions"><li><i class="fas fa-tasks"></i> Manage Questions</li></a>
-                <a href=""><li><i class="fas fa-clipboard"></i> Course Tests</li></a>
+                <a href="/manageTests"><li><i class="fas fa-clipboard"></i> Manage Tests</li></a>
                 <a href=""><li><i class="fas fa-clipboard-check"></i> Result</li></a>
                 <a href=""><li><i class="fas fa-book-open"></i> Reports</li></a>
                 <a href=""><li><i class="fas fa-certificate"></i> Certificates</li></a>
@@ -80,10 +84,9 @@
                         <th class="w-25">Full Name</th>
                         <th>Email</th>
                         <th>Status</th>
-                        <th class="w-25" >Last Login</th>
+                        <th >Last Login</th>
                         <th>Payment Mode</th>
                         <th>Plan</th>
-                        <th>Remember Password</th>
                         <th>Register Date</th>
                     </tr>
                 </thead>
@@ -97,7 +100,6 @@
                             <td><%= user.LAST_LOGIN ? user.LAST_LOGIN.toISOString().slice(0, 10) : 'N/A' %></td>
                             <td><%= user.PAYMENT_MODE %></td>
                             <td><%= user.PLAN %></td>
-                            <td><%= user.REMEMBER_PASSWORD ? 'Yes' : 'No' %></td>
                             <td><%= user.REGISTER_DATE.toISOString().slice(0, 19).replace('T', ' ') %></td>
                         </tr>
                     <% }) %>
