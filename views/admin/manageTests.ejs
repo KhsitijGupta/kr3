@@ -70,7 +70,7 @@
                             <select class="form-control py-0" name="deleteTable">
                                 <option>--- Choose Table ---</option>
                                 <% tables.forEach(table => { %>
-                                <option><%= table.originalTableName.replace(/_/g, ' ').toUpperCase() %></option>
+                                <option><%= table.tableName.replace(/_/g, ' ').toUpperCase() %></option>
                                 <%})%>
                             </select>
                         </form>
@@ -90,16 +90,18 @@
                         <th>Insert Details</th>
                     </tr>
                     <% tables.forEach(table => { %>
-                    <tr>
-                        <td>1</td>
-                        <td><%= table.originalTableName.replace(/_test/g, '').toUpperCase() %></td>
-                        <td>Nov 24, 2024</td>
-                        <td>12:00 PM</td>
-                        <td>30 Minutes</td>
-                        <td>15</td>
-                        <td><a href="#">Edit</a></td>
-                    </tr>
-                    <%})%>
+                        <% table.data.forEach(contest => { %>
+                            <tr>
+                                <td><%= contest.contest_id %></td>
+                                <td><%= table.tableName.replace(/_test/g, '').toUpperCase() %></td>
+                                <td><%= contest.date %></td>
+                                <td><%= contest.time %></td>
+                                <td><%= contest.duration %></td>
+                                <td><%= contest.no_of_questions %></td>
+                                <td><a href="/edit-contest/<%= contest.contest_id %>">Edit</a></td>
+                            </tr>
+                        <% }) %>
+                    <% }) %>
                 </table>
             </div>
         </div>
