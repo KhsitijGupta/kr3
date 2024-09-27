@@ -39,7 +39,7 @@ const connection=mysql.createConnection({
     host: "localhost",
     user:"root",
     database:"KR3Database",
-    password:"MYSQL@123"
+    password:""
   });
 
 app.get("/",(req,res)=>{
