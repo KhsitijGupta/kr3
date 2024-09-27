@@ -669,88 +669,40 @@ app.post('/manageSubjects', wrapAsync(async(req, res) => {
     });
 }));
 
-app.get("/manageTests", wrapAsync(async (req, res) => {
-    if (req.session && req.session.admin) {
-        // First query to fetch the list of tables
-        const query = "SHOW TABLES";
+// Get All Tables
+app.get('/manageTests', (req, res) => {
+    let tablesWithTest;
+    const query = 'SHOW TABLES';
+    connection.query(query, (err, results) => {
+      if (err) {
+        console.error('Error getting tables:', err);
+        res.status(500).send({ message: 'Error getting tables' });
+      } else {
+        // const tables = results.map((table) => table.Tables_in_kr3database);
 
-        try {
-            const tablesResults = await new Promise((resolve, reject) => {
-                connection.query(query, (err, results) => {
-                    if (err) reject(err);
-                    else resolve(results);
-                });
-            });
+        // Filter out unwanted tables
+        const filteredTables = results
+        .map(table => {
+            // Split the table name by underscore
+            const splitTableName = table.Tables_in_kr3database.split('_');
 
-            // Process the results from the first query
-            const filteredTables = tablesResults
-                .map(table => {
-                    const splitTableName = table.Tables_in_kr3database.split('_');
-                    const containsQuestions = splitTableName.includes("test");
-                    return { 
-                        originalTableName: table.Tables_in_kr3database, 
-                        splitTableName, 
-                        containsQuestions 
-                    };
-                });
+            // Check if "questions" is part of the split table name
+            const containsTest = splitTableName.includes("test");
 
-            // Filter tables containing 'questions'
-            const tablesWithQuestions = filteredTables.filter(table => table.containsQuestions);
+            // Return both the original table name and whether it contains "questions"
+            return { 
+                originalTableName: table.Tables_in_kr3database, 
+                splitTableName, 
+                containsTest 
+            };
+        });
 
-            // Create an array of promises for each table's easy, medium, and hard question count queries
-            const difficultyCountsPromises = tablesWithQuestions.map(table => {
-                const tableName = table.originalTableName;
-
-                // Queries for Easy, Medium, and Hard question counts
-                const easyQuery = `SELECT count(question_id) as easyCount FROM ${tableName} WHERE difficulty_level = 'Easy';`;
-                const mediumQuery = `SELECT count(question_id) as mediumCount FROM ${tableName} WHERE difficulty_level = 'Medium';`;
-                const hardQuery = `SELECT count(question_id) as hardCount FROM ${tableName} WHERE difficulty_level = 'Hard';`;
-
-                // Execute all queries for this table
-                return Promise.all([
-                    new Promise((resolve, reject) => {
-                        connection.query(easyQuery, (err, results) => {
-                            if (err) reject(err);
-                            else resolve({ tableName, easyCount: results[0].easyCount });
-                        });
-                    }),
-                    new Promise((resolve, reject) => {
-                        connection.query(mediumQuery, (err, results) => {
-                            if (err) reject(err);
-                            else resolve({ tableName, mediumCount: results[0].mediumCount });
-                        });
-                    }),
-                    new Promise((resolve, reject) => {
-                        connection.query(hardQuery, (err, results) => {
-                            if (err) reject(err);
-                            else resolve({ tableName, hardCount: results[0].hardCount });
-                        });
-                    })
-                ]);
-            });
-
-            // Execute all the promises and structure the results
-            const difficultyCountsResults = await Promise.all(difficultyCountsPromises);
-
-            // Combine results for each table
-            const combinedDifficultyCounts = difficultyCountsResults.map(countsArray => {
-                const easyCount = countsArray[0].easyCount;
-                const mediumCount = countsArray[1].mediumCount;
-                const hardCount = countsArray[2].hardCount;
-                const tableName = countsArray[0].tableName; // Table name will be the same across all counts
-                return { tableName, easyCount, mediumCount, hardCount };
-            });
-
-            // Render the view with the tables and difficulty question counts
-            res.render("admin/manageTest.ejs", { tables: tablesWithQuestions, difficultyCounts: combinedDifficultyCounts });
-        } catch (err) {
-            console.error(err);
-            return res.status(500).send("Error retrieving data.");
+        // Render a view to display only tables containing "questions"
+         tablesWithTest = filteredTables.filter(table => table.containsTest);
+            res.render("admin/manageTests.ejs",{tables: tablesWithTest})
         }
-    } else {
-        res.redirect("/adminLogin");
-    }
-}));
+    });
+  });
 
 
 
@@ -794,14 +746,11 @@ app.post('/manageTests', wrapAsync(async(req, res) => {
             // Ensure the 'newTable' key exists in the data
             if (Object.keys(data).includes("newTable")) {
                 let createQuery = `CREATE TABLE ${reqData} (
-                    question_id INT AUTO_INCREMENT PRIMARY KEY,
-                    question_text VARCHAR(255) NOT NULL,
-                    option_a VARCHAR(100) NOT NULL,
-                    option_b VARCHAR(100) NOT NULL,
-                    option_c VARCHAR(100) NOT NULL,
-                    option_d VARCHAR(100) NOT NULL,
-                    correct_option CHAR(1) NOT NULL,
-                    difficulty_level VARCHAR(50),
+                    contest_id INT AUTO_INCREMENT PRIMARY KEY,
+                    date VARCHAR(255) NOT NULL DEFAULT 'NA',
+                    time VARCHAR(100) NOT NULL DEFAULT 'NA',
+                    duration VARCHAR(100) NOT NULL DEFAULT 'NA',
+                    no_of_questions VARCHAR(100) NOT NULL DEFAULT 'NA',
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );`;
                 
