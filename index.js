@@ -710,6 +710,7 @@ app.get("/createContest",(req, res ) => {
 
 app.post('/admin/contest/create', (req, res) => {
     const { contestName, date, time, duration, noOfQuestions, details } = req.body;
+    // console.log(date)
     const contestNameTable = req.body.contestName.replace(/ /g, "").toLowerCase() + "_contest_questions";
     const query = `
     INSERT INTO admin_contest (ContestName, ContestNameTable, Date, Time, Duration, NoOfQuestions, Details)
@@ -768,31 +769,30 @@ else{
 
 app.get("/admin/edit-contest/:id", async(req, res ) => {
     let {id}=req.params;
-    if (req.session && req.session.admin) {     
+    if (req.session && req.session.admin) {
         const sql = `SELECT * FROM admin_contest where id = ${id}`; 
 
-    connection.query(sql, (err, results) => {
-         if (err) {
-             let { statusCode = 500, message = "Something went wrong" } = err;
-             return res.render("error.ejs", { statusCode, message });
-             
-         }
-        res.render("admin/editContest.ejs",{results:results[0]});
-        //console.log(results)
-    });
-}
-else{
-    res.redirect("/adminLogin"); 
-
-}
+        connection.query(sql, (err, results) => {
+            if (err) {
+                let { statusCode = 500, message = "Something went wrong" } = err;
+                return res.render("error.ejs", { statusCode, message });
+                
+            }
+            res.render("admin/editContest.ejs",{results:results[0]});
+            //console.log(results)
+        });
+    }
+    else{
+        res.redirect("/adminLogin"); 
+    }
 });
 app.put("/admin/contest/edit/:id",(req, res ) => {
     let {id} =req.params;
     let data = req.body;
     //console.log(data)
     if (req.session && req.session.admin) {     
-        let updateSql = "UPDATE admin_contest SET Date = ? , Time  = ? , Duration  = ? , NoOfQuestions = ? WHERE id = ? ";
-        connection.query(updateSql, [data.Date, data.Time, data.Duration, data.NoOfQuestions, id], (err, updateResult) => {
+        let updateSql = "UPDATE admin_contest SET Date = ? , Time  = ? , Duration  = ? , NoOfQuestions = ?, Details = ? WHERE id = ? ";
+        connection.query(updateSql, [data.Date, data.Time, data.Duration, data.NoOfQuestions,data.Details, id], (err, updateResult) => {
             if (err) {
                 let {statusCode=500 , message="Something went wrong"} = err;
                 return res.render("error.ejs",{statusCode , message});

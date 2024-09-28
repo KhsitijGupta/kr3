@@ -63,13 +63,13 @@
                         <th>Time</th>
                         <th>Duration</th>
                         <th>No. of Questions</th>
-                        <th>Insert Details</th>
+                        <th>Update Details</th>
                     </tr>
                     <% results.forEach(result => { %>
                             <tr>
                                 <td><%= result.id %></td>
                                 <td><%= result.ContestName%></td>
-                                <td><%= result.Date.toISOString().slice(0, 10).replace('T', ' ') %></td>
+                                <td><%= result.Date.toLocaleDateString('en-CA').slice(0, 10).replace('T', ' ') %></td>
                                 <td><%= result.Time %></td>
                                 <td><%= result.Duration %></td>
                                 <td><%= result.NoOfQuestions %></td>
