@@ -35,7 +35,6 @@
             gap: 40px;
             padding-top: 10px;
             padding-bottom: 20px;
-            border-bottom: 2px solid #ccc;
         }
         #TableForm {
             display: flex;
@@ -50,34 +49,11 @@
     </style>
 
         <div class="right_side_panel p-5 d-block">
-            <h3>Manage Table</h3>
+            <h3>Create Contests</h3>
             <div id="manageTable">
-                <div class="row h-100">
-                    <div class="card d-flex flex-column align-items-center">
-                        <h6 class="text-center py-2 fw-bold">Create Test Table</h6>
-                        <form action="/manageTests" method="POST" id="TableForm">
-                            <button type="submit" class="border border-0 bg-transparent"><i class="fas fa-plus-circle"></i></button>
-                            <input type="text" name="newTable" placeholder="Enter New Test Table" required>
-                        </form>
-                    </div>
-                </div>
-                <div class="row h-100">
-                    <div class="card d-flex flex-column align-items-center">
-                        <h6 class="text-center py-2 fw-bold">Delete Test Table</h6>
-                        <form action="/manageTests/delete" method="POST" id="TableForm">
-                            <button type="submit"  class="border border-0 bg-transparent">
-                                <i class="fas fa-trash-alt" ></i></button>
-                            <select class="form-control py-0" name="deleteTable">
-                                <option>--- Choose Table ---</option>
-                                <% tables.forEach(table => { %>
-                                <option><%= table.tableName.replace(/_/g, ' ').toUpperCase() %></option>
-                                <%})%>
-                            </select>
-                        </form>
-                    </div>
-                </div>
+                <a href="/createContest"><button class="btn border bg-light">Create Contest</button></a>
             </div>
-            <h3 class="my-4">Manage Tests</h3>
+            <h5 class="my-4">Manage Contests</h5>
             <div id="allCourse">
                 <table>
                     <tr>

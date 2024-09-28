@@ -39,7 +39,6 @@ const connection=mysql.createConnection({
     host: "localhost",
     user:"root",
     database:"KR3Database",
-    // password:""
      password:"MYSQL@123"
   });
 
@@ -331,7 +330,7 @@ app.get("/manageQuestions",wrapAsync(async(req, res ) => {
             {
 
             }
-        const sql = "SELECT * FROM aptitude_questions"; // Query to select all aptitude questions
+        const sql = "SELECT * FROM aptitude_subject_questions"; // Query to select all aptitude questions
     
     connection.query(sql, (err, results) => {
         if (err) {
@@ -414,12 +413,13 @@ app.get("/filtermanageQuestions", wrapAsync(async (req, res) => {
 app.get("/manageQuestions/:id/edit", wrapAsync(async(req,res)=>{
     let {id} = req.params;
         if (req.session && req.session.admin) {
-       const sql = "SELECT * from  aptitude_questions where question_id = ?"; 
+       const sql = "SELECT * from  aptitude_subject_questions where question_id = ?"; 
     
     connection.query(sql,[id], (err, result) => {
         console.log(result);
         if (err) {
             console.error("Error fetching aptitude questions:", err);
+            console.log(res)
             return res.status(500).send("Database error");
         }
         
@@ -435,7 +435,7 @@ app.put("/manageQuestions/:id",wrapAsync(async(req,res)=>{
     let data = req.body;
     console.log([id])
     if (req.session && req.session.admin) {     
-        let updateSql = "UPDATE aptitude_questions SET question_text = ?, option_a = ?, option_b = ?, option_c = ?, option_d = ?, correct_option = ?, difficulty_level = ? WHERE question_id = ? ";
+        let updateSql = "UPDATE aptitude_subject_questions SET question_text = ?, option_a = ?, option_b = ?, option_c = ?, option_d = ?, correct_option = ?, difficulty_level = ? WHERE question_id = ? ";
         connection.query(updateSql, [data.question_text, data.option_a, data.option_b, data.option_c, data.option_d, data.correct_option, data.difficulty_level , id], (err, updateResult) => {
             if (err) throw err;
             res.redirect("/manageQuestions");
@@ -451,7 +451,7 @@ app.put("/manageQuestions/:id",wrapAsync(async(req,res)=>{
 app.delete("/manageQuestions/:id",wrapAsync(async(req,res)=>{
     let {id} =req.params;
      if (req.session && req.session.admin) {     
-        let deleteSql = "DELETE FROM aptitude_questions WHERE question_id = ? ";
+        let deleteSql = "DELETE FROM aptitude_subject_questions WHERE question_id = ? ";
                 connection.query(deleteSql,[id], (err, deletedResult) => {
                     if (err) throw err;
                     console.log(deletedResult);
@@ -501,7 +501,7 @@ app.delete("/manageQuestions/:id",wrapAsync(async(req,res)=>{
 
 //             res.render("admin/manageSubjects.ejs", { tables: tablesWithQuestions , easy:easy[0] } );
 //         });
-//         const easy = "SELECT count(question_id) as easyCount FROM aptitude_questions where difficulty_level = 'Easy' ;";
+//         const easy = "SELECT count(question_id) as easyCount FROM aptitude_subject_questions where difficulty_level = 'Easy' ;";
         
 //         connection.query(easy, (err, easy) => {
 //              //easyct={ escount:easy[0].easyCount};
@@ -534,7 +534,7 @@ app.get("/manageSubjects", wrapAsync(async (req, res) => {
             const filteredTables = tablesResults
                 .map(table => {
                     const splitTableName = table.Tables_in_kr3database.split('_');
-                    const containsQuestions = splitTableName.includes("questions");
+                    const containsQuestions = splitTableName.includes("subject") && splitTableName.includes("questions");
                     return { 
                         originalTableName: table.Tables_in_kr3database, 
                         splitTableName, 
@@ -626,7 +626,7 @@ app.post('/manageSubjects/delete',validateTableName, wrapAsync(async(req, res) =
 
 app.post('/manageSubjects', wrapAsync(async(req, res) => {
     let data = req.body;
-    let reqData = data.newTable.replace(/ /g, "").toLowerCase() + "_questions";
+    let reqData = data.newTable.replace(/ /g, "").toLowerCase() + "_subject_questions";
     const query = "SHOW TABLES";
     
     connection.query(query, (err, results) => {
