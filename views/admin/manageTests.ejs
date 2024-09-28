@@ -65,19 +65,17 @@
                         <th>No. of Questions</th>
                         <th>Insert Details</th>
                     </tr>
-                    <% tables.forEach(table => { %>
-                        <% table.data.forEach(contest => { %>
+                    <% results.forEach(result => { %>
                             <tr>
-                                <td><%= contest.contest_id %></td>
-                                <td><%= table.tableName.replace(/_test/g, '').toUpperCase() %></td>
-                                <td><%= contest.date %></td>
-                                <td><%= contest.time %></td>
-                                <td><%= contest.duration %></td>
-                                <td><%= contest.no_of_questions %></td>
-                                <td><a href="/edit-contest/<%= contest.contest_id %>">Edit</a></td>
+                                <td><%= result.id %></td>
+                                <td><%= result.ContestName%></td>
+                                <td><%= result.Date.toISOString().slice(0, 10).replace('T', ' ') %></td>
+                                <td><%= result.Time %></td>
+                                <td><%= result.Duration %></td>
+                                <td><%= result.NoOfQuestions %></td>
+                                <td><a href="/admin/edit-contest/<%= result.id %>">Edit</a></td>
                             </tr>
                         <% }) %>
-                    <% }) %>
                 </table>
             </div>
         </div>
