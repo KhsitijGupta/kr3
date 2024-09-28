@@ -201,14 +201,13 @@ app.get('/logout', (req, res) => {
 
 
 app.get('/aptitude', wrapAsync(async(req, res) => {
-    const sql = "SELECT * FROM aptitude_questions ORDER BY RAND() LIMIT 25"; 
+    const sql = "SELECT * FROM aptitude_subject_questions ORDER BY RAND() LIMIT 25"; 
     
     connection.query(sql, (err, results) => {
         if (err) {
             let { statusCode = 500, message = "Something went wrong" } = err;
             res.render("error.ejs", { statusCode, message });
-            //console.error("Error fetching aptitude questions:", err);
-            //return res.status(500).send("Database error");
+            
         }
         
         res.render("tests/aptitude.ejs", { questions: results });
@@ -464,58 +463,6 @@ app.delete("/manageQuestions/:id",wrapAsync(async(req,res)=>{
     }
 }));
 
-// app.get("/manageSubjects", wrapAsync(async(req, res) => {
-//     // Check if the user is an admin
-//     if (req.session && req.session.admin) {
-//         const query = "SHOW TABLES";
-//         //let easyct;
-//         connection.query(query, (err, results) => {
-//             if (err) {
-//                 console.error(err);
-//                 return res.status(500).send("Error retrieving tables.");
-//             }
-
-//             // Filter out unwanted tables
-//             const filteredTables = results
-//                 // .filter(table => 
-//                 //     table.Tables_in_kr3database !== 'admin_profile' && 
-//                 //     table.Tables_in_kr3database !== 'users'
-//                 // )
-//                 .map(table => {
-//                     // Split the table name by underscore
-//                     const splitTableName = table.Tables_in_kr3database.split('_');
-
-//                     // Check if "questions" is part of the split table name
-//                     const containsQuestions = splitTableName.includes("questions");
-
-//                     // Return both the original table name and whether it contains "questions"
-//                     return { 
-//                         originalTableName: table.Tables_in_kr3database, 
-//                         splitTableName, 
-//                         containsQuestions 
-//                     };
-//                 });
-
-//             // Render a view to display only tables containing "questions"
-//             const tablesWithQuestions = filteredTables.filter(table => table.containsQuestions);
-
-//             res.render("admin/manageSubjects.ejs", { tables: tablesWithQuestions , easy:easy[0] } );
-//         });
-//         const easy = "SELECT count(question_id) as easyCount FROM aptitude_subject_questions where difficulty_level = 'Easy' ;";
-        
-//         connection.query(easy, (err, easy) => {
-//              //easyct={ escount:easy[0].easyCount};
-//             console.error(easy[0].easyCount);
-//             if (err) {
-//                 console.error(err);
-//                 return res.status(500).send("Error retrieving tables.");
-//             }
-//         });
-//     } else {
-//         res.redirect("/adminLogin");
-//     }
-// }));
-
 
 app.get("/manageSubjects", wrapAsync(async (req, res) => {
     if (req.session && req.session.admin) {
@@ -671,78 +618,24 @@ app.post('/manageSubjects', wrapAsync(async(req, res) => {
 }));
 
 // Get All Tables
-app.get('/manageTests', (req, res) => {
-    const query = 'SHOW TABLES';
+app.get('/manageTests', async (req, res) => {
+    const query = "SELECT * FROM admin_contest";
     
-    connection.query(query, (err, results) => {
-      if (err) {
-        console.error('Error getting tables:', err);
-        return res.status(500).send({ message: 'Error getting tables' });
-      }
-  
-      // Filter tables that contain 'test' in their name
-      const tablesWithTest = results
-        .map(table => {
-          const splitTableName = table.Tables_in_kr3database.split('_');
-          const containsTest = splitTableName.includes("test");
-          return { 
-            originalTableName: table.Tables_in_kr3database, 
-            splitTableName, 
-            containsTest 
-          };
-        })
-        .filter(table => table.containsTest);
-  
-      // If no tables found, send an empty response
-      if (tablesWithTest.length === 0) {
-        return res.render("admin/manageTests.ejs", { tables: [] });
-      }
-  
-      // Query each table to retrieve its data
-      const tableDataPromises = tablesWithTest.map(table => {
-        const query = `SELECT * FROM ${table.originalTableName}`;
-        return new Promise((resolve, reject) => {
-          connection.query(query, (err, results) => {
+    try{
+        connection.query(query, (err, results) => {
             if (err) {
-              return reject(err);
+                console.error(err);
+                return res.status(500).send("Error retrieving tables.");
             }
-  
-            // If no rows are returned, resolve with an empty data set
-            if (results.length === 0) {
-              return resolve({ tableName: table.originalTableName, data: [] });
-            }
-  
-            // Extract column names from the first row
-            const columnNames = Object.keys(results[0]);
-  
-            // Create an array of objects with column names as keys
-            const tableData = results.map(row => {
-              const data = {};
-              columnNames.forEach(columnName => {
-                data[columnName] = row[columnName]; // Access row data using column names
-              });
-              return data;
-            });
-  
-            resolve({ tableName: table.originalTableName, data: tableData });
-          });
+            console.log(results[0])
+            res.render("admin/manageTests.ejs",{results : results});
         });
+    }catch (err) {
+            res.status(500).send("Error creating table");
+            console.log(err);
+        }
       });
-  
-      // Wait for all table data promises to resolve
-      Promise.all(tableDataPromises)
-        .then(tableData => {
-          // Render the view with the retrieved table data
-          //console.log(tableData)
-          res.render("admin/manageTests.ejs", { tables: tableData });
-        })
-        .catch(err => {
-          console.error('Error retrieving table data:', err);
-          res.status(500).send({ message: 'Error retrieving table data' });
-        });
-    });
-  });
-  
+
 
 app.post('/manageTests/delete',validateTableName, wrapAsync(async(req, res) => {
     let data =  req.body;
@@ -824,9 +717,10 @@ app.post('/admin/contest/create', (req, res) => {
     
     connection.query(query, [contestName,contestNameTable, date, time, duration, noOfQuestions, details], (error, results) => {
         if (error) {
-            console.error('Error inserting data:', error);
-            return res.status(500).send('Error inserting data');
-        }
+            //console.error('Error inserting data:', error);
+            const { statusCode = 500, message = "Something went wrong" } = error;
+            return res.render("error.ejs", { statusCode, message });
+               }
     });
     let createQuery = `CREATE TABLE ${contestNameTable} (
         question_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -842,12 +736,18 @@ app.post('/admin/contest/create', (req, res) => {
     
     try {
         connection.query(createQuery, (err, result) => {
-            if (err) throw err;
-            res.send("contest created successfully");
+            if (err) {
+                const { statusCode = 500, message = "Something went wrong" } = err;
+            return res.render("error.ejs", { statusCode, message });
+            }
+            res.send(`contest created successfully
+                <br>
+                <a href=/manageTests><button>DONE</button></a>
+                `);
         });
     } catch (err) {
-        res.status(500).send("Error creating table");
-        console.log(err);
+        const { statusCode = 500, message = "Something went wrong" } = err;
+        return res.render("error.ejs", { statusCode, message });
     }
 
 });
@@ -856,8 +756,54 @@ app.post('/admin/contest/create', (req, res) => {
 
 
 app.get("/courseCategories",(req, res ) => {
-     
+    if (req.session && req.session.admin) {     
+
     res.render("admin/courseCategories.ejs");
+}
+else{
+    res.redirect("/adminLogin"); 
+
+}
+});
+
+app.get("/admin/edit-contest/:id", async(req, res ) => {
+    let {id}=req.params;
+    if (req.session && req.session.admin) {     
+        const sql = `SELECT * FROM admin_contest where id = ${id}`; 
+
+    connection.query(sql, (err, results) => {
+         if (err) {
+             let { statusCode = 500, message = "Something went wrong" } = err;
+             return res.render("error.ejs", { statusCode, message });
+             
+         }
+        res.render("admin/editContest.ejs",{results:results[0]});
+        //console.log(results)
+    });
+}
+else{
+    res.redirect("/adminLogin"); 
+
+}
+});
+app.put("/admin/contest/edit/:id",(req, res ) => {
+    let {id} =req.params;
+    let data = req.body;
+    //console.log(data)
+    if (req.session && req.session.admin) {     
+        let updateSql = "UPDATE admin_contest SET Date = ? , Time  = ? , Duration  = ? , NoOfQuestions = ? WHERE id = ? ";
+        connection.query(updateSql, [data.Date, data.Time, data.Duration, data.NoOfQuestions, id], (err, updateResult) => {
+            if (err) {
+                let {statusCode=500 , message="Something went wrong"} = err;
+                return res.render("error.ejs",{statusCode , message});
+            };
+            res.redirect("/manageTests");
+        });
+    }
+    else 
+    {
+        res.redirect("/adminLogin"); 
+    }
 });
 
 app.get("*", (req, res , next) => {
@@ -865,7 +811,7 @@ app.get("*", (req, res , next) => {
 });
 
 
-app.use((err, req, res , next)=>{
+app.use((err, req, res )=>{
     let {statusCode=500 , message="Something went wrong"} = err;
     res.render("error.ejs",{statusCode , message})
     // res.status(statusCode).send(message);

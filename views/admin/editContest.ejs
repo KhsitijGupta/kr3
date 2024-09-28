@@ -1,0 +1,46 @@
+<% layout("/layouts/adminBoilerplate") %>
+<div class="right_side_panel p-4 d-block">
+    <div class="container-fluid p-0 m-0">
+        <h2>Update Contest Details</h2>
+        <form id="contestForm" action="/admin/contest/edit/<%=results.id%>?_method=put" method="POST" novalidate>
+            <div class="form-group pt-3">
+                <label for="contestName">Contest Name:</label>
+                <input type="text" class="form-control" id="contestName" name="ContestName"  value="<%=results.ContestName %>" readonly required minlength="3" maxlength="100" title="Contest Name must be between 3 to 100 characters.">
+                <div class="invalid-feedback">Contest Name must be between 3 to 100 characters.</div>
+            </div>
+    
+            <div class="form-group pt-3">
+                <label for="date">Date:</label>
+                <input type="date" class="form-control" id="date" name="Date" value="<%= results.Date ? results.Date.toISOString().substring(0, 10) : '' %>" required>
+                <div class="invalid-feedback">Please select a date.</div>
+            </div>
+    
+            <div class="form-group pt-3">
+                <label for="time">Time:</label>
+                <input type="time" class="form-control" id="time" name="Time" value="<%=results.Time%>" required>
+                <div class="invalid-feedback">Please select a time.</div>
+            </div>
+    
+            <div class="form-group pt-3">
+                <label for="duration">Duration (minutes):</label>
+                <input type="number" class="form-control" id="duration" name="Duration" value="<%=results.Duration %>" required min="1" max="480">
+                <div class="invalid-feedback">Duration must be between 1 and 480 minutes.</div>
+            </div>
+    
+            <div class="form-group pt-3">
+                <label for="noOfQuestions">No. of Questions:</label>
+                <input type="number" class="form-control" id="noOfQuestions" name="NoOfQuestions" value="<%=results.NoOfQuestions %>" required min="1" max="1000">
+                <div class="invalid-feedback">Number of Questions must be between 1 and 1000.</div>
+            </div>
+    
+            <div class="form-group pt-3">
+                <label for="details">Insert Details:</label>
+                <textarea class="form-control" id="details" name="Details" rows="4" maxlength="500"><%=results.Details%></textarea>
+                <div class="invalid-feedback">Details should not exceed 500 characters.</div>
+            </div>
+    
+            <button type="submit" class="btn btn-primary mt-3">UPDATE</button>
+        </form>
+    </div>
+    </div>
+    
