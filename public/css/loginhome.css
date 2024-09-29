@@ -9,8 +9,16 @@ body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
 }
+#profileToggler {
+    width: 50px;
+    display: flex;
+    justify-content: space-between;
+    border-radius: 20px;
+    padding-right: 4px;
+}
 #profileToggler:hover {
     cursor: pointer;
+    outline: 2px solid #ccc;
 }
 
 #container_profile {

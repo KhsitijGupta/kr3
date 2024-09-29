@@ -126,7 +126,7 @@ h1{
     margin:1rem 0rem;
     font-size: 15px;
 }
-.rememberme label,.rememberme a {
+.rememberme label, .rememberme a{
     text-decoration: none;
     color: rgb(190,190,190);
 }
@@ -141,6 +141,10 @@ h1{
 .register p a{
     text-decoration: none;
     color: rgb(200,200,200);
+}
+.termsAndConditions a {
+    text-decoration: none;
+    color: #068af0;
 }
 .register p a:hover{
     text-decoration: underline;
