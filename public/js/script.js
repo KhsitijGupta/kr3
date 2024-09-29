@@ -28,3 +28,40 @@ function scrollFunction() {
 
     lastScrollTop = currentScrollTop;
 }
+
+/*Profile box management.*/
+
+// Event listeners for the tabs
+document.getElementById('profileTab').addEventListener('click', function() {
+    // Show profile and hide settings
+    document.getElementById('profile').classList.add('active');
+    document.getElementById('settings').classList.remove('active');
+});
+
+document.getElementById('settingsTab').addEventListener('click', function() {
+    // Show settings and hide profile
+    document.getElementById('settings').classList.add('active');
+    document.getElementById('profile').classList.remove('active');
+});
+
+// Update and Exit buttons
+document.getElementById('updateProfile').addEventListener('click', function() {
+    alert('Update profile button clicked!');
+});
+
+document.getElementById('exitButton').addEventListener('click', function() {
+    window.close(); // Close the window (won't work in most modern browsers)
+    alert('Exit button clicked!'); // Fallback alert
+});
+
+// Profile Toggler controler
+let profileToggler = document.getElementById("profileToggler");
+let profileBox = document.getElementById("container_profile");
+
+profileToggler.addEventListener('click',() => {
+    if(profileBox.style.display == "none") {
+        profileBox.style.display = "block";
+    }else {
+        profileBox.style.display = "none";
+    }
+});
