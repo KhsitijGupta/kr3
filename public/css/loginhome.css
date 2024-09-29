@@ -1,0 +1,110 @@
+@charset "UTF-8";
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+}
+#profileToggler:hover {
+    cursor: pointer;
+}
+
+#container_profile {
+    display: none;
+    width: 300px !important;
+    position: absolute;
+    top: -10px;
+    right: 0;
+    z-index: 2;
+    margin: 50px auto;
+    color: black;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.profileDashboard {
+    list-style: none;
+    padding: 0;
+}
+
+.profileDashboard li {
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #e9e6e6;
+    background-color: aliceblue;
+    cursor: pointer;
+}
+.profileDashboard li:hover {
+    font-size: 20px;
+    border: none;
+    background-color: transparent;
+}
+
+#profile button {
+    width: 49%;
+}
+
+#profile, #settings {
+    display: none; /* Hide both by default */
+}
+
+#profile.active, #settings.active {
+    display: block; /* Display the active section */
+}
+
+.photo-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.photo {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #ccc;
+}
+
+.photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.user-info {
+    text-align: center;
+}
+
+.user-info h2 {
+    margin-bottom: 10px;
+}
+
+.user-info p {
+    margin: 5px 0;
+}
+
+.update-button, .exit-button {
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    width: 45%;
+}
+
+.update-button {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.exit-button {
+    background-color: #f44336;
+    color: white;
+}
