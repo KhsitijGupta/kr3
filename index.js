@@ -12,6 +12,8 @@ const deletetableSchema = require("./deletetableSchema")
 const wrapAsync= require("./utils/wrapAsync.js")
 const ExpressError = require("./utils/ExpressError.js")
 const multer = require('multer');
+const fs = require('fs');
+
 
 app.use(session({
     secret: 'KR3Secret@', // Change this to a strong secret key
@@ -810,38 +812,61 @@ app.put("/admin/contest/edit/:id",(req, res ) => {
     }
 });
 
-// Set up Multer for file uploads
+// Define storage options for multer
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/');
+        cb(null, 'uploads/');  // Directory to save the uploaded file
     },
     filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname)); // Save with unique filename
+        cb(null, Date.now() + path.extname(file.originalname)); // Unique file name
     }
 });
-
-const upload = multer({ storage: storage });
-
-app.put('/uploadPhoto/:id', upload.single('photo'), (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ error: 'No file uploaded' });
+  
+  // File upload middleware
+  const upload = multer({
+    storage: storage,
+    limits: { fileSize: 1024 * 1024 * 5 }, // Limit file size to 5MB
+    fileFilter: (req, file, cb) => {
+      // Only allow certain file types (images)
+      const fileTypes = /jpeg|jpg|png|gif/;
+      const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
+      const mimetype = fileTypes.test(file.mimetype);
+      if (mimetype && extname) {
+        return cb(null, true);
+      } else {
+        cb(new Error('Only images are allowed!'));
+      }
     }
-    let id = req.params;
-    let data = req.body;
-    // let updateSql = "update  users set userImage =?,FULLNAME=? where id=?";
-    // connection.query(updateSql, [data.user, data.Time, data.Duration, data.NoOfQuestions,data.Details, id], (err, updateResult) => {
-    //     if (err) {
-    //         let {statusCode=500 , message="Something went wrong"} = err;
-    //         return res.render("error.ejs",{statusCode , message});
-    //     };
-    // });
-    console.log(req)
-    res.json({
-        message: 'Photo uploaded successfully',
-        filename: req.file.filename
+  }).single('photoId');
+  
+  app.put('/uploadPhoto/:id', async (req, res) => {
+    // Handle file upload using multer
+    upload(req, res, (err) => {
+      if (err) {
+        // Handle any upload errors
+        return res.status(400).send({ message: err.message });
+      }
+  
+      // Extract parameters and form data
+      let id = req.params.id; // Correctly extract the user ID
+      const imagePath = req.file.filename; // The uploaded image file name
+      const updateName = req.body.updateName; // The new name from the form
+  
+      // SQL query to update user info
+      const updateSql = "UPDATE users SET userImage = ?, FULLNAME = ? WHERE id = ?";
+      connection.query(updateSql, [imagePath, updateName, id], (err, updateResult) => {
+        if (err) {
+          // Error handling for SQL query
+          let { statusCode = 500, message = "Something went wrong" } = err;
+          return res.render("error.ejs", { statusCode, message });
+        }
+  
+        // Successfully updated the user, redirect to login
+        res.send('uploaded succesfully '); // Correctly redirect the user
+      });
     });
-});
-
+  });
+  
 app.get("*", (req, res , next) => {
     next(new ExpressError(404,"Page not found"));
 });

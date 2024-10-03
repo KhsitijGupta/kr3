@@ -72,44 +72,29 @@ profileToggler.addEventListener('click',() => {
     }
 });
 
-// Update profile photo uploading
-let photo = document.getElementById('uploadPhoto');
-let photoDisplay = document.getElementById('photoDisplay');
-let imgTag = document.createElement('img');
+// // Update profile photo uploading
+// let photo = document.getElementById('uploadPhoto');
+// let photoDisplay = document.getElementById('photoDisplay');
+// let imgTag = document.createElement('img');
 
-photo.addEventListener('change', () => {
-    let file = photo.files[0];
-    if (file) {
-        let reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = function () {
-            let filename = reader.result;
-            imgTag.setAttribute('src', filename);
-            photoDisplay.innerHTML = '';  // Clear previous photo if any
-            photoDisplay.append(imgTag);
-        };
-    }
-});
 
-// Handle the form submission to send file to the server
-// document.getElementById('photoForm').addEventListener('submit', (e) => {
-//     e.preventDefault();
+// photo.addEventListener('change', () => {
+// let file = photo.files[0];  // Get the first selected file
+// if (file) {
+//     let reader = new FileReader();  // Create a FileReader object
+//     reader.readAsDataURL(file);     // Read the file as a Data URL
 
-//     let formData = new FormData();
-//     formData.append('photo', photo.files[0]);
-
-    // fetch('/uploadPhoto/<%=user.ID%>', {
-    //     method: 'POST',
-    //     body: formData
-    // })
-    // console.log(formData)
-    // .then(response => response.json())
-    // .then(data => {
-    //     console.log('Photo uploaded successfully:', data);
-    // })
-    // .catch(error => {
-    //     console.error('Error uploading photo:', error);
-    // });
+//     reader.onload = function () {
+//         let filename1 = reader.result;   // Get the base64 image data
+//         imgTag.setAttribute('src', filename1);  // Set the src of img to base64
+//         photoDisplay.innerHTML = '';  // Clear previous image or content
+//         photoDisplay.appendChild(imgTag);  // Add the new image
+//     };
+// }
 // });
+
+
+
+
 
 
