@@ -43,7 +43,7 @@
                         <div id="profile" class="active my-2">
                             <div class="photo-section">
                                 <div class="photo">
-                                    <img src="/images/profile.png" alt="User Photo" id="userPhoto">
+                                    <img src="uploads/<%=user.userImage%>" alt="User Photo" id="userPhoto">
                                 </div>
                             </div>
                             <div class="user-info">
@@ -58,22 +58,22 @@
                         </div>
                         <!-- Profile Update Section -->
                         <div id="profileUpdate" class="active my-2 d-none">
-                            <div class="photo-section">
-                                <form action="#" class="photo-section flex-column">
+                            <form action="/uploadPhoto/<%=user.ID%>?_method=put" method="POST" class="photo-section" id="photoForm" enctype="multipart/form-data">
+                                <div class="photo-section flex-column">
                                     <div class="photo mb-3" id="photoDisplay">
                                         <label for="uploadPhoto"><i class="fas fa-upload"></i></label>
-                                        <input type="file" class="photoUpdate" id="uploadPhoto"/>
+                                        <input type="file" name="photoId" class="photoUpdate" id="uploadPhoto"/>
                                     </div>
                                     <input type="text" name="updateName"  placeholder="Enter new name">
-                                </form>
-                            </div>
-                            <div class="user-info">
-                                <div class="mb-5">
-                                    <p><b>Username:</b> <span id="username"><%=user.FULLNAME.replace(/ /g,'_').toLowerCase()%></span></p>
-                                    <p><b>Email:</b> <span id="email"><%=user.EMAIL%></span></p>
                                 </div>
-                            </div>
-                            <button class="update-button" id="updateProfile">Submit</button>
+                                <div class="user-info">
+                                    <div class="mb-5">
+                                        <p><b>Username:</b> <span id="username"><%=user.FULLNAME.replace(/ /g,'_').toLowerCase()%></span></p>
+                                        <p><b>Email:</b> <span id="email"><%=user.EMAIL%></span></p>
+                                    </div>
+                                </div>
+                                <button type="submit" class="update-button" id="updateProfileButton">Submit</button>
+                            </form>
                         </div>
             
                         <!-- Settings Section -->

@@ -91,3 +91,25 @@ photo.addEventListener('change', () => {
     }
 });
 
+// Handle the form submission to send file to the server
+// document.getElementById('photoForm').addEventListener('submit', (e) => {
+//     e.preventDefault();
+
+//     let formData = new FormData();
+//     formData.append('photo', photo.files[0]);
+
+    // fetch('/uploadPhoto/<%=user.ID%>', {
+    //     method: 'POST',
+    //     body: formData
+    // })
+    // console.log(formData)
+    // .then(response => response.json())
+    // .then(data => {
+    //     console.log('Photo uploaded successfully:', data);
+    // })
+    // .catch(error => {
+    //     console.error('Error uploading photo:', error);
+    // });
+// });
+
+

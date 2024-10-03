@@ -72,6 +72,12 @@ body {
     display: block; /* Display the active section */
 }
 
+#profileUpdate form {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+}
+
 .photo-section {
     display: flex;
     justify-content: center;

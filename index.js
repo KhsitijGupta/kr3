@@ -11,6 +11,7 @@ const questionSchema = require("./questionSchema")
 const deletetableSchema = require("./deletetableSchema")
 const wrapAsync= require("./utils/wrapAsync.js")
 const ExpressError = require("./utils/ExpressError.js")
+const multer = require('multer');
 
 app.use(session({
     secret: 'KR3Secret@', // Change this to a strong secret key
@@ -34,6 +35,9 @@ app.use(express.urlencoded({ extended: true }))
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true })); // To handle form data
 app.use(express.json()); // To handle JSON data 
+
+// Serve the uploads folder publicly to serve the uploaded files
+app.use('/uploads', express.static('uploads'));
 
 const connection=mysql.createConnection({
     host: "localhost",
@@ -804,6 +808,38 @@ app.put("/admin/contest/edit/:id",(req, res ) => {
     {
         res.redirect("/adminLogin"); 
     }
+});
+
+// Set up Multer for file uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname)); // Save with unique filename
+    }
+});
+
+const upload = multer({ storage: storage });
+
+app.put('/uploadPhoto/:id', upload.single('photo'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+    }
+    let id = req.params;
+    let data = req.body;
+    // let updateSql = "update  users set userImage =?,FULLNAME=? where id=?";
+    // connection.query(updateSql, [data.user, data.Time, data.Duration, data.NoOfQuestions,data.Details, id], (err, updateResult) => {
+    //     if (err) {
+    //         let {statusCode=500 , message="Something went wrong"} = err;
+    //         return res.render("error.ejs",{statusCode , message});
+    //     };
+    // });
+    console.log(req)
+    res.json({
+        message: 'Photo uploaded successfully',
+        filename: req.file.filename
+    });
 });
 
 app.get("*", (req, res , next) => {
