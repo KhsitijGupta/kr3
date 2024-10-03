@@ -32,7 +32,8 @@
                 </div>
                 <div class="col-2 d-flex justify-content-center">
                     <div id="profileToggler">
-                        <img width="30" src="uploads/<%=user.userImage%>" alt="User Photo" id="userPhoto"> <i class="fas fa-sort-down"></i></div>
+                        <img src="uploads/<%=user.userImage%>" alt="User Photo" id="userPhoto" style="width:33px; border-radius: 50%;"> <i class="fas fa-sort-down"></i>
+                    </div>
                 </div>
                 <div class="container_profile p-0" id="container_profile">
                     <ul class="profileDashboard d-flex">
@@ -43,7 +44,7 @@
                         <!-- Profile Section -->
                         <div id="profile" class="active my-2">
                             <div class="photo-section">
-                                <div class="photo">
+                                <div class="photo" >
                                     <img src="uploads/<%=user.userImage%>" alt="User Photo" id="userPhoto">
                                 </div>
                             </div>
@@ -63,7 +64,7 @@
                                 <div class="photo-section flex-column">
                                     <div class="photo mb-3" id="photoDisplay">
                                         <label for="uploadPhoto"><i class="fas fa-upload"></i></label>
-                                        <input type="file" name="photoId" class="photoUpdate" id="uploadPhoto"/>
+                                        <input type="file" name="photoId" class="photoUpdate" id="uploadPhoto">
                                     </div>
                                     <input type="text" name="updateName"  placeholder="Enter new name">
                                 </div>
