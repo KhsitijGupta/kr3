@@ -35,18 +35,24 @@ function scrollFunction() {
 document.getElementById('profileTab').addEventListener('click', function() {
     // Show profile and hide settings
     document.getElementById('profile').classList.add('active');
+    document.getElementById('profileTab').classList.add('tabActive');
     document.getElementById('settings').classList.remove('active');
+    document.getElementById('settingsTab').classList.remove('tabActive');
 });
 
 document.getElementById('settingsTab').addEventListener('click', function() {
     // Show settings and hide profile
     document.getElementById('settings').classList.add('active');
+    document.getElementById('settingsTab').classList.add('tabActive');
     document.getElementById('profile').classList.remove('active');
+    document.getElementById('profileTab').classList.remove('tabActive');
 });
 
 // Update and Exit buttons
 document.getElementById('updateProfile').addEventListener('click', function() {
     alert('Update profile button clicked!');
+    document.getElementById('profile').classList.remove('active');
+    document.getElementById('profileUpdate').classList.remove('d-none');
 });
 
 document.getElementById('exitButton').addEventListener('click', function() {
@@ -65,3 +71,23 @@ profileToggler.addEventListener('click',() => {
         profileBox.style.display = "none";
     }
 });
+
+// Update profile photo uploading
+let photo = document.getElementById('uploadPhoto');
+let photoDisplay = document.getElementById('photoDisplay');
+let imgTag = document.createElement('img');
+
+photo.addEventListener('change', () => {
+    let file = photo.files[0];
+    if (file) {
+        let reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function () {
+            let filename = reader.result;
+            imgTag.setAttribute('src', filename);
+            photoDisplay.innerHTML = '';  // Clear previous photo if any
+            photoDisplay.append(imgTag);
+        };
+    }
+});
+
