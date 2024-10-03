@@ -45,9 +45,10 @@ body {
     justify-content: center;
     align-items: center;
     border: 1px solid #e9e6e6;
-    background-color: aliceblue;
+    background-color: #f0f8ff;
     cursor: pointer;
 }
+
 .profileDashboard li:hover {
     font-size: 20px;
     border: none;
@@ -60,6 +61,11 @@ body {
 
 #profile, #settings {
     display: none; /* Hide both by default */
+}
+
+.tabActive {
+    background-color: transparent !important;
+    border: none !important;
 }
 
 #profile.active, #settings.active {
@@ -79,6 +85,20 @@ body {
     border-radius: 50%;
     overflow: hidden;
     border: 2px solid #ccc;
+}
+
+.fa-upload {
+    font-size: 95px;
+    color: #ccc;
+}
+
+.photoUpdate {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    opacity: 0;
+    cursor: pointer;
 }
 
 .photo img {
