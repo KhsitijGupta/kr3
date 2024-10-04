@@ -29,6 +29,20 @@ function scrollFunction() {
     lastScrollTop = currentScrollTop;
 }
 
+// Theme control Dark and Light
+let switchButton = document.getElementById('flexSwitchCheckDefault');
+let body = document.querySelector('header');
+switchButton.addEventListener('click', () => {
+    if(switchButton.checked){
+        body.style.backgroundColor = "#000";
+        body.style.Color = "#fff";
+        alert("on")
+    } else {
+        alert("off")
+    }
+})
+
+
 /*Profile box management.*/
 
 // Event listeners for the tabs
@@ -38,6 +52,7 @@ document.getElementById('profileTab').addEventListener('click', function() {
     document.getElementById('profileTab').classList.add('tabActive');
     document.getElementById('settings').classList.remove('active');
     document.getElementById('settingsTab').classList.remove('tabActive');
+    document.getElementById('profileUpdate').classList.add('d-none');
 });
 
 document.getElementById('settingsTab').addEventListener('click', function() {
@@ -46,11 +61,11 @@ document.getElementById('settingsTab').addEventListener('click', function() {
     document.getElementById('settingsTab').classList.add('tabActive');
     document.getElementById('profile').classList.remove('active');
     document.getElementById('profileTab').classList.remove('tabActive');
+    document.getElementById('profileUpdate').classList.add('d-none');
 });
 
 // Update and Exit buttons
 document.getElementById('updateProfile').addEventListener('click', function() {
-    alert('Update profile button clicked!');
     document.getElementById('profile').classList.remove('active');
     document.getElementById('profileUpdate').classList.remove('d-none');
 });
