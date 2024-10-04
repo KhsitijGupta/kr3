@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>General Knowledge Test</title>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        /* Header styles */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .logo-text {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+        .company-name {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        .header-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+        .btn-outline {
+            background-color: white;
+            border: 1px solid #d1d5db;
+            color: #374151;
+        }
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        /* Main content styles */
+        .content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .card-title {
+            font-size: 25px;
+            color: #000;
+            margin-bottom: 0.5rem;
+        }
+        .question-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .options {
+            list-style-type: none;
+        }
+        .option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        .option input[type="radio"] {
+            margin-right: 0.5rem;
+        }
+
+        /* Timer styles */
+        .timer-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .timer-value span {
+            color: #f97316;
+        }
+
+        /* Progress styles */
+        .progress-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .progress-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .progress-indicators {
+            display: flex;
+            padding: 20px 0;
+            gap: 2.25rem;
+        }
+        .indicator {
+            width: 0.75rem;
+            height: 0.75rem;
+            border-radius: 50%;
+        }
+        .indicator-blue { background-color: #2563eb; margin-right: 5px;}
+        .indicator-gray { background-color: #e5e7eb; margin-right: 5px;}
+        .indicator-green { background-color: rgb(0, 85, 38); margin-right: 5px;}
+        .progress-bar {
+            width: 100%;
+            height: 0.5rem;
+            background-color: #e5e7eb;
+            border-radius: 0.25rem;
+            overflow: hidden;
+        }
+        .status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .progress-bar-fill {
+            width: 52%;
+            height: 100%;
+            background-color: #2563eb;
+        }
+
+        /* Question grid styles */
+        .question-grid {
+            max-height: 190px;
+            display: grid;
+            padding-right: 10px;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.5rem;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        .question-grid h3 {
+            grid-column: 1 / -1;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+        .question-button {
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #d1d5db;
+            border-radius: 0.25rem;
+            font-weight: 600;
+            color: #2563eb;
+            cursor: pointer;
+        }
+        .question-button.active {
+            background-color: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+        
+        .nav-button {
+            width: 15%;
+            padding: 10px;
+            background-color: #000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        .nav-button:hover {
+            background-color: #063e5f;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <span class="logo-text"><img src="/images/logo.png" alt="Company Logo" height="30px" width="70px"></span>
+            <!-- <span class="company-name">NOVAGENIUS ENTERPRISES</span> -->
+        </div>
+        <div class="header-buttons">
+            <button class="btn btn-outline">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="16" height="16" style="margin-right: 0.5rem;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                </svg>
+                All questions
+            </button>
+            <button class="btn btn-primary">Finish</button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="content">
+            <div class="question-section">
+                <% questions.forEach(function(question, index) { %>
+                <div class="card quesCard" id="question-<%= index + 1 %>" style="display: none;">
+                    <h2 class="card-title">Question <%= index + 1 %>:</h2>
+                    <h3 class="question-title"><%= question.question_text %></h3>
+                    <ul class="options">
+                        <li class="option">
+                            <input type="radio" id="margaret-thatcher" name="pm" value="<%= question.option_a %>">
+                            <label for="margaret-thatcher"><%= question.option_a %></label>
+                        </li>
+                        <li class="option">
+                            <input type="radio" id="angela-merkel" name="pm" value="<%= question.option_b %>">
+                            <label for="angela-merkel"><%= question.option_b %></label>
+                        </li>
+                        <li class="option">
+                            <input type="radio" id="theresa-may" name="pm" value="<%= question.option_c %>">
+                            <label for="theresa-may"><%= question.option_c %></label>
+                        </li>
+                        <li class="option">
+                            <input type="radio" id="indira-gandhi" name="pm" value="<%= question.option_d %>">
+                            <label for="indira-gandhi"><%= question.option_d %></label>
+                        </li>
+                    </ul>
+                </div>
+                <% }); %>
+                <div class="navFooter">
+                    <button class="nav-button" id="prev-btn" disabled>Previous</button>
+                    <button class="nav-button" id="next-btn">Next</button>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="card">
+                    <h3 class="card-title">Time to complete</h3>
+                    <p class="timer-value"><span id="timer">30:00</span> / 30:00</p>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Questions</h3>
+                    <div class="progress-container">
+                        <span class="progress-text">1 / <%= questions.length %></span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill"></div>
+                    </div>
+                    <div class="progress-indicators">
+                        <div class="status"><div class="indicator indicator-blue"></div><span>Pending</span></div>
+                        <div class="status"><div class="indicator indicator-gray"></div><span>Skip</span></div>
+                        <div class="status"><div class="indicator indicator-green"></div><span>Answered</span></div>
+                    </div>
+                    <div class="question-grid">
+                        <% for (let i = 1; i <= questions.length; i++) { %>
+                            <button onclick="showQuestion(<%= i %>)" class="question-button"><%= i %></button>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        let currentQuestionIndex = 0;
+
+        // Function to display the current question
+        function displayQuestion() {
+            const questions = document.querySelectorAll(".quesCard");
+            questions.forEach(q => q.style.display = "none");
+
+            const currentQuestionElement = document.getElementById("question-" + (currentQuestionIndex + 1));
+            currentQuestionElement.style.display = "block";
+
+            // Disable previous button on the first question
+            document.getElementById("prev-btn").disabled = currentQuestionIndex === 0;
+
+            // Disable next button on the last question
+            document.getElementById("next-btn").disabled = currentQuestionIndex === questions.length - 1;
+        }
+
+        // Function to handle previous button click
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+
+        // Function to handle next button click
+        function nextQuestion() {
+            const questions = document.querySelectorAll(".quesCard");
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion();
+            }
+        }
+
+        // Add event listeners to buttons
+        document.getElementById("prev-btn").addEventListener("click", prevQuestion);
+        document.getElementById("next-btn").addEventListener("click", nextQuestion);
+
+        // Timer function
+        function startTimer(duration, display) {
+            var timer = duration, minutes, seconds;
+            setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+                display.textContent = minutes + ":" + seconds;
+                if (--timer < 0) {
+                    timer = 0;
+                }
+            }, 1000);
+        }
+
+        window.onload = function () {
+            // Initialize the timer for 30 minutes
+            var thirtyMinutes = 60 * 30,
+                display = document.querySelector('#timer');
+            startTimer(thirtyMinutes, display);
+
+            // Display the first question on page load
+            displayQuestion();
+        };
+
+        function showQuestion(questionNumber) {
+            // Set current question index to the clicked question number
+            currentQuestionIndex = questionNumber - 1;
+            displayQuestion();
+        }
+    </script>
+</body>
+</html>

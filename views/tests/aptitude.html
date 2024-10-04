@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sequential Question Display</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        .container-fluid {
+            display: flex;
+            flex-direction: row;
+            
+        }
+        .sidebar {
+            width: 24%;
+            height:100vh;
+            background-color: #f0f0f0;
+            padding: 20px;
+            border-right: 1px solid #ccc;
+        }
+        .content {
+            width: 80%;
+            padding: 20px;
+        }
+        .question-container {
+            margin-bottom: 20px;
+        }
+        .question {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .options {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .option-button {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            background-color: transparent;
+            border: none;
+            font-size: large;
+        }
+        .option-button:hover {
+            font-weight: bold;
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .nav-button {
+            width: 15%;
+            padding: 10px;
+            background-color: #000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        .nav-button:hover {
+            background-color: #063e5f;
+        }
+        #timer {
+            font-size: 40px;
+            font-weight: bold;
+            margin-top: 20px;
+            color: blue;
+        }
+        .numbered-list {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            padding: 0;
+            margin: 0;
+            font-size: x-large;
+            gap:10px;
+        }
+        .numbered-list li {
+            padding: 10px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            width:45px;
+        }
+        .numbered-list li:hover {
+            background-color: #ccc;
+        }
+        .numbered-list li:last-child {
+            border-bottom: none;
+        }
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 20%; /* Align with the content area */
+            right: 0;
+            background-color: #7e7e7eaf;
+            color: rgb(0, 0, 0);
+            font-weight: 700;
+            padding: 10px;
+            text-align: center;
+            z-index: -2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid m-0 p-0">
+        <div class="sidebar text-center">
+            <div id="timer">30:00</div>
+            <hr>
+            <h2 class="text-start">Total Questions</h2>
+            <ul class="numbered-list text-center">
+                <% for (let i = 1; i <= questions.length; i++) { %>
+                    <li onclick="showQuestion(<%= i %>)"><%= i %></li>
+                <% } %>
+            </ul>
+        </div>
+        <div class="top-bar ">
+            <h2>Apptitude Questions</h2>
+        </div>
+        <div class="content mt-5">
+            <div class="question-container mt-5">
+                <% questions.forEach(function(question, index) { %>
+                <div class="question" id="question-<%= index + 1 %>" style="display: none;">
+                    <h3><b>Question <%= index + 1 %>: </b></h3><h4><%= question.question_text %></h4>
+                    <ul class="options">
+                        <li><button class="option-button">A. <%= question.option_a %></button></li>
+                        <li><button class="option-button">B. <%= question.option_b %></button></li>
+                        <li><button class="option-button">C. <%= question.option_c %></button></li>
+                        <li><button class="option-button">D. <%= question.option_d %></button></li>
+                    </ul>
+                </div>
+                <% }); %>
+            </div>
+            <div class="footer">
+                <button class="nav-button" id="prev-btn" disabled>Previous</button>
+                <button class="nav-button" id="next-btn">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestionIndex = 0;
+
+        // Function to display the current question
+        function displayQuestion() {
+            const questions = document.querySelectorAll(".question");
+            questions.forEach(q => q.style.display = "none");
+
+            const currentQuestionElement = document.getElementById("question-" + (currentQuestionIndex + 1));
+            currentQuestionElement.style.display = "block";
+
+            // Disable previous button on the first question
+            document.getElementById("prev-btn").disabled = currentQuestionIndex === 0;
+
+            // Disable next button on the last question
+            document.getElementById("next-btn").disabled = currentQuestionIndex === questions.length - 1;
+        }
+
+        // Function to handle previous button click
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+
+        // Function to handle next button click
+        function nextQuestion() {
+            const questions = document.querySelectorAll(".question");
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion();
+            }
+        }
+
+        // Add event listeners to buttons
+        document.getElementById("prev-btn").addEventListener("click", prevQuestion);
+        document.getElementById("next-btn").addEventListener("click", nextQuestion);
+
+        // Timer function
+        function startTimer(duration, display) {
+            var timer = duration, minutes, seconds;
+            setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+                display.textContent = minutes + ":" + seconds;
+                if (--timer < 0) {
+                    timer = 0;
+                }
+            }, 1000);
+        }
+
+        window.onload = function () {
+            // Initialize the timer for 30 minutes
+            var thirtyMinutes = 60 * 30,
+                display = document.querySelector('#timer');
+            startTimer(thirtyMinutes, display);
+
+            // Display the first question on page load
+            displayQuestion();
+        };
+
+        function showQuestion(questionNumber) {
+            // Set current question index to the clicked question number
+            currentQuestionIndex = questionNumber - 1;
+            displayQuestion();
+        }
+    </script>
+</body>
+</html>
