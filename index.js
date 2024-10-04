@@ -841,29 +841,46 @@ const storage = multer.diskStorage({
   
   app.put('/uploadPhoto/:id', async (req, res) => {
     // Handle file upload using multer
+    let id = req.params.id; // Correctly extract the user ID
+
     upload(req, res, (err) => {
       if (err) {
         // Handle any upload errors
         return res.status(400).send({ message: err.message });
       }
-  
+      else if(!req.file){
+        const updateName = req.body.updateName; 
+        
+        const updatenameSql = "UPDATE users SET  FULLNAME = ? WHERE id = ?";
+        connection.query(updatenameSql, [ updateName, id], (err, updateResult) => {
+          if (err) {
+            // Error handling for SQL query
+            let { statusCode = 500, message = "Something went wrong" } = err;
+            return res.render("error.ejs", { statusCode, message });
+          }
+    
+          // Successfully updated the user, redirect to login
+          return res.send('uploaded succesfully ');
+        });
+      }
       // Extract parameters and form data
-      let id = req.params.id; // Correctly extract the user ID
-      const imagePath = req.file.filename; // The uploaded image file name
-      const updateName = req.body.updateName; // The new name from the form
+      else{
+        const updateName = req.body.updateName; 
+        const imagePath = req.file.filename; // The uploaded image file name
   
-      // SQL query to update user info
-      const updateSql = "UPDATE users SET userImage = ?, FULLNAME = ? WHERE id = ?";
-      connection.query(updateSql, [imagePath, updateName, id], (err, updateResult) => {
-        if (err) {
-          // Error handling for SQL query
-          let { statusCode = 500, message = "Something went wrong" } = err;
-          return res.render("error.ejs", { statusCode, message });
-        }
-  
-        // Successfully updated the user, redirect to login
-        res.send('uploaded succesfully '); // Correctly redirect the user
-      });
+        // SQL query to update user info
+        const updateSql = "UPDATE users SET userImage = ?, FULLNAME = ? WHERE id = ?";
+        connection.query(updateSql, [imagePath, updateName, id], (err, updateResult) => {
+          if (err) {
+            // Error handling for SQL query
+            let { statusCode = 500, message = "Something went wrong" } = err;
+            return res.render("error.ejs", { statusCode, message });
+          }
+    
+          // Successfully updated the user, redirect to login
+          res.send('uploaded succesfully '); // Correctly redirect the user
+        });
+      }
     });
   });
   
