@@ -203,9 +203,6 @@ app.get('/logout', (req, res) => {
     });
 });
 
-
-
-
 app.get('/test', wrapAsync(async(req, res) => {
     const sql = "SELECT * FROM aptitude_subject_questions ORDER BY RAND() LIMIT 25"; 
     

@@ -99,6 +99,7 @@
         }
         .option input[type="radio"] {
             margin-right: 0.5rem;
+            cursor: pointer;
         }
 
         /* Timer styles */
@@ -131,9 +132,10 @@
             height: 0.75rem;
             border-radius: 50%;
         }
-        .indicator-blue { background-color: #2563eb; margin-right: 5px;}
+        .indicator-orange { background-color: #ff4500; margin-right: 5px;}
+        .indicator-blue { background-color: #6c9bff; margin-right: 5px;}
         .indicator-gray { background-color: #e5e7eb; margin-right: 5px;}
-        .indicator-green { background-color: rgb(0, 85, 38); margin-right: 5px;}
+        .indicator-green { background-color: #05aa4f; margin-right: 5px;}
         .progress-bar {
             width: 100%;
             height: 0.5rem;
@@ -147,9 +149,9 @@
             align-items: center;
         }
         .progress-bar-fill {
-            width: 52%;
             height: 100%;
             background-color: #2563eb;
+            transition: 0.5s;
         }
 
         /* Question grid styles */
@@ -235,26 +237,28 @@
                     <h3 class="question-title"><%= question.question_text %></h3>
                     <ul class="options">
                         <li class="option">
-                            <input type="radio" id="margaret-thatcher" name="pm" value="<%= question.option_a %>">
-                            <label for="margaret-thatcher"><%= question.option_a %></label>
+                            <input type="radio" id="optionA" name="option" value="<%= question.option_a %>">
+                            <label for="optionA"><%= question.option_a %></label>
                         </li>
                         <li class="option">
-                            <input type="radio" id="angela-merkel" name="pm" value="<%= question.option_b %>">
-                            <label for="angela-merkel"><%= question.option_b %></label>
+                            <input type="radio" id="optionB" name="option" value="<%= question.option_b %>">
+                            <label for="optionB"><%= question.option_b %></label>
                         </li>
                         <li class="option">
-                            <input type="radio" id="theresa-may" name="pm" value="<%= question.option_c %>">
-                            <label for="theresa-may"><%= question.option_c %></label>
+                            <input type="radio" id="optionC" name="option" value="<%= question.option_c %>">
+                            <label for="optionC"><%= question.option_c %></label>
                         </li>
                         <li class="option">
-                            <input type="radio" id="indira-gandhi" name="pm" value="<%= question.option_d %>">
-                            <label for="indira-gandhi"><%= question.option_d %></label>
+                            <input type="radio" id="optionD" name="option" value="<%= question.option_d %>">
+                            <label for="optionD"><%= question.option_d %></label>
                         </li>
                     </ul>
                 </div>
                 <% }); %>
                 <div class="navFooter">
                     <button class="nav-button" id="prev-btn" disabled>Previous</button>
+                    <button class="nav-button" id="mark-btn" style="background-color: #ff4500;">Mark</button>
+                    <button class="nav-button" id="skip-btn" style="background-color: #6c9bff;">Skip</button>
                     <button class="nav-button" id="next-btn">Next</button>
                 </div>
             </div>
@@ -268,14 +272,15 @@
                 <div class="card">
                     <h3 class="card-title">Questions</h3>
                     <div class="progress-container">
-                        <span class="progress-text">1 / <%= questions.length %></span>
+                        <span class="progress-text"><span id="questionNumber">34</span> / <%= questions.length %></span>
                     </div>
                     <div class="progress-bar">
-                        <div class="progress-bar-fill"></div>
+                        <div class="progress-bar-fill" id="progressBarFill"></div>
                     </div>
                     <div class="progress-indicators">
-                        <div class="status"><div class="indicator indicator-blue"></div><span>Pending</span></div>
-                        <div class="status"><div class="indicator indicator-gray"></div><span>Skip</span></div>
+                        <div class="status"><div class="indicator indicator-orange"></div><span>Marked</span></div>
+                        <div class="status"><div class="indicator indicator-blue"></div><span>Skiped</span></div>
+                        <div class="status"><div class="indicator indicator-gray"></div><span>Remaining</span></div>
                         <div class="status"><div class="indicator indicator-green"></div><span>Answered</span></div>
                     </div>
                     <div class="question-grid">
@@ -297,6 +302,12 @@
 
             const currentQuestionElement = document.getElementById("question-" + (currentQuestionIndex + 1));
             currentQuestionElement.style.display = "block";
+
+            // Display question Number
+            document.getElementById('questionNumber').innerHTML = currentQuestionIndex + 1;
+
+            // Progress bar fill width
+            document.getElementById('progressBarFill').style.width = (((currentQuestionIndex) / (questions.length))*100) +"%";
 
             // Disable previous button on the first question
             document.getElementById("prev-btn").disabled = currentQuestionIndex === 0;
