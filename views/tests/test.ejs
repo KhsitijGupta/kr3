@@ -233,6 +233,7 @@
             <div class="question-section">
                 <% questions.forEach(function(question, index) { %>
                 <div class="card quesCard" id="question-<%= index + 1 %>" style="display: none;">
+                    <p style="display: none;" id="questionID"><%=question.question_id%></p>
                     <h2 class="card-title">Question <%= index + 1 %>:</h2>
                     <h3 class="question-title"><%= question.question_text %></h3>
                     <ul class="options">
@@ -272,7 +273,7 @@
                 <div class="card">
                     <h3 class="card-title">Questions</h3>
                     <div class="progress-container">
-                        <span class="progress-text"><span id="questionNumber">34</span> / <%= questions.length %></span>
+                        <span class="progress-text"><span id="questionNumber"></span> / <%= questions.length %></span>
                     </div>
                     <div class="progress-bar">
                         <div class="progress-bar-fill" id="progressBarFill"></div>
@@ -296,8 +297,8 @@
         let currentQuestionIndex = 0;
 
         // Function to display the current question
+        const questions = document.querySelectorAll(".quesCard");
         function displayQuestion() {
-            const questions = document.querySelectorAll(".quesCard");
             questions.forEach(q => q.style.display = "none");
 
             const currentQuestionElement = document.getElementById("question-" + (currentQuestionIndex + 1));
@@ -314,6 +315,9 @@
 
             // Disable next button on the last question
             document.getElementById("next-btn").disabled = currentQuestionIndex === questions.length - 1;
+
+            // Attach event listeners to the current question's options
+            addOptionSessionStorage(currentQuestionIndex + 1);
         }
 
         // Function to handle previous button click
@@ -366,6 +370,20 @@
             // Set current question index to the clicked question number
             currentQuestionIndex = questionNumber - 1;
             displayQuestion();
+        }
+
+        // Function to add user response in Session Storage
+        function addOptionSessionStorage(questionIndex) {
+            const options = document.querySelectorAll(`#question-${questionIndex} [name='option']`);
+            const questionID = document.querySelector(`#question-${questionIndex} #questionID`).textContent;
+
+            console.log(options)
+            options.forEach(option => {
+                option.addEventListener('change', () => {
+                    sessionStorage.setItem(questionID, option.value);
+                    //console.log(`Saved: Question ID = ${questionID}, Selected Option = ${option.value}`);
+                });
+            });
         }
     </script>
 </body>
