@@ -133,7 +133,6 @@
             border-radius: 50%;
         }
         .indicator-orange { background-color: #ff4500; margin-right: 5px;}
-        .indicator-blue { background-color: #6c9bff; margin-right: 5px;}
         .indicator-gray { background-color: #e5e7eb; margin-right: 5px;}
         .indicator-green { background-color: #05aa4f; margin-right: 5px;}
         .progress-bar {
@@ -203,6 +202,54 @@
             background-color: #063e5f;
         }
 
+        .question-button.answered {
+            background-color: #05aa4f; /* Green for answered */
+            color: white;
+            border-color: #05aa4f;
+        }
+        
+        .question-button.marked {
+            background-color: #ff4500; /* Orange for marked */
+            color: white;
+            border-color: #ff4500;
+        }
+        section {
+            display: none;
+            width: 100%;
+            height: 85vh;
+            padding: 2%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .previewContainer{
+            width: 50%;
+            border-radius: 10px;
+            padding: 2%;
+            background-color: #fff;
+        }
+        .previewContainer h3 {
+            color: #727070;
+            margin-bottom: 25px;
+        }
+        .previewQuestions {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 4px;
+        }
+        .previewContainer>button {
+            float: right;
+            padding: 10px;
+            font-size: 15px;
+            color: #fff;
+            background-color: #05aa4f;
+            border: none;
+            border-radius: 5px;
+            margin: 40px 0 0 0;
+            cursor: pointer;
+        }
+        
+
         /* Responsive styles */
         @media (max-width: 768px) {
             .content {
@@ -224,7 +271,7 @@
                 </svg>
                 All questions
             </button>
-            <button class="btn btn-primary">Finish</button>
+            <button class="btn btn-primary" id="finishButton">Finish</button>
         </div>
     </header>
 
@@ -256,10 +303,10 @@
                     </ul>
                 </div>
                 <% }); %>
+                <p id="displayMessage" style="color: red;"></p>
                 <div class="navFooter">
                     <button class="nav-button" id="prev-btn" disabled>Previous</button>
                     <button class="nav-button" id="mark-btn" style="background-color: #ff4500;">Mark</button>
-                    <button class="nav-button" id="skip-btn" style="background-color: #6c9bff;">Skip</button>
                     <button class="nav-button" id="next-btn">Next</button>
                 </div>
             </div>
@@ -280,22 +327,32 @@
                     </div>
                     <div class="progress-indicators">
                         <div class="status"><div class="indicator indicator-orange"></div><span>Marked</span></div>
-                        <div class="status"><div class="indicator indicator-blue"></div><span>Skiped</span></div>
                         <div class="status"><div class="indicator indicator-gray"></div><span>Remaining</span></div>
                         <div class="status"><div class="indicator indicator-green"></div><span>Answered</span></div>
                     </div>
                     <div class="question-grid">
                         <% for (let i = 1; i <= questions.length; i++) { %>
-                            <button onclick="showQuestion(<%= i %>)" class="question-button"><%= i %></button>
+                            <button onclick="showQuestion('<%= i %>')" class="question-button"><%= i %></button>
                         <% } %>
                     </div>
                 </div>
             </div>
         </div>
     </main>
+    <section>
+        <div class="previewContainer">
+            <h3>All Questions Preview</h3>
+            <div class="previewQuestions">
+                <% for (let i = 1; i <= questions.length; i++) { %>
+                    <button onclick="showQuestion('<%= i %>')" class="question-button"><%= i %></button>
+                <% } %>
+            </div>
+            <button id="finalSubmit">Submit</button>
+        </div>
+    </section>
     <script>
         let currentQuestionIndex = 0;
-
+        
         // Function to display the current question
         const questions = document.querySelectorAll(".quesCard");
         function displayQuestion() {
@@ -314,10 +371,24 @@
             document.getElementById("prev-btn").disabled = currentQuestionIndex === 0;
 
             // Disable next button on the last question
-            document.getElementById("next-btn").disabled = currentQuestionIndex === questions.length - 1;
+            //document.getElementById("next-btn").disabled = currentQuestionIndex === questions.length - 1;
 
             // Attach event listeners to the current question's options
             addOptionSessionStorage(currentQuestionIndex + 1);
+        }
+
+        // Show previously selected option if it exists in sessionStorage
+        const questionID = document.querySelector(`#question-${currentQuestionIndex + 1} #questionID`).textContent;
+        const selectedOption = sessionStorage.getItem(questionID);
+
+        if (selectedOption) {
+            // Find the option and select it
+            const options = document.querySelectorAll(`#question-${currentQuestionIndex + 1} [name="option"]`);
+            options.forEach(option => {
+                if (option.value === selectedOption) {
+                    option.checked = true;
+                }
+            });
         }
 
         // Function to handle previous button click
@@ -328,18 +399,79 @@
             }
         }
 
-        // Function to handle next button click
-        function nextQuestion() {
+        // Function to handle mark button click
+        function markQuestion() {
             const questions = document.querySelectorAll(".quesCard");
+            // Check if it's the last question
+            const isLastQuestion = currentQuestionIndex+1 === questions.length;
+
             if (currentQuestionIndex < questions.length - 1) {
+                updateQuestionGridButton(currentQuestionIndex + 1, 'marked'); // Mark as marked
                 currentQuestionIndex++;
                 displayQuestion();
+                document.getElementById('displayMessage').style.display = "none"; // Hide the message
+            } else if(isLastQuestion) {
+                updateQuestionGridButton(currentQuestionIndex + 1, 'marked'); // Mark as marked
+                finalPreview()
             }
         }
 
+        // Function to handle next button click
+        function nextQuestion() {
+            // Get the current question ID
+            const questionID = document.querySelector(`#question-${currentQuestionIndex + 1} #questionID`).textContent;
+
+            // Get the display message element
+            const displayMessageElement = document.getElementById('displayMessage');
+
+            // Check if the question ID exists in sessionStorage (meaning it has been answered)
+            let isQuestionAnswered = Object.keys(sessionStorage).includes(questionID);
+            // Check if it's the last question
+            const isLastQuestion = currentQuestionIndex+1 === questions.length;
+
+            if (isLastQuestion && isQuestionAnswered) {
+                // If on the last question and it's answered, show final preview
+                updateQuestionGridButton(currentQuestionIndex + 1, 'answered'); // Mark as answered
+                finalPreview()
+
+            } else if (isQuestionAnswered && currentQuestionIndex < questions.length - 1) {
+                // If answered, hide the message and move to the next question
+                displayMessageElement.style.display = "none"; // Hide the message
+                updateQuestionGridButton(currentQuestionIndex + 1, 'answered'); // Mark as answered
+                currentQuestionIndex++;
+                displayQuestion();
+            } else {
+                // If not answered, display the message asking the user to choose an option
+                displayMessageElement.style.display = "block"; // Show the message again
+                displayMessageElement.innerHTML = "** Please choose an option OR click on the mark button to do it later!";
+            }
+        };
+
         // Add event listeners to buttons
         document.getElementById("prev-btn").addEventListener("click", prevQuestion);
+        document.getElementById("mark-btn").addEventListener("click", markQuestion);
         document.getElementById("next-btn").addEventListener("click", nextQuestion);
+
+        // Function to update question button in grid
+        function updateQuestionGridButton(questionNumber, status) {
+            const questionButton = document.querySelector(`.question-button:nth-child(${questionNumber})`);
+            const previewButton = document.querySelector(`.previewQuestions .question-button:nth-child(${questionNumber})`);
+
+            if (status === 'answered') {
+                // Apply green class for answered
+                questionButton.classList.remove('marked');
+                previewButton.classList.remove('marked');
+                questionButton.classList.add('answered');
+                previewButton.classList.add('answered');
+            } else if (status === 'marked') {
+                // Apply orange class for marked
+                questionButton.classList.remove('answered');
+                previewButton.classList.remove('answered');
+                questionButton.classList.add('marked');
+                previewButton.classList.add('marked');
+                
+            }
+        }
 
         // Timer function
         function startTimer(duration, display) {
@@ -367,6 +499,9 @@
         };
 
         function showQuestion(questionNumber) {
+            
+            document.querySelector('section').style.display = "none";
+            document.querySelector('.container').style.display = "block";
             // Set current question index to the clicked question number
             currentQuestionIndex = questionNumber - 1;
             displayQuestion();
@@ -374,10 +509,10 @@
 
         // Function to add user response in Session Storage
         function addOptionSessionStorage(questionIndex) {
+            // Finding selected user response
             const options = document.querySelectorAll(`#question-${questionIndex} [name='option']`);
+            // Finding question id which is currently displayed on the screen
             const questionID = document.querySelector(`#question-${questionIndex} #questionID`).textContent;
-
-            console.log(options)
             options.forEach(option => {
                 option.addEventListener('change', () => {
                     sessionStorage.setItem(questionID, option.value);
@@ -385,6 +520,31 @@
                 });
             });
         }
+
+        function finalPreview() {
+            document.querySelector('.container').style.display = "none";
+            document.querySelector('section').style.display = "flex";
+        }
+
+        // Final submission 
+        document.getElementById('finalSubmit').addEventListener('click', () => {
+            let surity = confirm("Are you sure for final submission!");
+            if(surity) {
+                let allQuestionId = Object.keys(sessionStorage); // have all questions id
+                let allUserResponse = [];
+                allQuestionId.map((currQuesId) => {
+                    allUserResponse.push(sessionStorage.getItem(currQuesId))
+                })
+                console.log(allUserResponse) // have all questions response
+            }
+        })
+
+        // Finish button
+        document.getElementById('finishButton').addEventListener('click', () => {
+            document.getElementById('finalSubmit').click()
+            window.location.href = "../home.ejs";
+        })
+        
     </script>
 </body>
 </html>
