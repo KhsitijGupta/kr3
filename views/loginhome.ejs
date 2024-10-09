@@ -7,6 +7,7 @@
     <!-- Page css link -->
     <link rel="stylesheet" href="/css/header.css">
     <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="/css/userNavBar.css">
     <link rel="stylesheet" href="/css/hero-section.css">
     <link rel="stylesheet" href="/css/contact_us .css">
     <link rel="stylesheet" href="/css/loginhome.css">
@@ -57,7 +58,7 @@
                                 </div>
                             </div>
                             <button class="update-button" id="updateProfile">Update Profile</button>
-                            <a href="/login"><button class="exit-button" id="exitButton">Exit <i class="fas fa-sign-out-alt"></i></button></a>
+                            <a href="/"><button class="exit-button" id="exitButton">Exit <i class="fas fa-sign-out-alt"></i></button></a>
                         </div>
                         <!-- Profile Update Section -->
                         <div id="profileUpdate" class="active my-2 d-none">
@@ -92,57 +93,7 @@
                 </div>
             </div>
         </div>
-        <nav class="navbar navbar-expand-lg navbar-light bg-white border">
-            <div class="container">
-                <a class="navbar-brand" href="/"><img src="/images/logo.png" alt="" height="30px" width="70px"></a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNavDropdown">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="#">Home</a>
-                    </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="/test">Test</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link " href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Categories <i class="fas fa-angle-down"></i>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <li><a class="dropdown-item" href="#">Action</a></li>
-                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                            <li><a class="dropdown-item" href="#">Something else here</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link " href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Services <i class="fas fa-angle-down"></i>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <li><a class="dropdown-item" href="#">Action</a></li>
-                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                            <li><a class="dropdown-item" href="#">Something else here</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link " href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Explore <i class="fas fa-angle-down"></i>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <li><a class="dropdown-item" href="#">Action</a></li>
-                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                            <li><a class="dropdown-item" href="#">Something else here</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="#contact">Contact Us</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-      </nav>
+        <%- include("./includes/userNavBar.ejs") %>
       </header>
 
 <!-- hero section -->

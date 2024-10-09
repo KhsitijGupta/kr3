@@ -213,8 +213,7 @@
             color: white;
             border-color: #ff4500;
         }
-        section {
-            display: none;
+        #previewBox {
             width: 100%;
             height: 85vh;
             padding: 2%;
@@ -339,7 +338,7 @@
             </div>
         </div>
     </main>
-    <section>
+    <section id="previewBox" style="display: none;">
         <div class="previewContainer">
             <h3>All Questions Preview</h3>
             <div class="previewQuestions">
@@ -500,7 +499,7 @@
 
         function showQuestion(questionNumber) {
             
-            document.querySelector('section').style.display = "none";
+            document.querySelector('#previewBox').style.display = "none";
             document.querySelector('.container').style.display = "block";
             // Set current question index to the clicked question number
             currentQuestionIndex = questionNumber - 1;
@@ -523,7 +522,7 @@
 
         function finalPreview() {
             document.querySelector('.container').style.display = "none";
-            document.querySelector('section').style.display = "flex";
+            document.querySelector('#previewBox').style.display = "flex";
         }
 
         // Final submission 
