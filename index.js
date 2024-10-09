@@ -73,40 +73,44 @@ const validateTableName=(req ,res ,next)=>{
         }
 };
 
-// Define the showTables function
-const showTables = (req, res, next) => {
-    const query = "SHOW TABLES";
 
-    // Execute the query to get the tables
-    connection.query(query, (err, results) => {
-        if (err) {
-            console.error("Error retrieving tables:", err);
-            return res.status(500).send("Error retrieving tables.");
-        }
+const showTables = async (req, res, next) => {
+    try {
+        const query = "SHOW TABLES";
 
-        // Filter the tables to include only those containing "questions"
-        const filteredTables = results
-            .map(table => {
-                const tableName = table.Tables_in_kr3database;
-                const splitTableName = tableName.split('_');
-                const containsQuestions = splitTableName.includes("questions");
+        // Execute the query to get the tables
+        connection.query(query, (err, results) => {
+            if (err) {
+                console.error("Error retrieving tables:", err);
+                return res.status(500).send("Error retrieving tables.");
+            }
 
-                return { 
-                    originalTableName: tableName, 
-                    splitTableName, 
-                    containsQuestions 
-                };
-            });
+            // Filter the tables to include only those containing "questions"
+            const filteredTables = results
+                .map(table => {
+                    const tableName = table.Tables_in_kr3database;
+                    const splitTableName = tableName.split('_');
+                    const containsQuestions = splitTableName.includes("questions");
 
-        const tablesWithQuestions = filteredTables.filter(table => table.containsQuestions);
+                    return { 
+                        originalTableName: tableName, 
+                        splitTableName, 
+                        containsQuestions 
+                    };
+                });
 
-        // Log the filtered tables to the console
-        // console.log("Filtered tables with 'questions':", tablesWithQuestions);
+            const tablesWithQuestions = filteredTables.filter(table => table.containsQuestions);
 
-        // Send the filtered tables as the response
-        res.json(tablesWithQuestions);
-    });
+            // Attach the filtered tables to the req object
+            req.tablesWithQuestions = tablesWithQuestions;
+            next(); // Pass control to the next middleware
+        });
+    } catch (error) {
+        console.error("Error in showTables:", error);
+        next(error); // Pass the error to the next middleware or error handler
+    }
 };
+
 
 
 app.post('/register', wrapAsync(async (req, res) => {
@@ -239,19 +243,20 @@ app.get('/logout', (req, res) => {
     });
 });
 
-app.get('/test',showTables, wrapAsync(async(req, res) => {
+app.get('/test', showTables, wrapAsync(async (req, res) => {
     const sql = "SELECT * FROM aptitude_subject_questions ORDER BY RAND() LIMIT 25"; 
     
-    // const sessinData = showTables(req, res);
-    console.log("Filtered Tables with Questions:", req.tablesWithQuestions);
+    // Access the filtered tables from req object
+    console.log(req.tablesWithQuestions[2].originalTableName);
 
+    // Execute the query for the questions
     connection.query(sql, (err, results) => {
         if (err) {
             let { statusCode = 500, message = "Something went wrong" } = err;
-            res.render("error.ejs", { statusCode, message });
-            
+            return res.render("error.ejs", { statusCode, message });
         }
         
+        // Render the questions in the test.ejs template
         res.render("tests/test.ejs", { questions: results });
     });
 }));
