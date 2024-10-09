@@ -284,22 +284,26 @@
                     <h3 class="question-title"><%= question.question_text %></h3>
                     <ul class="options">
                         <li class="option">
-                            <input type="radio" id="optionA" name="option" value="<%= question.option_a %>">
-                            <label for="optionA"><%= question.option_a %></label>
+                            <input type="radio" id="optionA<%=question.question_id%>" name="option" value="<%= question.option_a %>">
+                            <label for="optionA<%=question.question_id%>"><%= question.option_a %></label>
                         </li>
                         <li class="option">
-                            <input type="radio" id="optionB" name="option" value="<%= question.option_b %>">
-                            <label for="optionB"><%= question.option_b %></label>
+                            <input type="radio" id="optionB<%=question.question_id%>" name="option" value="<%= question.option_b %>">
+                            <label for="optionB<%=question.question_id%>"><%= question.option_b %></label>
                         </li>
                         <li class="option">
-                            <input type="radio" id="optionC" name="option" value="<%= question.option_c %>">
-                            <label for="optionC"><%= question.option_c %></label>
+                            <input type="radio" id="optionC<%=question.question_id%>" name="option" value="<%= question.option_c %>">
+                            <label for="optionC<%=question.question_id%>"><%= question.option_c %></label>
                         </li>
                         <li class="option">
-                            <input type="radio" id="optionD" name="option" value="<%= question.option_d %>">
-                            <label for="optionD"><%= question.option_d %></label>
+                            <input type="radio" id="optionD<%=question.question_id%>" name="option" value="<%= question.option_d %>">
+                            <label for="optionD<%=question.question_id%>"><%= question.option_d %></label>
+                        </li>
+                        <li class="option" style="display:none;">
+                            <input type="password" id="correct_option" value="<%= question.correct_option %>"  style="display:none;">
                         </li>
                     </ul>
+                    
                 </div>
                 <% }); %>
                 <p id="displayMessage" style="color: red;"></p>
@@ -349,7 +353,23 @@
             <button id="finalSubmit">Submit</button>
         </div>
     </section>
+    <!-- <script>
+            // This event triggers when the user tries to leave or reload the page
+            window.addEventListener("beforeunload", function (event) {
+                // Prevent the default behavior (leaving/reloading the page)
+                event.preventDefault();
+                
+                // Chrome requires setting the returnValue property for this to work
+                event.returnValue = "Are you sure you want to leave this page?";
+            });
+        
+    </script> -->
+
     <script>
+
+
+
+
         let currentQuestionIndex = 0;
         
         // Function to display the current question
@@ -384,7 +404,7 @@
             // Find the option and select it
             const options = document.querySelectorAll(`#question-${currentQuestionIndex + 1} [name="option"]`);
             options.forEach(option => {
-                if (option.value === selectedOption) {
+                if (option.value[0] === selectedOption) {
                     option.checked = true;
                 }
             });
@@ -512,9 +532,11 @@
             const options = document.querySelectorAll(`#question-${questionIndex} [name='option']`);
             // Finding question id which is currently displayed on the screen
             const questionID = document.querySelector(`#question-${questionIndex} #questionID`).textContent;
+            const correct_option = document.querySelector(`#question-${questionIndex} #correct_option`);
             options.forEach(option => {
                 option.addEventListener('change', () => {
-                    sessionStorage.setItem(questionID, option.value);
+                    console.log(correct_option.value)
+                    sessionStorage.setItem(questionID, [option.value,correct_option.value]);
                     //console.log(`Saved: Question ID = ${questionID}, Selected Option = ${option.value}`);
                 });
             });
@@ -534,16 +556,26 @@
                 allQuestionId.map((currQuesId) => {
                     allUserResponse.push(sessionStorage.getItem(currQuesId))
                 })
-                console.log(allUserResponse) // have all questions response
+                //console.log(allUserResponse) // have all questions response
             }
+            result(allUserResponse);
+
         })
 
         // Finish button
         document.getElementById('finishButton').addEventListener('click', () => {
             document.getElementById('finalSubmit').click()
-            window.location.href = "../home.ejs";
+            window.location.href = "/login";
         })
+
+
+        function result(allUserResponse){
+            console.log(allUserResponse) // have all questions response
+
+        }
+        //result();
         
     </script>
 </body>
 </html>
+
