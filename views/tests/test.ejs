@@ -101,6 +101,9 @@
             margin-right: 0.5rem;
             cursor: pointer;
         }
+        .option label {
+            cursor: pointer;
+        }
 
         /* Timer styles */
         .timer-value {
@@ -213,7 +216,7 @@
             color: white;
             border-color: #ff4500;
         }
-        #previewBox {
+        #previewBox, #displayResultBox {
             width: 100%;
             height: 85vh;
             padding: 2%;
@@ -221,7 +224,7 @@
             justify-content: center;
             align-items: center;
         }
-        .previewContainer{
+        .previewContainer, .resultContainer{
             width: 50%;
             border-radius: 10px;
             padding: 2%;
@@ -236,7 +239,12 @@
             grid-template-columns: repeat(10, 1fr);
             gap: 4px;
         }
-        .previewContainer>button {
+        .showResult {
+            padding: 15px;
+            line-height: 25px;
+        }
+        
+        .previewContainer>button, .resultContainer>button {
             float: right;
             padding: 10px;
             font-size: 15px;
@@ -264,12 +272,12 @@
             <!-- <span class="company-name">NOVAGENIUS ENTERPRISES</span> -->
         </div>
         <div class="header-buttons">
-            <button class="btn btn-outline">
+            <!-- <button class="btn btn-outline">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="16" height="16" style="margin-right: 0.5rem;">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                 </svg>
                 All questions
-            </button>
+            </button> -->
             <button class="btn btn-primary" id="finishButton">Finish</button>
         </div>
     </header>
@@ -284,23 +292,23 @@
                     <h3 class="question-title"><%= question.question_text %></h3>
                     <ul class="options">
                         <li class="option">
-                            <input type="radio" id="optionA<%=question.question_id%>" name="option" value="<%= question.option_a %>">
+                            <input type="radio" id="optionA<%=question.question_id%>" name="option" value="A">
                             <label for="optionA<%=question.question_id%>"><%= question.option_a %></label>
                         </li>
                         <li class="option">
-                            <input type="radio" id="optionB<%=question.question_id%>" name="option" value="<%= question.option_b %>">
+                            <input type="radio" id="optionB<%=question.question_id%>" name="option" value="B">
                             <label for="optionB<%=question.question_id%>"><%= question.option_b %></label>
                         </li>
                         <li class="option">
-                            <input type="radio" id="optionC<%=question.question_id%>" name="option" value="<%= question.option_c %>">
+                            <input type="radio" id="optionC<%=question.question_id%>" name="option" value="C">
                             <label for="optionC<%=question.question_id%>"><%= question.option_c %></label>
                         </li>
                         <li class="option">
-                            <input type="radio" id="optionD<%=question.question_id%>" name="option" value="<%= question.option_d %>">
+                            <input type="radio" id="optionD<%=question.question_id%>" name="option" value="D">
                             <label for="optionD<%=question.question_id%>"><%= question.option_d %></label>
                         </li>
                         <li class="option" style="display:none;">
-                            <input type="password" id="correct_option" value="<%= question.correct_option %>"  style="display:none;">
+                            <input type="password" id="correct_option<%=question.question_id%>" value="<%= question.correct_option %>"  style="display:none;">
                         </li>
                     </ul>
                     
@@ -353,6 +361,16 @@
             <button id="finalSubmit">Submit</button>
         </div>
     </section>
+    <section id="displayResultBox" style="display: none;">
+        <div class="resultContainer">
+            <h2>Result</h2>
+            <div class="showResult">
+                <h3 id="resultStatus"></h3>
+                <p id="score"></p>
+            </div>
+            <button id="backHomeBtn">Back to home</button>
+        </div>
+    </section>
     <!-- <script>
             // This event triggers when the user tries to leave or reload the page
             window.addEventListener("beforeunload", function (event) {
@@ -366,10 +384,6 @@
     </script> -->
 
     <script>
-
-
-
-
         let currentQuestionIndex = 0;
         
         // Function to display the current question
@@ -388,9 +402,6 @@
 
             // Disable previous button on the first question
             document.getElementById("prev-btn").disabled = currentQuestionIndex === 0;
-
-            // Disable next button on the last question
-            //document.getElementById("next-btn").disabled = currentQuestionIndex === questions.length - 1;
 
             // Attach event listeners to the current question's options
             addOptionSessionStorage(currentQuestionIndex + 1);
@@ -532,16 +543,17 @@
             const options = document.querySelectorAll(`#question-${questionIndex} [name='option']`);
             // Finding question id which is currently displayed on the screen
             const questionID = document.querySelector(`#question-${questionIndex} #questionID`).textContent;
-            const correct_option = document.querySelector(`#question-${questionIndex} #correct_option`);
+            const correct_option = document.querySelector(`#question-${questionIndex} #correct_option${questionID}`);
             options.forEach(option => {
                 option.addEventListener('change', () => {
-                    console.log(correct_option.value)
+                    //console.log(correct_option.value)
+                    // Storing user response in session storage
                     sessionStorage.setItem(questionID, [option.value,correct_option.value]);
-                    //console.log(`Saved: Question ID = ${questionID}, Selected Option = ${option.value}`);
                 });
             });
         }
 
+        // Final preview function
         function finalPreview() {
             document.querySelector('.container').style.display = "none";
             document.querySelector('#previewBox').style.display = "flex";
@@ -554,27 +566,55 @@
                 let allQuestionId = Object.keys(sessionStorage); // have all questions id
                 let allUserResponse = [];
                 allQuestionId.map((currQuesId) => {
-                    allUserResponse.push(sessionStorage.getItem(currQuesId))
+                    allUserResponse.push([sessionStorage.getItem(currQuesId)])
                 })
-                //console.log(allUserResponse) // have all questions response
+                for(i=0; i < allUserResponse.length; i++) {
+                    result(allUserResponse[i][0].split(','))
+                }
             }
-            result(allUserResponse);
 
         })
 
+        let count = 0;
+        function result(Response){
+            if(Response[0] === Response[1]) {
+                count += 1;
+            }
+            //console.log(count) // have all questions response
+        }
+        
         // Finish button
         document.getElementById('finishButton').addEventListener('click', () => {
             document.getElementById('finalSubmit').click()
-            window.location.href = "/login";
+            document.querySelector('.container').style.display = "none";
+            document.querySelector('#previewBox').style.display = "none";
+            document.querySelector('header').style.display = "none";
+            document.querySelector('#displayResultBox').style.display = "flex";
+
+            // Finding percentage of passing mark
+            let passNum = Math.round(((60/100) * questions.length));
+            console.log(passNum)
+            console.log(((70/100) * questions.length))
+
+            // Checking pass and fail
+            if(count >= passNum) {
+                document.getElementById('resultStatus').innerHTML = "Your result is : Pass";
+                document.getElementById('resultStatus').style.color = "#05aa4f";
+                document.getElementById('score').innerHTML = "You have score "+passNum+" out of "+questions.length+".";
+                document.getElementById('score').style.color = "#05aa4f";
+            } else {
+                document.getElementById('resultStatus').innerHTML = "Your result is : Fail";
+                document.getElementById('resultStatus').style.color = "red";
+                document.getElementById('score').innerHTML = "You have score "+passNum+" out of "+questions.length+".";
+                document.getElementById('score').style.color = "red";
+            }
         })
 
-
-        function result(allUserResponse){
-            console.log(allUserResponse) // have all questions response
-
-        }
-        //result();
-        
+        // Send back to home page
+        document.getElementById('backHomeBtn').addEventListener('click', () => {
+            sessionStorage.clear()
+            window.location.replace('/login');
+        });
     </script>
 </body>
 </html>

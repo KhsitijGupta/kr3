@@ -7,6 +7,7 @@
     justify-content: space-between;
     align-items: center;
     position: relative;
+    box-sizing: border-box;
 }
 
 #navList {
@@ -22,6 +23,7 @@
 #navList li {
     padding: 4px 8px;
     cursor: pointer;
+    color: #3f3e3e;
     background-color: inherit;
 }
 
@@ -31,7 +33,7 @@
 }
 
 #navList li:hover {
-    color: #06b7c4;
+    color: #000;
 }
 
 /* #navItemsTest, #navItemsCategories, #navItemsAbout {
@@ -51,8 +53,8 @@
 }
 
 #dropdownMenus li:hover {
-    border: 1px solid #06b7c4;
-    border-radius: 5px;
+    color: #000;
+    text-decoration: underline;
 }
 
 #navItemsTest:hover #dropdownMenus {

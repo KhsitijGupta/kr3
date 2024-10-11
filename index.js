@@ -247,7 +247,7 @@ app.get('/test', showTables, wrapAsync(async (req, res) => {
     const sql = "SELECT * FROM aptitude_subject_questions ORDER BY RAND() LIMIT 25"; 
     
     // Access the filtered tables from req object
-    console.log(req.tablesWithQuestions[2].originalTableName);
+    // console.log(req.tablesWithQuestions[2].originalTableName);
 
     // Execute the query for the questions
     connection.query(sql, (err, results) => {
