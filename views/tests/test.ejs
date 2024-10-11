@@ -12,6 +12,8 @@
             box-sizing: border-box;
         }
         body {
+            width: 100%;
+            height: 100vh;
             font-family: Arial, sans-serif;
             background-color: #f3f4f6;
             min-height: 100vh;
@@ -216,7 +218,7 @@
             color: white;
             border-color: #ff4500;
         }
-        #previewBox, #displayResultBox {
+        #previewBox, #displayResultBox, #testInfoBox, #testInstructionBox {
             width: 100%;
             height: 85vh;
             padding: 2%;
@@ -266,7 +268,8 @@
     </style>
 </head>
 <body>
-    <header>
+    <%- include("testInstruction.ejs") %>
+    <header style="display: none;">
         <div class="logo">
             <span class="logo-text"><img src="/images/logo.png" alt="Company Logo" height="30px" width="70px"></span>
             <!-- <span class="company-name">NOVAGENIUS ENTERPRISES</span> -->
@@ -282,7 +285,7 @@
         </div>
     </header>
 
-    <main class="container">
+    <main class="container" style="display: none;">
         <div class="content">
             <div class="question-section">
                 <% questions.forEach(function(question, index) { %>
@@ -384,6 +387,22 @@
     </script> -->
 
     <script>
+        // Test info handle
+        document.getElementById('testInfoBtn').addEventListener('click', () => {
+            document.getElementById('testInfoBox').style.display = "none";
+            document.getElementById('testInstructionBox').style.display = "flex";
+        })
+
+        // Test instruction handle
+        document.getElementById('testInstructionBtn').addEventListener('click', () => {
+            let surity = confirm("Are you ready to start test?");
+            if(surity) {
+                document.getElementById('testInstructionBox').style.display = "none";
+                document.querySelector('.container').style.display = "block";
+                document.querySelector('header').style.display = "flex";
+            }
+        })
+
         let currentQuestionIndex = 0;
         
         // Function to display the current question
