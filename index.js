@@ -48,9 +48,6 @@ const connection=mysql.createConnection({
      password:"MYSQL@123"
   });
 
-app.get("/",(req,res)=>{
-    res.render("home.ejs");
-})
 
 const validatequestion=(req ,res ,next)=>{
     let {error} = questionSchema.validate(req.body);
@@ -112,6 +109,34 @@ const showTables = async (req, res, next) => {
 };
 
 
+app.get("/",(req,res)=>{
+    if ( req.session.userId){
+    let sql = "SELECT * FROM users WHERE Id = ?";
+    connection.query(sql, req.session.userId , (err, result) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send("Database error");
+        }
+
+        if (result.length > 0) {
+            const user = result[0];
+            res.render("loginhome.ejs",{ user });
+        }
+    });
+    }
+    else{
+        res.render("home.ejs");
+        }
+})
+
+app.get('/userlogout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).send('Failed to logout');
+        }
+        res.redirect('/'); 
+    });
+});
 
 app.post('/register', wrapAsync(async (req, res) => {
     let data = req.body;
@@ -165,6 +190,13 @@ app.post('/login',wrapAsync(async(req, res) => {
                 let updateSql = "UPDATE users SET LAST_LOGIN = NOW() WHERE id = ?";
                 connection.query(updateSql, [user.ID], (err, updateResult) => {
                     if (err) throw err;
+                    
+                     // Create a session for the user
+                     req.session.userId = user.ID;
+                     req.session.userName = user.FULLNAME;
+                     req.session.loggedIn = true;
+
+
                     res.render("loginhome.ejs",{user});
                 });
             } else {
@@ -244,21 +276,26 @@ app.get('/logout', (req, res) => {
 });
 
 app.get('/test', showTables, wrapAsync(async (req, res) => {
-    const sql = "SELECT * FROM aptitude_subject_questions ORDER BY RAND() LIMIT 25"; 
+    if(req.session.userId){
+        const sql = "SELECT * FROM aptitude_subject_questions ORDER BY RAND() LIMIT 25"; 
     
-    // Access the filtered tables from req object
-    // console.log(req.tablesWithQuestions[2].originalTableName);
-
-    // Execute the query for the questions
-    connection.query(sql, (err, results) => {
-        if (err) {
-            let { statusCode = 500, message = "Something went wrong" } = err;
-            return res.render("error.ejs", { statusCode, message });
-        }
-        
-        // Render the questions in the test.ejs template
-        res.render("tests/test.ejs", { questions: results });
-    });
+        // Access the filtered tables from req object
+        // console.log(req.tablesWithQuestions[2].originalTableName);
+    
+        // Execute the query for the questions
+        connection.query(sql, (err, results) => {
+            if (err) {
+                let { statusCode = 500, message = "Something went wrong" } = err;
+                return res.render("error.ejs", { statusCode, message });
+            }
+            
+            // Render the questions in the test.ejs template
+            res.render("tests/test.ejs", { questions: results });
+        });
+    }
+    else{
+        res.redirect('/')
+    }
 }));
 
 
@@ -270,9 +307,9 @@ app.get("/uploadQuestions",wrapAsync(async(req, res ) => {
 
         connection.query(query, (err, results) => {
             if (err) {
-                console.error(err);
-                return res.status(500).send("Error retrieving tables.");
-            }
+                let { statusCode = 500, message = "Something went wrong" } = err;
+                return res.render("error.ejs", { statusCode, message });
+              }
 
             // Filter out unwanted tables
             const filteredTables = results
@@ -306,8 +343,8 @@ app.post('/uploadQuestions', validatequestion , async(req, res) => {
 
         connection.query(query, (err, results) => {
             if (err) {
-                console.error(err);
-                return res.status(500).send("Error retrieving tables.");
+                let { statusCode = 500, message = "Something went wrong" } = err;
+                return res.render("error.ejs", { statusCode, message });
             }
         });
     let data =  req.body;
@@ -316,13 +353,16 @@ app.post('/uploadQuestions', validatequestion , async(req, res) => {
     let val = [data.questionText, data.optionA, data.optionB, data.optionC, data.optionD, data.correctOption, data.difficultyLevel];
     try{
     connection.query(sqlQuery, val,(err,result)=>{
-        if(err) throw err;
+        if (err) {
+            let { statusCode = 500, message = "Something went wrong" } = err;
+            return res.render("error.ejs", { statusCode, message });
+        }
         //res.send("<>alert('successfully uploaded');</script>");
         res.send("successfully uploaded");
     })
     }catch(err){
-        res.send("err in db");
-        console.log(err);
+            let { statusCode = 500, message = "Something went wrong" } = err;
+            return res.render("error.ejs", { statusCode, message });
     }
 });
 
@@ -333,8 +373,8 @@ app.get("/allUsres",wrapAsync(async(req, res ) => {
     
         connection.query(sql, (err, users) => {
             if (err) {
-                console.error("Error fetching aptitude questions:", err);
-                return res.status(500).send("Database error");
+                let { statusCode = 500, message = "Something went wrong" } = err;
+            return res.render("error.ejs", { statusCode, message });
             }
             
             res.render("admin/allUser.ejs", { users });
@@ -374,14 +414,15 @@ app.get("/manageQuestions",wrapAsync(async(req, res ) => {
              tablesWithQuestions = filteredTables.filter(table => table.containsQuestions);
             }catch
             {
-
+                let { statusCode = 500, message = "Something went wrong" } = err;
+            return res.render("error.ejs", { statusCode, message });
             }
         const sql = "SELECT * FROM aptitude_subject_questions"; // Query to select all aptitude questions
     
     connection.query(sql, (err, results) => {
         if (err) {
-            console.error("Error fetching aptitude questions:", err);
-            return res.status(500).send("Database error");
+            let { statusCode = 500, message = "Something went wrong" } = err;
+            return res.render("error.ejs", { statusCode, message });
         }
         
         res.render("admin/manageQuestions.ejs", { questions: results, tables : tablesWithQuestions });
@@ -419,7 +460,8 @@ app.get("/filtermanageQuestions", wrapAsync(async (req, res) => {
              tablesWithQuestions = filteredTables.filter(table => table.containsQuestions);
             }catch
             {
-
+            let { statusCode = 500, message = "Something went wrong" } = err;
+            return res.render("error.ejs", { statusCode, message });
             }
         const { subject, difficulty } = req.query; // Get selected subject (table) and difficulty from the form
         
@@ -445,8 +487,8 @@ app.get("/filtermanageQuestions", wrapAsync(async (req, res) => {
             // Render the manageQuestions page with the filtered questions
             res.render("admin/manageQuestions.ejs", { questions, tables: [] , tables : tablesWithQuestions}); // Pass the filtered questions to the template
         } catch (err) {
-            console.error("Error fetching filtered questions:", err);
-            return res.status(500).send("Database error while fetching filtered questions");
+            let { statusCode = 500, message = "Something went wrong" } = err;
+            return res.render("error.ejs", { statusCode, message });
         }
     } else {
         res.redirect("/adminLogin");
@@ -464,9 +506,8 @@ app.get("/manageQuestions/:id/edit", wrapAsync(async(req,res)=>{
     connection.query(sql,[id], (err, result) => {
         console.log(result);
         if (err) {
-            console.error("Error fetching aptitude questions:", err);
-            console.log(res)
-            return res.status(500).send("Database error");
+            let { statusCode = 500, message = "Something went wrong" } = err;
+            return res.render("error.ejs", { statusCode, message });
         }
         
         res.render("admin/editQuestions.ejs",{result: result[0]});
@@ -499,7 +540,10 @@ app.delete("/manageQuestions/:id",wrapAsync(async(req,res)=>{
      if (req.session && req.session.admin) {     
         let deleteSql = "DELETE FROM aptitude_subject_questions WHERE question_id = ? ";
                 connection.query(deleteSql,[id], (err, deletedResult) => {
-                    if (err) throw err;
+                    if (err) {
+                        let { statusCode = 500, message = "Something went wrong" } = err;
+                        return res.render("error.ejs", { statusCode, message });
+                    }
                     console.log(deletedResult);
                     res.redirect("/manageQuestions");
      });
@@ -586,8 +630,8 @@ app.get("/manageSubjects", wrapAsync(async (req, res) => {
             // Render the view with the tables and difficulty question counts
             res.render("admin/manageSubjects.ejs", { tables: tablesWithQuestions, difficultyCounts: combinedDifficultyCounts });
         } catch (err) {
-            console.error(err);
-            return res.status(500).send("Error retrieving data.");
+            let { statusCode = 500, message = "Something went wrong" } = err;
+            return res.render("error.ejs", { statusCode, message });
         }
     } else {
         res.redirect("/adminLogin");
@@ -604,12 +648,15 @@ app.post('/manageSubjects/delete',validateTableName, wrapAsync(async(req, res) =
         let deleteQuery = "DROP TABLE "+reqData+";";
         try{
             connection.query(deleteQuery, (err,result)=>{
-                if(err) throw err;
+                if (err) {
+                    let { statusCode = 500, message = "Something went wrong" } = err;
+                    return res.render("error.ejs", { statusCode, message });
+                }
                     res.send("deleted successfully")
             })
             }catch(err){
-                res.send("err in db");
-                console.log(err);
+                let { statusCode = 500, message = "Something went wrong" } = err;
+                return res.render("error.ejs", { statusCode, message });
             }
     }
     else{
@@ -625,8 +672,8 @@ app.post('/manageSubjects', wrapAsync(async(req, res) => {
     
     connection.query(query, (err, results) => {
         if (err) {
-            console.error(err);
-            return res.status(500).send("Error retrieving tables.");
+            let { statusCode = 500, message = "Something went wrong" } = err;
+            return res.render("error.ejs", { statusCode, message });
         }
 
         // Convert the array of results into an array of table names
@@ -650,12 +697,15 @@ app.post('/manageSubjects', wrapAsync(async(req, res) => {
                 
                 try {
                     connection.query(createQuery, (err, result) => {
-                        if (err) throw err;
+                        if (err) {
+                            let { statusCode = 500, message = "Something went wrong" } = err;
+                            return res.render("error.ejs", { statusCode, message });
+                        }
                         res.send("Table created successfully");
                     });
                 } catch (err) {
-                    res.status(500).send("Error creating table");
-                    console.log(err);
+                    let { statusCode = 500, message = "Something went wrong" } = err;
+            return res.render("error.ejs", { statusCode, message });
                 }
             } else {
                 res.status(400).send("Invalid data: 'newTable' key is missing");
@@ -671,15 +721,16 @@ app.get('/manageTests', async (req, res) => {
     try{
         connection.query(query, (err, results) => {
             if (err) {
-                console.error(err);
-                return res.status(500).send("Error retrieving tables.");
+                let { statusCode = 500, message = "Something went wrong" } = err;
+                return res.render("error.ejs", { statusCode, message });
             }
             console.log(results[0])
             res.render("admin/manageTests.ejs",{results : results});
         });
     }catch (err) {
-            res.status(500).send("Error creating table");
-            console.log(err);
+            let { statusCode = 500, message = "Something went wrong" } = err;
+            return res.render("error.ejs", { statusCode, message });
+        
         }
       });
 
@@ -692,13 +743,16 @@ app.post('/manageTests/delete',validateTableName, wrapAsync(async(req, res) => {
         let deleteQuery = "DROP TABLE "+reqData+";";
         try{
             connection.query(deleteQuery, (err,result)=>{
-                if(err) throw err;
+                if (err) {
+                    let { statusCode = 500, message = "Something went wrong" } = err;
+                    return res.render("error.ejs", { statusCode, message });
+                }
                     res.send("deleted successfully")
             })
             }catch(err){
-                res.send("err in db");
-                console.log(err);
-            }
+                    let { statusCode = 500, message = "Something went wrong" } = err;
+                    return res.render("error.ejs", { statusCode, message });
+                }
     }
     else{
         res.send("Table not found!");
@@ -712,8 +766,8 @@ app.post('/manageTests', wrapAsync(async(req, res) => {
     
     connection.query(query, (err, results) => {
         if (err) {
-            console.error(err);
-            return res.status(500).send("Error retrieving tables.");
+            let { statusCode = 500, message = "Something went wrong" } = err;
+            return res.render("error.ejs", { statusCode, message });
         }
 
         // Convert the array of results into an array of table names
@@ -734,12 +788,16 @@ app.post('/manageTests', wrapAsync(async(req, res) => {
                 
                 try {
                     connection.query(createQuery, (err, result) => {
-                        if (err) throw err;
+                        if (err) {
+                            let { statusCode = 500, message = "Something went wrong" } = err;
+                            return res.render("error.ejs", { statusCode, message });
+                        }
                         res.send("Table created successfully");
                     });
                 } catch (err) {
-                    res.status(500).send("Error creating table");
-                    console.log(err);
+                        let { statusCode = 500, message = "Something went wrong" } = err;
+                        return res.render("error.ejs", { statusCode, message });
+                    
                 }
             } else {
                 res.status(400).send("Invalid data: 'newTable' key is missing");
@@ -750,12 +808,19 @@ app.post('/manageTests', wrapAsync(async(req, res) => {
 
 
 app.get("/createContest",(req, res ) => {
-     
-    res.render("admin/createContest.ejs");
+    if (req.session && req.session.admin) {     
+        res.render("admin/createContest.ejs");
+    }
+    else{
+        res.redirect("/adminLogin"); 
+    
+    }
 });
 
 
 app.post('/admin/contest/create', (req, res) => {
+    if (req.session && req.session.admin) {     
+    
     const { contestName, date, time, duration, noOfQuestions, details } = req.body;
     // console.log(date)
     const contestNameTable = req.body.contestName.replace(/ /g, "").toLowerCase() + "_contest_questions";
@@ -765,7 +830,6 @@ app.post('/admin/contest/create', (req, res) => {
     
     connection.query(query, [contestName,contestNameTable, date, time, duration, noOfQuestions, details], (error, results) => {
         if (error) {
-            //console.error('Error inserting data:', error);
             const { statusCode = 500, message = "Something went wrong" } = error;
             return res.render("error.ejs", { statusCode, message });
                }
@@ -797,6 +861,11 @@ app.post('/admin/contest/create', (req, res) => {
         const { statusCode = 500, message = "Something went wrong" } = err;
         return res.render("error.ejs", { statusCode, message });
     }
+}
+else{
+    res.redirect("/adminLogin"); 
+
+}
 
 });
 
@@ -881,14 +950,16 @@ const storage = multer.diskStorage({
   }).single('photoId');
   
   app.put('/uploadPhoto/:id', async (req, res) => {
+    if (req.session && req.session.admin) {
+
     // Handle file upload using multer
     let id = req.params.id; // Correctly extract the user ID
 
     upload(req, res, (err) => {
-      if (err) {
-        // Handle any upload errors
-        return res.status(400).send({ message: err.message });
-      }
+        if (err) {
+            let { statusCode = 500, message = "Something went wrong" } = err;
+            return res.render("error.ejs", { statusCode, message });
+          }
       else if(!req.file){
         const updateName = req.body.updateName; 
         
@@ -913,7 +984,6 @@ const storage = multer.diskStorage({
         const updateSql = "UPDATE users SET userImage = ?, FULLNAME = ? WHERE id = ?";
         connection.query(updateSql, [imagePath, updateName, id], (err, updateResult) => {
           if (err) {
-            // Error handling for SQL query
             let { statusCode = 500, message = "Something went wrong" } = err;
             return res.render("error.ejs", { statusCode, message });
           }
@@ -923,17 +993,18 @@ const storage = multer.diskStorage({
         });
       }
     });
+}
+else{
+    res.redirect("/adminLogin"); 
+}
   });
   
 app.get("*", (req, res , next) => {
     next(new ExpressError(404,"Page not found"));
 });
-
-
-app.use((err, req, res )=>{
+app.use((err, req, res,next )=>{
     let {statusCode=500 , message="Something went wrong"} = err;
     res.render("error.ejs",{statusCode , message})
-    // res.status(statusCode).send(message);
 });
 
 app.listen(8080,()=>{
