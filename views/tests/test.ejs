@@ -599,32 +599,30 @@
             if(Response[0] === Response[1]) {
                 count += 1;
             }
-            //console.log(count) // have all questions response
         }
         
         // Finish button
         document.getElementById('finishButton').addEventListener('click', () => {
-            document.getElementById('finalSubmit').click()
+            //document.getElementById('finalSubmit').click()
             document.querySelector('.container').style.display = "none";
             document.querySelector('#previewBox').style.display = "none";
             document.querySelector('header').style.display = "none";
             document.querySelector('#displayResultBox').style.display = "flex";
 
             // Finding percentage of passing mark
-            let passNum = Math.round(((60/100) * questions.length));
-            console.log(passNum)
-            console.log(((70/100) * questions.length))
+            let passPercentage = Math.round((count/questions.length) * 100);
+            //console.log(passPercentage)
 
             // Checking pass and fail
-            if(count >= passNum) {
+            if(passPercentage >= 60) {
                 document.getElementById('resultStatus').innerHTML = "Your result is : Pass";
                 document.getElementById('resultStatus').style.color = "#05aa4f";
-                document.getElementById('score').innerHTML = "You have score "+passNum+" out of "+questions.length+".";
+                document.getElementById('score').innerHTML = "You have score "+count+" out of "+questions.length+".";
                 document.getElementById('score').style.color = "#05aa4f";
             } else {
                 document.getElementById('resultStatus').innerHTML = "Your result is : Fail";
                 document.getElementById('resultStatus').style.color = "red";
-                document.getElementById('score').innerHTML = "You have score "+passNum+" out of "+questions.length+".";
+                document.getElementById('score').innerHTML = "You have score "+count+" out of "+questions.length+".";
                 document.getElementById('score').style.color = "red";
             }
         })
