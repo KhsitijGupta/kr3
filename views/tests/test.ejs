@@ -223,6 +223,7 @@
             height: 85vh;
             padding: 2%;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
         }
@@ -363,6 +364,7 @@
             </div>
             <button id="finalSubmit">Submit</button>
         </div>
+        <p id="submitMessage" style="color: #05aa4f; margin-top: 40px;"></p>
     </section>
     <section id="displayResultBox" style="display: none;">
         <div class="resultContainer">
@@ -374,19 +376,24 @@
             <button id="backHomeBtn">Back to home</button>
         </div>
     </section>
-    <!-- <script>
-            // This event triggers when the user tries to leave or reload the page
-            window.addEventListener("beforeunload", function (event) {
-                // Prevent the default behavior (leaving/reloading the page)
-                event.preventDefault();
-                
-                // Chrome requires setting the returnValue property for this to work
-                event.returnValue = "Are you sure you want to leave this page?";
-            });
-        
-    </script> -->
-
     <script>
+        window.addEventListener('load', () => {
+            // Clear session when user reload the page
+            sessionStorage.clear()
+
+            // Display the first question on page load
+            displayQuestion();
+        });
+
+         // This event triggers when the user tries to leave or reload the page
+         window.addEventListener("beforeunload", function (event) {
+            // Prevent the default behavior (leaving/reloading the page)
+            event.preventDefault();
+            
+            // Chrome requires setting the returnValue property for this to work
+            event.returnValue = "Are you sure you want to leave this page?";
+        });
+
         // Test info handle
         document.getElementById('testInfoBtn').addEventListener('click', () => {
             document.getElementById('testInfoBox').style.display = "none";
@@ -400,6 +407,7 @@
                 document.getElementById('testInstructionBox').style.display = "none";
                 document.querySelector('.container').style.display = "block";
                 document.querySelector('header').style.display = "flex";
+                startTimer();
             }
         })
 
@@ -523,28 +531,29 @@
         }
 
         // Timer function
-        function startTimer(duration, display) {
+        function setTimer(duration, display) {
             var timer = duration, minutes, seconds;
-            setInterval(function () {
+            const myInterval = setInterval(function () {
                 minutes = parseInt(timer / 60, 10);
                 seconds = parseInt(timer % 60, 10);
                 minutes = minutes < 10 ? "0" + minutes : minutes;
                 seconds = seconds < 10 ? "0" + seconds : seconds;
                 display.textContent = minutes + ":" + seconds;
-                if (--timer < 0) {
+                if(timer == 0) {
+                    // auto save user response after timeout
+                    document.getElementById('finishButton').click();
+                    clearInterval(myInterval);
+                } else if (--timer < 0) {
                     timer = 0;
                 }
             }, 1000);
         }
 
-        window.onload = function () {
+        function startTimer() {
             // Initialize the timer for 30 minutes
-            var thirtyMinutes = 60 * 30,
+            var thirtyMinutes = 60 * parseInt(document.getElementById('timer').innerHTML),
                 display = document.querySelector('#timer');
-            startTimer(thirtyMinutes, display);
-
-            // Display the first question on page load
-            displayQuestion();
+            setTimer(thirtyMinutes, display);
         };
 
         function showQuestion(questionNumber) {
@@ -578,20 +587,25 @@
             document.querySelector('#previewBox').style.display = "flex";
         }
 
+        // Function to submit user response to session storage
+        function setResponse() {
+            let allQuestionId = Object.keys(sessionStorage); // have all questions id
+            let allUserResponse = [];
+            allQuestionId.map((currQuesId) => {
+                allUserResponse.push([sessionStorage.getItem(currQuesId)])
+            })
+            for(i=0; i < allUserResponse.length; i++) {
+                result(allUserResponse[i][0].split(','))
+            }
+        }
+
         // Final submission 
         document.getElementById('finalSubmit').addEventListener('click', () => {
             let surity = confirm("Are you sure for final submission!");
             if(surity) {
-                let allQuestionId = Object.keys(sessionStorage); // have all questions id
-                let allUserResponse = [];
-                allQuestionId.map((currQuesId) => {
-                    allUserResponse.push([sessionStorage.getItem(currQuesId)])
-                })
-                for(i=0; i < allUserResponse.length; i++) {
-                    result(allUserResponse[i][0].split(','))
-                }
+                setResponse();
+                document.getElementById('submitMessage').innerHTML = "Your response submitted successfully."
             }
-
         })
 
         let count = 0;
@@ -603,7 +617,7 @@
         
         // Finish button
         document.getElementById('finishButton').addEventListener('click', () => {
-            //document.getElementById('finalSubmit').click()
+            setResponse();
             document.querySelector('.container').style.display = "none";
             document.querySelector('#previewBox').style.display = "none";
             document.querySelector('header').style.display = "none";
@@ -625,11 +639,11 @@
                 document.getElementById('score').innerHTML = "You have score "+count+" out of "+questions.length+".";
                 document.getElementById('score').style.color = "red";
             }
+            sessionStorage.clear();
         })
 
         // Send back to home page
         document.getElementById('backHomeBtn').addEventListener('click', () => {
-            sessionStorage.clear()
             window.location.replace('/');
         });
     </script>
