@@ -295,19 +295,19 @@
                     <h3 class="question-title"><%= question.question_text %></h3>
                     <ul class="options">
                         <li class="option">
-                            <input type="radio" id="optionA<%=question.question_id%>" name="option" value="A">
+                            <input class="inpOpt" type="radio" id="optionA<%=question.question_id%>" name="option<%=question.question_id%>" value="A">
                             <label for="optionA<%=question.question_id%>"><%= question.option_a %></label>
                         </li>
                         <li class="option">
-                            <input type="radio" id="optionB<%=question.question_id%>" name="option" value="B">
+                            <input class="inpOpt" type="radio" id="optionB<%=question.question_id%>" name="option<%=question.question_id%>" value="B">
                             <label for="optionB<%=question.question_id%>"><%= question.option_b %></label>
                         </li>
                         <li class="option">
-                            <input type="radio" id="optionC<%=question.question_id%>" name="option" value="C">
+                            <input class="inpOpt" type="radio" id="optionC<%=question.question_id%>" name="option<%=question.question_id%>" value="C">
                             <label for="optionC<%=question.question_id%>"><%= question.option_c %></label>
                         </li>
                         <li class="option">
-                            <input type="radio" id="optionD<%=question.question_id%>" name="option" value="D">
+                            <input class="inpOpt" type="radio" id="optionD<%=question.question_id%>" name="option<%=question.question_id%>" value="D">
                             <label for="optionD<%=question.question_id%>"><%= question.option_d %></label>
                         </li>
                         <li class="option" style="display:none;">
@@ -432,7 +432,7 @@
 
         if (selectedOption) {
             // Find the option and select it
-            const options = document.querySelectorAll(`#question-${currentQuestionIndex + 1} [name="option"]`);
+            const options = document.querySelectorAll(`#question-${currentQuestionIndex + 1} .inpOpt`);
             options.forEach(option => {
                 if (option.value[0] === selectedOption) {
                     option.checked = true;
@@ -559,7 +559,7 @@
         // Function to add user response in Session Storage
         function addOptionSessionStorage(questionIndex) {
             // Finding selected user response
-            const options = document.querySelectorAll(`#question-${questionIndex} [name='option']`);
+            const options = document.querySelectorAll(`#question-${questionIndex} .inpOpt`);
             // Finding question id which is currently displayed on the screen
             const questionID = document.querySelector(`#question-${questionIndex} #questionID`).textContent;
             const correct_option = document.querySelector(`#question-${questionIndex} #correct_option${questionID}`);
@@ -632,7 +632,7 @@
         // Send back to home page
         document.getElementById('backHomeBtn').addEventListener('click', () => {
             sessionStorage.clear()
-            window.location.replace('/login');
+            window.location.replace('/');
         });
     </script>
 </body>
