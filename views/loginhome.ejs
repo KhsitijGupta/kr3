@@ -58,7 +58,7 @@
                                 </div>
                             </div>
                             <button class="update-button" id="updateProfile">Update Profile</button>
-                            <a href="/"><button class="exit-button" id="exitButton">Exit <i class="fas fa-sign-out-alt"></i></button></a>
+                            <a href="/userlogout"><button class="exit-button" id="exitButton">Exit <i class="fas fa-sign-out-alt"></i></button></a>
                         </div>
                         <!-- Profile Update Section -->
                         <div id="profileUpdate" class="active my-2 d-none">
@@ -285,6 +285,24 @@
           // Open WhatsApp link in a new tab
           window.open(whatsappLink, '_blank');
         }
-        </script>
+
+
+// Function to check if the user is logged in by checking 'loggedIn' in localStorage
+function isLoggedIn() {
+    console.log(sessionStorage.getItem(userId));
+    return sessionStorage.getItem(userId) !== null  // Check if it's set to true
+    // If you're using sessionStorage:
+    // return sessionStorage.getItem('authToken') !== null;
+}
+
+// Example usage
+if (isLoggedIn()) {
+    console.log("User is logged in");
+} else {
+    console.log("User is not logged in");
+}
+
+        
+    </script>
 </body>
 </html>

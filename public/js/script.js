@@ -72,7 +72,7 @@ document.getElementById('updateProfile').addEventListener('click', function() {
 
 document.getElementById('exitButton').addEventListener('click', function() {
     window.close(); // Close the window (won't work in most modern browsers)
-    alert('Exit button clicked!'); // Fallback alert
+    alert('User Logout!'); // Fallback alert
 });
 
 // Profile Toggler controler
