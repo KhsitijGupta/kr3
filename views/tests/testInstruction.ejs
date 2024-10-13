@@ -2,7 +2,7 @@
     <div class="resultContainer">
         <h2>Test Informations:</h2>
         <ol style="padding: 20px 40px; line-height: 25px;">
-            <li>There are total 25 questions.</li>
+            <li>There are total <%= questions.length %> questions.</li>
             <li>All questions are compulsory.</li>
             <li>Need at least 60% to clear test.</li>
             <li>Each questions carry equal mark.</li>
@@ -18,9 +18,9 @@
     <div class="resultContainer">
         <h3>Test Instruction:</h3>
         <ol style="padding: 20px 40px; line-height: 25px;">
-            <li>Please submit your response before finsih. Otherwise response not submitted.</li>
-            <li>Please finish the test before timeout otherwise response not submitted.</li>
-            <li>Do not reload the page otherwise you are out from test.</li>
+            <li>Please submit your response before finsih.</li>
+            <li>Please finish the test before timeout.</li>
+            <li>Do not reload the page otherwise your test will be restarted.</li>
             <li>Do not switch tabs till test ended otherwise you are out from test.</li>
         </ol>
         <button id="testInstructionBtn">Start Test</button>

@@ -600,10 +600,12 @@
         }
 
         // Final submission 
+        let isClicked;
         document.getElementById('finalSubmit').addEventListener('click', () => {
             let surity = confirm("Are you sure for final submission!");
             if(surity) {
                 setResponse();
+                isClicked = "clicked";
                 document.getElementById('submitMessage').innerHTML = "Your response submitted successfully."
             }
         })
@@ -617,7 +619,10 @@
         
         // Finish button
         document.getElementById('finishButton').addEventListener('click', () => {
-            setResponse();
+            // checking submit btn clicked or not by user during submission
+            if(isClicked != "clicked"){
+                setResponse();
+            }
             document.querySelector('.container').style.display = "none";
             document.querySelector('#previewBox').style.display = "none";
             document.querySelector('header').style.display = "none";
