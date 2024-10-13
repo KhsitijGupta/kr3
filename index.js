@@ -412,21 +412,20 @@ app.get("/manageQuestions",wrapAsync(async(req, res ) => {
             
             // Filter tables containing 'questions'
              tablesWithQuestions = filteredTables.filter(table => table.containsQuestions);
-            }catch
-            {
-                let { statusCode = 500, message = "Something went wrong" } = err;
-            return res.render("error.ejs", { statusCode, message });
-            }
-        const sql = "SELECT * FROM aptitude_subject_questions"; // Query to select all aptitude questions
-    
-    connection.query(sql, (err, results) => {
-        if (err) {
+        } catch {
             let { statusCode = 500, message = "Something went wrong" } = err;
             return res.render("error.ejs", { statusCode, message });
         }
-        
-        res.render("admin/manageQuestions.ejs", { questions: results, tables : tablesWithQuestions });
-    });
+
+        const sql = "SELECT * FROM aptitude_subject_questions"; // Query to select all aptitude questions
+        connection.query(sql, (err, results) => {
+            if (err) {
+                let { statusCode = 500, message = "Something went wrong" } = err;
+                return res.render("error.ejs", { statusCode, message });
+            }
+            
+            res.render("admin/manageQuestions.ejs", { questions: results, tables : tablesWithQuestions });
+        });
     } else {
         res.redirect("/adminLogin"); 
     }
