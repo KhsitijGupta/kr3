@@ -275,6 +275,57 @@ app.get('/logout', (req, res) => {
     });
 });
 
+app.get('/contest', wrapAsync(async (req, res) => {
+    if(req.session.userId){
+        let ContestTableName;
+        // Getting today date
+        let todayDate = new Date(Date.now()).toLocaleDateString('en-CA');
+        
+        const sqlQuery = `SELECT * FROM admin_contest WHERE Date = '${todayDate}';`
+        try{
+            const tablesResults = await new Promise((resolve, reject) => {
+                connection.query(sqlQuery, (err, results) => {
+                    if (err) reject(err); // if id is not available then throw err
+                    else resolve(results);
+                });
+            });
+
+            const nextQuery = `SELECT Date FROM admin_contest WHERE Date > '${todayDate}';`
+            const nextContest = await new Promise((resolve, reject) => {
+                connection.query(nextQuery, (err, results) => {
+                    if (err) reject(err); // if id is not available then throw err
+                    else resolve(results);
+                });
+            });
+
+            ContestTableName = tablesResults[0];
+            if (ContestTableName == null){
+               return res.render("alert.ejs",{message: "Next contest is on: "+nextContest[0].Date.toDateString()});
+            }
+            
+        } catch(err) {
+            //let { statusCode = 500, message = "Something went wrong" } = ;
+            //return res.render("error.ejs", { statusCode:200 , message: "Today, No any contest available" }); // render on alert.
+        }
+
+        const sql = "SELECT * FROM "+ContestTableName.ContestNameTable+" ORDER BY RAND() LIMIT 25"; 
+    
+        // Execute the query for the questions
+        connection.query(sql, (err, results) => {
+            if (err) {
+                let { statusCode = 500, message = "Something went wrong" } = err;
+                return res.render("error.ejs", { statusCode, message });
+            }
+        
+            // Render the questions in the test.ejs template
+            res.render("tests/test.ejs", { questions: results });
+        });
+    }
+    else{
+        res.redirect('/')
+    }
+}));
+
 app.get('/test', showTables, wrapAsync(async (req, res) => {
     if(req.session.userId){
         const sql = "SELECT * FROM aptitude_subject_questions ORDER BY RAND() LIMIT 25"; 
