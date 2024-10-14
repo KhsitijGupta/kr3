@@ -280,8 +280,38 @@ app.get('/contest', wrapAsync(async (req, res) => {
         let ContestTableName;
         // Getting today date
         let todayDate = new Date(Date.now()).toLocaleDateString('en-CA');
+        // Getting today Time
+        let todayTime = new Date(Date.now()).toLocaleTimeString('en-US', { hour12: false });
+
+        const getTimeQuery = `SELECT * FROM admin_contest WHERE Date = '${todayDate}' and Time < '${todayTime}';`
+        const timeResults = await new Promise((resolve, reject) => {
+            connection.query(getTimeQuery, (err, results) => {
+                if (err) reject(err); // if id is not available then throw err
+                else resolve(results);
+            });
+        });
+
+        let stopEntryTime = addTime(timeResults[0].Time)
         
-        const sqlQuery = `SELECT * FROM admin_contest WHERE Date = '${todayDate}';`
+        function addTime(requiredTime) { // requiredTime must contain Time in this formate 17:34:45
+            let formateTime = requiredTime.split(":")
+            let EntryTime=[];
+            
+            if((parseInt(formateTime[1]) + 15) >= 60){
+                formateTime[0] = parseInt(formateTime[0]) + 1;
+                formateTime[1] = (parseInt(formateTime[1]) + 15) - 60;
+            } else {
+                formateTime[1] = parseInt(formateTime[1]) + 15;
+            }
+            EntryTime = [`${formateTime[0] }`,`${formateTime[1] }`,`${formateTime[2] }`];
+            let stopEntryTime = EntryTime.join(":");
+            return stopEntryTime;
+        }
+        // console.log(timeResults[0].Duration)
+        
+        // console.log(addTime(todayTime))
+        
+        const sqlQuery = `SELECT * FROM admin_contest WHERE Date = '${todayDate}' and Time < '${todayTime}' and '${todayTime}' < '${stopEntryTime}';`
         try{
             const tablesResults = await new Promise((resolve, reject) => {
                 connection.query(sqlQuery, (err, results) => {
@@ -290,7 +320,7 @@ app.get('/contest', wrapAsync(async (req, res) => {
                 });
             });
 
-            const nextQuery = `SELECT Date FROM admin_contest WHERE Date > '${todayDate}';`
+            const nextQuery = `SELECT * FROM admin_contest WHERE Date >= '${todayDate}' and Time > '${stopEntryTime}';`
             const nextContest = await new Promise((resolve, reject) => {
                 connection.query(nextQuery, (err, results) => {
                     if (err) reject(err); // if id is not available then throw err
@@ -299,15 +329,16 @@ app.get('/contest', wrapAsync(async (req, res) => {
             });
 
             ContestTableName = tablesResults[0];
-            if (ContestTableName == null){
-               return res.render("alert.ejs",{message: "Next contest is on: "+nextContest[0].Date.toDateString()});
+            
+            if (!ContestTableName){
+                return res.render("alert.ejs",{message: "Next contest is on: "+nextContest[0].Date.toDateString()+" at "+ nextContest[0].Time+" IST"});
             }
             
         } catch(err) {
-            //let { statusCode = 500, message = "Something went wrong" } = ;
-            //return res.render("error.ejs", { statusCode:200 , message: "Today, No any contest available" }); // render on alert.
+            return res.render("alert.ejs",{message: "No any contest sheduled. Please wait till announced! <br> Thankyou!"});
         }
 
+        // console.log(timeResults[0].Duration)
         const sql = "SELECT * FROM "+ContestTableName.ContestNameTable+" ORDER BY RAND() LIMIT 25"; 
     
         // Execute the query for the questions

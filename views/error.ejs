@@ -1,10 +1,11 @@
 <% layout("/layouts/boilerplate") %>
 <div class="container">
-    <div class="row pt-4 text-center">
+    <div class="row py-4 text-center d-flex flex-column align-items-center">
         <h1 class="text-danger display-3 fw-bold">--------------ERROR--------------</h1>
         <div class="alert alert-danger" role="alert">
             <h3>-------------- <%=statusCode%> --------------
                   <br> <%- message %> . . .</h3>
         </div>
+        <button class="btn btn-success w-25" onclick="history.back()">Go back</button>
     </div>
 </div>
