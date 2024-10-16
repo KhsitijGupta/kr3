@@ -1,52 +1,3 @@
-// const express = require("express")
-// const app = express()
-// const path = require("path")
-// const bodyParser = require('body-parser');
-// const methodOverride = require('method-override')
-// const ejsMate = require("ejs-mate")
-// const mysql = require("mysql2");
-// const session = require("express-session");
-// const { log } = require("console");
-// const questionSchema = require("./questionSchema")
-// const deletetableSchema = require("./deletetableSchema")
-// const wrapAsync= require("./utils/wrapAsync.js")
-// const ExpressError = require("./utils/ExpressError.js")
-// const multer = require('multer');
-// const fs = require('fs');
-
-
-// app.use(session({
-//     secret: 'KR3Secret@', // Change this to a strong secret key
-//     resave: false,
-//     saveUninitialized: true,
-//     cookie: { secure: false } // Set 'true' if using https
-// }));
-
-
-// //for delete and put request
-// app.use(methodOverride("_method"))
-// // ejs(html) file linking
-// app.set("views", path.join(__dirname, "views"))
-// app.set("views engine", "ejs")
-// //ejs mate
-// app.engine("ejs",ejsMate)
-// // css file linking
-// app.use(express.static(path.join(__dirname, "public")))
-// app.use(express.urlencoded({ extended: true }))
-
-// // Middleware
-// app.use(bodyParser.urlencoded({ extended: true })); // To handle form data
-// app.use(express.json()); // To handle JSON data 
-
-// // Serve the uploads folder publicly to serve the uploaded files
-// app.use('/uploads', express.static('uploads'));
-
-// const connection=mysql.createConnection({
-//     host: "localhost",
-//     user:"root",
-//     database:"KR3Database",
-//      password:"MYSQL@123"
-//   });
 require('dotenv').config(); // Load environment variables from .env file
 const express = require("express");
 const app = express();
@@ -99,8 +50,7 @@ const connection = mysql.createConnection({
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    port: process.env.DB_PORT            // Default port
-
+    DB_PORT:3306
 });
 
 connection.connect((err) => {
