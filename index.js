@@ -42,10 +42,12 @@ app.use(express.json()); // To handle JSON data
 app.use('/uploads', express.static('uploads'));
 
 const connection=mysql.createConnection({
-    host: "localhost",
+    host: "127.0.0.1",
     user:"root",
     database:"KR3Database",
-     password:"MYSQL@123"
+     password:"MYSQL@123",
+     port: 3306
+
   });
 
 
@@ -1035,7 +1037,7 @@ const storage = multer.diskStorage({
   }).single('photoId');
   
   app.put('/uploadPhoto/:id', async (req, res) => {
-    if (req.session && req.session.admin) {
+    if ( req.session.userId){
 
     // Handle file upload using multer
     let id = req.params.id; // Correctly extract the user ID
