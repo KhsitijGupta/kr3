@@ -1,38 +1,90 @@
-const express = require("express")
-const app = express()
-const path = require("path")
+// const express = require("express")
+// const app = express()
+// const path = require("path")
+// const bodyParser = require('body-parser');
+// const methodOverride = require('method-override')
+// const ejsMate = require("ejs-mate")
+// const mysql = require("mysql2");
+// const session = require("express-session");
+// const { log } = require("console");
+// const questionSchema = require("./questionSchema")
+// const deletetableSchema = require("./deletetableSchema")
+// const wrapAsync= require("./utils/wrapAsync.js")
+// const ExpressError = require("./utils/ExpressError.js")
+// const multer = require('multer');
+// const fs = require('fs');
+
+
+// app.use(session({
+//     secret: 'KR3Secret@', // Change this to a strong secret key
+//     resave: false,
+//     saveUninitialized: true,
+//     cookie: { secure: false } // Set 'true' if using https
+// }));
+
+
+// //for delete and put request
+// app.use(methodOverride("_method"))
+// // ejs(html) file linking
+// app.set("views", path.join(__dirname, "views"))
+// app.set("views engine", "ejs")
+// //ejs mate
+// app.engine("ejs",ejsMate)
+// // css file linking
+// app.use(express.static(path.join(__dirname, "public")))
+// app.use(express.urlencoded({ extended: true }))
+
+// // Middleware
+// app.use(bodyParser.urlencoded({ extended: true })); // To handle form data
+// app.use(express.json()); // To handle JSON data 
+
+// // Serve the uploads folder publicly to serve the uploaded files
+// app.use('/uploads', express.static('uploads'));
+
+// const connection=mysql.createConnection({
+//     host: "localhost",
+//     user:"root",
+//     database:"KR3Database",
+//      password:"MYSQL@123"
+//   });
+require('dotenv').config(); // Load environment variables from .env file
+const express = require("express");
+const app = express();
+const path = require("path");
 const bodyParser = require('body-parser');
-const methodOverride = require('method-override')
-const ejsMate = require("ejs-mate")
+const methodOverride = require('method-override');
+const ejsMate = require("ejs-mate");
 const mysql = require("mysql2");
 const session = require("express-session");
 const { log } = require("console");
-const questionSchema = require("./questionSchema")
-const deletetableSchema = require("./deletetableSchema")
-const wrapAsync= require("./utils/wrapAsync.js")
-const ExpressError = require("./utils/ExpressError.js")
+const questionSchema = require("./questionSchema");
+const deletetableSchema = require("./deletetableSchema");
+const wrapAsync = require("./utils/wrapAsync.js");
+const ExpressError = require("./utils/ExpressError.js");
 const multer = require('multer');
 const fs = require('fs');
 
-
+// Use session configuration with secret from .env
 app.use(session({
-    secret: 'KR3Secret@', // Change this to a strong secret key
+    secret: process.env.SESSION_SECRET, // Loaded from .env
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false } // Set 'true' if using https
+    cookie: { secure: process.env.NODE_ENV === 'production' } // Set 'true' if in production (HTTPS)
 }));
 
+// For delete and put requests
+app.use(methodOverride("_method"));
 
-//for delete and put request
-app.use(methodOverride("_method"))
-// ejs(html) file linking
-app.set("views", path.join(__dirname, "views"))
-app.set("views engine", "ejs")
-//ejs mate
-app.engine("ejs",ejsMate)
-// css file linking
-app.use(express.static(path.join(__dirname, "public")))
-app.use(express.urlencoded({ extended: true }))
+// EJS (HTML) file linking
+app.set("views", path.join(__dirname, "views"));
+app.set("views engine", "ejs");
+
+// EJS Mate
+app.engine("ejs", ejsMate);
+
+// CSS file linking
+app.use(express.static(path.join(__dirname, "public")));
+app.use(express.urlencoded({ extended: true }));
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true })); // To handle form data
@@ -41,14 +93,22 @@ app.use(express.json()); // To handle JSON data
 // Serve the uploads folder publicly to serve the uploaded files
 app.use('/uploads', express.static('uploads'));
 
-const connection=mysql.createConnection({
-    host: "127.0.0.1",
-    user:"root",
-    database:"KR3Database",
-     password:"MYSQL@123",
-     port: 3306
+// MySQL database connection using environment variables
+const connection = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
+});
 
-  });
+connection.connect((err) => {
+    if (err) {
+        console.error('Error connecting to the database:', err);
+        return;
+    }
+    console.log('Connected to the MySQL database');
+});
+
 
 
 const validatequestion=(req ,res ,next)=>{
