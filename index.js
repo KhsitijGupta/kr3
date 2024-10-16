@@ -46,6 +46,7 @@ app.use('/uploads', express.static('uploads'));
 
 // MySQL database connection using environment variables
 const connection = mysql.createConnection({
+    waitForConnections: true,
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
