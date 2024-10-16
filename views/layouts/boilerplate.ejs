@@ -38,10 +38,15 @@
         
           // Define phone number and WhatsApp link
           const phoneNumber = '+919993534374';
-          const whatsappLink = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=Hi%20there%20👋,%0A%0AI'm%20${name}.%0AI%20wanted%20to%20get%20in%20touch%20regarding%20your%20service%20or%20product.%0A%0AHere%20are%20my%20details:%0A%0A📧%20Email:%20${email}%0A💬%20Message:%20${message}.%0A%0AThank%20you%20and%20I%20look%20forward%20to%20hearing%20from%20you%20soon%20😊!`;
-        
+          //const whatsappLink = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=Hi%20there%20👋,%0A%0AI'm%20${name}.%0AI%20wanted%20to%20get%20in%20touch%20regarding%20your%20service%20or%20product.%0A%0AHere%20are%20my%20details:%0A%0A📧%20Email:%20${email}%0A💬%20Message:%20${message}.%0A%0AThank%20you%20and%20I%20look%20forward%20to%20hearing%20from%20you%20soon%20😊!`;
+          const whatsappLink = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(
+            `Hi there 👋,\n\nI'm ${name}.\nI wanted to get in touch regarding your service or product.\n\nHere are my details:\n\n📧 Email: ${email}\n💬 Message: ${message}.\n\nThank you and I look forward to hearing from you soon 😊!`
+          )}`;
+          
           // Open WhatsApp link in a new tab
-          window.open(whatsappLink, '_blank');
+          window.location.href = whatsappLink;
+
+          //window.open(whatsappLink, '_blank');
         }
         </script>
         <script>
