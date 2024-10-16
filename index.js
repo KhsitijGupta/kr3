@@ -45,12 +45,13 @@ app.use(express.json()); // To handle JSON data
 app.use('/uploads', express.static('uploads'));
 
 // MySQL database connection using environment variables
+let databaseName = process.env.DB_NAME;
 const connection = mysql.createConnection({
     waitForConnections: true,
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
+    database: databaseName,
 });
 
 connection.connect((err) => {
@@ -100,7 +101,7 @@ const showTables = async (req, res, next) => {
             // Filter the tables to include only those containing "questions"
             const filteredTables = results
                 .map(table => {
-                    const tableName = table.Tables_in_kr3database;
+                    const tableName = table.Tables_in_+databaseName;
                     const splitTableName = tableName.split('_');
                     const containsQuestions = splitTableName.includes("questions");
 
@@ -416,14 +417,14 @@ app.get("/uploadQuestions",wrapAsync(async(req, res ) => {
             const filteredTables = results
                 .map(table => {
                     // Split the table name by underscore
-                    const splitTableName = table.Tables_in_kr3database.split('_');
+                    const splitTableName = table.Tables_in_+databaseName.split('_');
 
                     // Check if "questions" is part of the split table name
                     const containsQuestions = splitTableName.includes("questions");
 
                     // Return both the original table name and whether it contains "questions"
                     return { 
-                        originalTableName: table.Tables_in_kr3database, 
+                        originalTableName: table.Tables_in_+databaseName, 
                         splitTableName, 
                         containsQuestions 
                     };
@@ -502,10 +503,10 @@ app.get("/manageQuestions",wrapAsync(async(req, res ) => {
             // Process the results from the first query
             const filteredTables = tablesResults
                 .map(table => {
-                    const splitTableName = table.Tables_in_kr3database.split('_');
+                    const splitTableName = table.Tables_in_+databaseName.split('_');
                     const containsQuestions = splitTableName.includes("questions");
                     return { 
-                        originalTableName: table.Tables_in_kr3database, 
+                        originalTableName: table.Tables_in_+databaseName, 
                         splitTableName, 
                         containsQuestions 
                     };
@@ -547,10 +548,10 @@ app.get("/filtermanageQuestions", wrapAsync(async (req, res) => {
             // Process the results from the first query
             const filteredTables = tablesResults
                 .map(table => {
-                    const splitTableName = table.Tables_in_kr3database.split('_');
+                    const splitTableName = table.Tables_in_+databaseName.split('_');
                     const containsQuestions = splitTableName.includes("questions");
                     return { 
-                        originalTableName: table.Tables_in_kr3database, 
+                        originalTableName: table.Tables_in_+databaseName, 
                         splitTableName, 
                         containsQuestions 
                     };
@@ -671,10 +672,10 @@ app.get("/manageSubjects", wrapAsync(async (req, res) => {
             // Process the results from the first query
             const filteredTables = tablesResults
                 .map(table => {
-                    const splitTableName = table.Tables_in_kr3database.split('_');
+                    const splitTableName = table.Tables_in_+databaseName.split('_');
                     const containsQuestions = splitTableName.includes("subject") && splitTableName.includes("questions");
                     return { 
-                        originalTableName: table.Tables_in_kr3database, 
+                        originalTableName: table.Tables_in_+databaseName, 
                         splitTableName, 
                         containsQuestions 
                     };
