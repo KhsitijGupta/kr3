@@ -54,7 +54,7 @@
                             <td><%= user.LAST_LOGIN ? user.LAST_LOGIN.toISOString().slice(0, 10) : 'N/A' %></td>
                             <td><%= user.PAYMENT_MODE %></td>
                             <td><%= user.PLAN %></td>
-                            <td><%= user.REGISTER_DATE.toISOString().slice(0, 19).replace('T', ' ') %></td>
+                            <%= user.REGISTER_DATE ? user.REGISTER_DATE.toISOString().slice(0, 19).replace('T', ' ') : 'N/A' %>
                         </tr>
                     <% }) %>
                 </tbody>
