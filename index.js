@@ -413,18 +413,20 @@ app.get("/uploadQuestions",wrapAsync(async(req, res ) => {
                 return res.render("error.ejs", { statusCode, message });
               }
 
+              let allTables;
             // Filter out unwanted tables
             const filteredTables = results
                 .map(table => {
+                    allTables = "Tables_in_"+databaseName;
                     // Split the table name by underscore
-                    const splitTableName = table.Tables_in_+databaseName.split('_');
+                    const splitTableName = table.allTables.split('_');
 
                     // Check if "questions" is part of the split table name
                     const containsQuestions = splitTableName.includes("questions");
 
                     // Return both the original table name and whether it contains "questions"
                     return { 
-                        originalTableName: table.Tables_in_+databaseName, 
+                        originalTableName: table.allTables, 
                         splitTableName, 
                         containsQuestions 
                     };
