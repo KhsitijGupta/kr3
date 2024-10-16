@@ -99,7 +99,7 @@ const connection = mysql.createConnection({
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    //port: process.env.DB_PORT            // Default port
+    port: process.env.DB_PORT            // Default port
 
 });
 
@@ -1156,9 +1156,8 @@ app.use((err, req, res,next )=>{
     res.render("error.ejs",{statusCode , message})
 });
 
-const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-    console.log(`App is listening on port ${PORT}`);
+app.listen(3000, () => {
+    console.log(`App is listening on port 3000`)
 });
 
