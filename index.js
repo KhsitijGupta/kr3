@@ -45,13 +45,14 @@ app.use(express.json()); // To handle JSON data
 app.use('/uploads', express.static('uploads'));
 
 // MySQL database connection using environment variables
-let databaseName = process.env.DB_NAME;
 const connection = mysql.createConnection({
     waitForConnections: true,
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: databaseName,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT,
+     
 });
 
 connection.connect((err) => {
