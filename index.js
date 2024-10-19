@@ -382,7 +382,7 @@ app.get('/contest', wrapAsync(async (req, res) => {
             // Getting today's date and time
             let todayDate = new Date(Date.now()).toLocaleDateString('en-CA');
             let todayTime = new Date(Date.now()).toLocaleTimeString('en-US', { hour12: false });
-
+console.log(todayTime);
             // Fetching contest time for today or future dates
             const getTimeQuery = `SELECT * FROM admin_contest WHERE Date >= '${todayDate}';`;
             const timeResults = await new Promise((resolve, reject) => {
