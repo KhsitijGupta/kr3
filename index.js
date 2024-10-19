@@ -291,91 +291,193 @@ app.get('/logout', (req, res) => {
     });
 });
 
-app.get('/contest', wrapAsync(async (req, res) => {
-    if(req.session.userId){
-        let ContestTableName;
-        // Getting today date
-        let todayDate = new Date(Date.now()).toLocaleDateString('en-CA');
-        // Getting today Time
-        let todayTime = new Date(Date.now()).toLocaleTimeString('en-US', { hour12: false });
+// app.get('/contest', wrapAsync(async (req, res) => {
+//     if(req.session.userId){
+//         let ContestTableName;
+//         // Getting today date
+//         let todayDate = new Date(Date.now()).toLocaleDateString('en-CA');
+//         // Getting today Time
+//         let todayTime = new Date(Date.now()).toLocaleTimeString('en-US', { hour12: false });
 
-        const getTimeQuery = `SELECT * FROM admin_contest WHERE Date >= '${todayDate}';`
-        const timeResults = await new Promise((resolve, reject) => {
-            connection.query(getTimeQuery, (err, results) => {
-                if (err) reject(err); // if id is not available then throw err
-                else resolve(results);
-            });
-        });
+//         const getTimeQuery = `SELECT * FROM admin_contest WHERE Date >= '${todayDate}';`
+//         const timeResults = await new Promise((resolve, reject) => {
+//             connection.query(getTimeQuery, (err, results) => {
+//                 if (err) reject(err); // if id is not available then throw err
+//                 else resolve(results);
+//             });
+//         });
 
-        // console.log(timeResults[0])
-        if(timeResults[0] !== undefined){
-            let stopEntryTime = addTime(timeResults[0].Time)
-            function addTime(requiredTime) { // requiredTime must contain Time in this formate 17:34:45
-                let formateTime = requiredTime.split(":")
-                let EntryTime=[];
+//         // console.log(timeResults[0])
+//         if(timeResults[0] !== undefined){
+//             let stopEntryTime = addTime(timeResults[0].Time)
+//             function addTime(requiredTime) { // requiredTime must contain Time in this formate 17:34:45
+//                 let formateTime = requiredTime.split(":")
+//                 let EntryTime=[];
                 
-                if((parseInt(formateTime[1]) + 15) >= 60){
-                    formateTime[0] = parseInt(formateTime[0]) + 1;
-                    formateTime[1] = (parseInt(formateTime[1]) + 15) - 60;
-                } else {
-                    formateTime[1] = parseInt(formateTime[1]) + 15;
+//                 if((parseInt(formateTime[1]) + 15) >= 60){
+//                     formateTime[0] = parseInt(formateTime[0]) + 1;
+//                     formateTime[1] = (parseInt(formateTime[1]) + 15) - 60;
+//                 } else {
+//                     formateTime[1] = parseInt(formateTime[1]) + 15;
+//                 }
+//                 EntryTime = [`${formateTime[0] }`,`${formateTime[1] }`,`${formateTime[2] }`];
+//                 let stopEntryTime = EntryTime.join(":");
+//                 return stopEntryTime;
+//             }
+//             // console.log(timeResults[0].Duration)
+            
+//             // console.log(addTime(todayTime))
+            
+//             const sqlQuery = `SELECT * FROM admin_contest WHERE Date = '${todayDate}' and Time < '${todayTime}' and '${todayTime}' < '${stopEntryTime}';`
+//             try{
+//                 const tablesResults = await new Promise((resolve, reject) => {
+//                     connection.query(sqlQuery, (err, results) => {
+//                         if (err) reject(err); // if id is not available then throw err
+//                         else resolve(results);
+//                     });
+//                 });
+//                 // console.log(stopEntryTime)
+//                 const nextQuery = `SELECT * FROM admin_contest WHERE Date >= '${todayDate}' and Time > '${todayTime}';`
+//                 const nextContest = await new Promise((resolve, reject) => {
+//                     connection.query(nextQuery, (err, results) => {
+//                         if (err) reject(err); // if id is not available then throw err
+//                         else resolve(results);
+//                     });
+//                 });
+
+//                 ContestTableName = tablesResults[0];
+                
+//                 if (!ContestTableName){
+//                     return res.render("alert.ejs",{message: "Next contest is on: "+nextContest[0].Date.toDateString()+" at "+ nextContest[0].Time+" IST"});
+//                 }
+                
+//             } catch(err) {
+//                 return res.render("alert.ejs",{message: "No any contest sheduled. Please wait till announced! <br> Thankyou!"});
+//             }
+//         } else {
+//             return res.render("alert.ejs",{message: "No any contest sheduled. Please wait till announced! <br> Thankyou!"});
+//         }
+
+//         // console.log(timeResults[0].Duration)
+//         const sql = "SELECT * FROM "+ContestTableName.ContestNameTable+" ORDER BY RAND() LIMIT 25"; 
+    
+//         // Execute the query for the questions
+//         connection.query(sql, (err, results) => {
+//             if (err) {
+//                 let { statusCode = 500, message = "Something went wrong" } = err;
+//                 return res.render("error.ejs", { statusCode, message });
+//             }
+        
+//             // Render the questions in the test.ejs template
+//             res.render("tests/test.ejs", { questions: results });
+//         });
+//     }
+//     else{
+//         res.redirect('/')
+//     }
+// }));
+app.get('/contest', wrapAsync(async (req, res) => {
+    if (req.session.userId) {
+        try {
+            // Getting today's date and time
+            let todayDate = new Date(Date.now()).toLocaleDateString('en-CA');
+            let todayTime = new Date(Date.now()).toLocaleTimeString('en-US', { hour12: false });
+
+            // Fetching contest time for today or future dates
+            const getTimeQuery = `SELECT * FROM admin_contest WHERE Date >= '${todayDate}';`;
+            const timeResults = await new Promise((resolve, reject) => {
+                connection.query(getTimeQuery, (err, results) => {
+                    if (err) reject(err); 
+                    else resolve(results);
+                });
+            });
+
+            // If contest data exists
+            if (timeResults[0] !== undefined) {
+                let stopEntryTime = addTime(timeResults[0].Time);
+
+                // Function to add 15 minutes to the contest time
+                function addTime(requiredTime) {
+                    let formattedTime = requiredTime.split(":");
+                    let entryTime = [];
+
+                    if ((parseInt(formattedTime[1]) + 15) >= 60) {
+                        formattedTime[0] = parseInt(formattedTime[0]) + 1;
+                        formattedTime[1] = (parseInt(formattedTime[1]) + 15) - 60;
+                    } else {
+                        formattedTime[1] = parseInt(formattedTime[1]) + 15;
+                    }
+
+                    entryTime = [`${formattedTime[0]}`, `${formattedTime[1]}`, `${formattedTime[2]}`];
+                    return entryTime.join(":");
                 }
-                EntryTime = [`${formateTime[0] }`,`${formateTime[1] }`,`${formateTime[2] }`];
-                let stopEntryTime = EntryTime.join(":");
-                return stopEntryTime;
-            }
-            // console.log(timeResults[0].Duration)
-            
-            // console.log(addTime(todayTime))
-            
-            const sqlQuery = `SELECT * FROM admin_contest WHERE Date = '${todayDate}' and Time < '${todayTime}' and '${todayTime}' < '${stopEntryTime}';`
-            try{
+
+                // Query to check if the current time is within the contest window
+                const sqlQuery = `SELECT * FROM admin_contest WHERE Date = '${todayDate}' 
+                                  AND Time < '${todayTime}' 
+                                  AND '${todayTime}' < '${stopEntryTime}';`;
+
                 const tablesResults = await new Promise((resolve, reject) => {
                     connection.query(sqlQuery, (err, results) => {
-                        if (err) reject(err); // if id is not available then throw err
-                        else resolve(results);
-                    });
-                });
-                // console.log(stopEntryTime)
-                const nextQuery = `SELECT * FROM admin_contest WHERE Date >= '${todayDate}' and Time > '${todayTime}';`
-                const nextContest = await new Promise((resolve, reject) => {
-                    connection.query(nextQuery, (err, results) => {
-                        if (err) reject(err); // if id is not available then throw err
+                        if (err) reject(err); 
                         else resolve(results);
                     });
                 });
 
-                ContestTableName = tablesResults[0];
-                
-                if (!ContestTableName){
-                    return res.render("alert.ejs",{message: "Next contest is on: "+nextContest[0].Date.toDateString()+" at "+ nextContest[0].Time+" IST"});
+                // If no contest is found, get the next available contest
+                if (!tablesResults[0]) {
+                    const nextQuery = `SELECT * FROM admin_contest WHERE Date >= '${todayDate}' 
+                                       AND Time > '${todayTime}' LIMIT 1;`;
+
+                    const nextContest = await new Promise((resolve, reject) => {
+                        connection.query(nextQuery, (err, results) => {
+                            if (err) reject(err);
+                            else resolve(results);
+                        });
+                    });
+
+                    if (nextContest[0]) {
+                        return res.render("alert.ejs", {
+                            message: `Next contest is on: ${new Date(nextContest[0].Date).toDateString()} at ${nextContest[0].Time} IST`
+                        });
+                    } else {
+                        return res.render("alert.ejs", {
+                            message: "No contests are scheduled. Please wait until announced. Thank you!"
+                        });
+                    }
                 }
-                
-            } catch(err) {
-                return res.render("alert.ejs",{message: "No any contest sheduled. Please wait till announced! <br> Thankyou!"});
-            }
-        } else {
-            return res.render("alert.ejs",{message: "No any contest sheduled. Please wait till announced! <br> Thankyou!"});
-        }
 
-        // console.log(timeResults[0].Duration)
-        const sql = "SELECT * FROM "+ContestTableName.ContestNameTable+" ORDER BY RAND() LIMIT 25"; 
-    
-        // Execute the query for the questions
-        connection.query(sql, (err, results) => {
-            if (err) {
-                let { statusCode = 500, message = "Something went wrong" } = err;
-                return res.render("error.ejs", { statusCode, message });
+                // Fetch contest questions if a contest is available
+                let contestTableName = tablesResults[0].ContestNameTable;
+                const sql = `SELECT * FROM ${contestTableName} ORDER BY RAND() LIMIT 25`;
+
+                connection.query(sql, (err, results) => {
+                    if (err) {
+                        return res.render("error.ejs", {
+                            statusCode: 500,
+                            message: "Error fetching contest questions. Please try again later."
+                        });
+                    }
+                    res.render("tests/test.ejs", { questions: results });
+                });
+
+            } else {
+                return res.render("alert.ejs", {
+                    message: "No contests are scheduled. Please wait until announced. Thank you!"
+                });
             }
-        
-            // Render the questions in the test.ejs template
-            res.render("tests/test.ejs", { questions: results });
-        });
-    }
-    else{
-        res.redirect('/')
+
+        } catch (err) {
+            return res.render("error.ejs", {
+                statusCode: 500,
+                message: "An unexpected error occurred. Please try again later."
+            });
+        }
+    } else {
+        res.redirect('/');
     }
 }));
+
 
 app.get('/test', showTables, wrapAsync(async (req, res) => {
     if(req.session.userId){
