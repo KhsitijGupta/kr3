@@ -380,8 +380,10 @@ app.get('/contest', wrapAsync(async (req, res) => {
     if (req.session.userId) {
         try {
             // Getting today's date and time
-            let todayDate = new Date(Date.now()).toLocaleDateString('en-CA');
-            let todayTime = new Date(Date.now()).toLocaleTimeString('en-US', { hour12: false });
+            let todayDate = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+            let todayTime = new Date().toLocaleTimeString('en-US', { hour12: false, timeZone: 'Asia/Kolkata' });
+            // let todayDate = new Date(Date.now()).toLocaleDateString('en-CA');
+            // let todayTime = new Date(Date.now()).toLocaleTimeString('en-US', { hour12: false });
 console.log(todayTime);
             // Fetching contest time for today or future dates
             const getTimeQuery = `SELECT * FROM admin_contest WHERE Date >= '${todayDate}';`;
