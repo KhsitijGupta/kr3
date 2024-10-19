@@ -296,7 +296,7 @@ app.get('/contest', wrapAsync(async (req, res) => {
         let ContestTableName;
         // Getting today date
         // let todayDate = new Date(Date.now()).toLocaleDateString('en-CA');
-         let todayDate = new Date().toLocaleDateString('en-US', { timeZone: 'Asia/Kolkata' });
+         let todayDate = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
         // Getting today Time
         let todayTime = new Date().toLocaleTimeString('en-US', { hour12: false, timeZone: 'Asia/Kolkata' });
         //let todayTime = new Date(Date.now()).toLocaleTimeString('en-US', { hour12: false });
