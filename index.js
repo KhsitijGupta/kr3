@@ -328,7 +328,7 @@ app.get('/contest', wrapAsync(async (req, res) => {
             
             // console.log(addTime(todayTime))
             
-            const sqlQuery = `SELECT * FROM admin_contest WHERE Date = '${todayDate}' and Time < '${todayTime}' and '${todayTime}' < '${stopEntryTime}';`
+            const sqlQuery = `SELECT * FROM admin_contest WHERE Date = '${todayDate}' and Time <= '${todayTime}' and '${todayTime}' < '${stopEntryTime}';`
             try{
                 const tablesResults = await new Promise((resolve, reject) => {
                     connection.query(sqlQuery, (err, results) => {
@@ -337,7 +337,7 @@ app.get('/contest', wrapAsync(async (req, res) => {
                     });
                 });
                 // console.log(stopEntryTime)
-                const nextQuery = `SELECT * FROM admin_contest WHERE Date >= '${todayDate}' and Time > '${todayTime}';`
+                const nextQuery = `SELECT * FROM admin_contest WHERE Date >= '${todayDate}' and Time => '${todayTime}';`
                 const nextContest = await new Promise((resolve, reject) => {
                     connection.query(nextQuery, (err, results) => {
                         if (err) reject(err); // if id is not available then throw err
