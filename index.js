@@ -60,7 +60,7 @@ connection.connect((err) => {
         return;
     }
 
-    console.log('Connected to the MySQL database');
+    console.log('Connected to the database');
 });
 
 
