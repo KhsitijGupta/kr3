@@ -56,8 +56,8 @@ const connection = mysql.createConnection({
 
 connection.connect((err) => {
     if (err) {
-        console.error('Error connecting to the database:', err);
-        return;
+        let { statusCode = 500, message = "Something went wrong" } = err;
+        return res.render("error.ejs", { statusCode, message });
     }
 
     console.log('Connected to the database');
@@ -68,8 +68,8 @@ connection.connect((err) => {
 const validatequestion=(req ,res ,next)=>{
     let {error} = questionSchema.validate(req.body);
         if(error){
-            let errmsg = error.details.map((el)=>el.message).join(",");
-            res.send(errmsg)
+            let { statusCode = 500, message = "Something went wrong" } = err;
+                return res.render("error.ejs", { statusCode, message });
         }
         else{
             next();
@@ -78,8 +78,8 @@ const validatequestion=(req ,res ,next)=>{
 const validateTableName=(req ,res ,next)=>{
     let {error} = deletetableSchema.validate(req.body);
         if(error){
-            let errmsg = error.details.map((el)=>el.message).join(",");
-            res.send(errmsg)
+            let { statusCode = 500, message = "Something went wrong" } = error;
+                return res.render("error.ejs", { statusCode, message });
         }
         else{
             next();
@@ -94,8 +94,8 @@ const showTables = async (req, res, next) => {
         // Execute the query to get the tables
         connection.query(query, (err, results) => {
             if (err) {
-                console.error("Error retrieving tables:", err);
-                return res.status(500).send("Error retrieving tables.");
+                let { statusCode = 500, message = "Something went wrong" } = err;
+                return res.render("error.ejs", { statusCode, message });
             }
 
             // Filter the tables to include only those containing "questions"
@@ -130,8 +130,8 @@ app.get("/",(req,res)=>{
     let sql = "SELECT * FROM users WHERE Id = ?";
     connection.query(sql, req.session.userId , (err, result) => {
         if (err) {
-            console.log(err);
-            return res.status(500).send("Database error");
+            let { statusCode = 500, message = "Something went wrong" } = err;
+                return res.render("error.ejs", { statusCode, message });
         }
 
         if (result.length > 0) {
@@ -148,8 +148,8 @@ app.get("/",(req,res)=>{
 app.get('/userlogout', (req, res) => {
     req.session.destroy((err) => {
         if (err) {
-            return res.status(500).send('Failed to logout');
-        }
+            let { statusCode = 500, message = "Something went wrong" } = err;
+            return res.render("error.ejs", { statusCode, message });        }
         res.redirect('/'); 
     });
 });
