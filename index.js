@@ -328,7 +328,7 @@ app.get('/contest', wrapAsync(async (req, res) => {
             
             // console.log(addTime(todayTime))
             
-            const sqlQuery = `SELECT * FROM admin_contest WHERE Date = '${todayDate}' and Time <= '${todayTime}' and '${todayTime}' < '${stopEntryTime}';`
+            const sqlQuery = `SELECT * FROM admin_contest WHERE Date = '${todayDate}' and Time < '${todayTime}' and '${todayTime}' < '${stopEntryTime}';`
             try{
                 const tablesResults = await new Promise((resolve, reject) => {
                     connection.query(sqlQuery, (err, results) => {
