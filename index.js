@@ -325,7 +325,7 @@ app.get('/contest', wrapAsync(async (req, res) => {
                 return stopEntryTime;
             }
             // console.log(timeResults[0].Duration)
-            
+            // console.log(addTime(todayTime))
             // console.log(addTime(todayTime))
             
             const sqlQuery = `SELECT * FROM admin_contest WHERE Date = '${todayDate}' and Time < '${todayTime}' and '${todayTime}' < '${stopEntryTime}';`
