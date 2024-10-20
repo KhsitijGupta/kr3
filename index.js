@@ -195,8 +195,8 @@ app.post('/login',wrapAsync(async(req, res) => {
 
     connection.query(sql, values, (err, result) => {
         if (err) {
-            console.log(err);
-            return res.status(500).send("Database error");
+           let { statusCode = 500, message = "Something went wrong" } = err;
+                return res.render("error.ejs", { statusCode, message });
         }
 
         if (result.length > 0) {
@@ -204,10 +204,13 @@ app.post('/login',wrapAsync(async(req, res) => {
             // console.log(user.FULLNAME)
             if (user.PASSWORD === data.password) {
              let todayTime = new Date().toLocaleTimeString('en-US', { hour12: false, timeZone: 'Asia/Kolkata' });
-
+            console.log(todayTime)
                 let updateSql = "UPDATE users SET LAST_LOGIN = ? WHERE id = ?";
                 connection.query(updateSql, [todayTime,user.ID], (err, updateResult) => {
-                    if (err) throw err;
+                    if (err) {
+                        let { statusCode = 500, message = "Something went wrong" } = err;
+                return res.render("error.ejs", { statusCode, message });
+                    };
                     
                      // Create a session for the user
                      req.session.userId = user.ID;
