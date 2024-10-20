@@ -203,8 +203,10 @@ app.post('/login',wrapAsync(async(req, res) => {
             const user = result[0];
             // console.log(user.FULLNAME)
             if (user.PASSWORD === data.password) {
-                let updateSql = "UPDATE users SET LAST_LOGIN = NOW() WHERE id = ?";
-                connection.query(updateSql, [user.ID], (err, updateResult) => {
+             let todayTime = new Date().toLocaleTimeString('en-US', { hour12: false, timeZone: 'Asia/Kolkata' });
+
+                let updateSql = "UPDATE users SET LAST_LOGIN = ? WHERE id = ?";
+                connection.query(updateSql, [todayTime,user.ID], (err, updateResult) => {
                     if (err) throw err;
                     
                      // Create a session for the user
@@ -242,8 +244,10 @@ app.post('/adminLogin', wrapAsync(async(req, res) => {
             const admin = result[0];
             if (admin.password === data.password) {
                 req.session.admin = admin; // Set session for admin
-                let updateSql = "UPDATE admin_profile SET last_login = NOW() WHERE id = ?";
-                connection.query(updateSql, [admin.id], (err, updateResult) => {
+                let todayTime = new Date().toLocaleTimeString('en-US', { hour12: false, timeZone: 'Asia/Kolkata' });
+
+                let updateSql = "UPDATE admin_profile SET last_login = ? WHERE id = ?";
+                connection.query(updateSql, [todayTime,admin.id], (err, updateResult) => {
                     if (err) throw err;
                     res.redirect("/adminDashboard");
                 });
