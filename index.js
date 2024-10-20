@@ -204,10 +204,12 @@ app.post('/login',wrapAsync(async(req, res) => {
             // console.log(user.FULLNAME)
             if (user.PASSWORD === data.password) {
             let today = new Date();
-            let date = today.toLocaleDateString('en-GB', { timeZone: 'Asia/Kolkata' });
+            let year = today.getFullYear();
+            let month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+            let day = String(today.getDate()).padStart(2, '0');
             let time = today.toLocaleTimeString('en-US', { hour12: false, timeZone: 'Asia/Kolkata' });
             
-            let todayDateTime = `${date} ${time}`;
+            let todayDateTime = `${year}/${month}/${day} ${time}`;
                 let updateSql = "UPDATE users SET LAST_LOGIN = ? WHERE id = ?";
                 connection.query(updateSql, [todayDateTime,user.ID], (err, updateResult) => {
                     if (err) {
