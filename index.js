@@ -1,4 +1,4 @@
-require('dotenv').config(); // Load environment variables from .env file
+srequire('dotenv').config(); // Load environment variables from .env file
 const express = require("express");
 const app = express();
 const path = require("path");
@@ -203,7 +203,7 @@ app.post('/login',wrapAsync(async(req, res) => {
             const user = result[0];
             // console.log(user.FULLNAME)
             if (user.PASSWORD === data.password) {
-             let todayTime = new Date().toLocaleTimeString('en-US', { hour12: false, timeZone: 'Asia/Kolkata' });
+             let todayTime = new Date().toLocaleString('en-US', { hour12: false, timeZone: 'Asia/Kolkata' });
             console.log(todayTime)
                 let updateSql = "UPDATE users SET LAST_LOGIN = ? WHERE id = ?";
                 connection.query(updateSql, [todayTime,user.ID], (err, updateResult) => {
