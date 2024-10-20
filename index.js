@@ -12,14 +12,14 @@ const questionSchema = require("./questionSchema");
 const deletetableSchema = require("./deletetableSchema");
 const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
-const multer = require('multer');
 const fs = require('fs');
+const multer = require('multer');
 
 // Use session configuration with secret from .env
 app.use(session({
     secret: process.env.SESSION_SECRET, // Loaded from .env
-    resave: false,
     saveUninitialized: true,
+    resave: false,
     cookie: { secure: process.env.NODE_ENV === 'production' } // Set 'true' if in production (HTTPS)
 }));
 
