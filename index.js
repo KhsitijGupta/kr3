@@ -203,10 +203,13 @@ app.post('/login',wrapAsync(async(req, res) => {
             const user = result[0];
             // console.log(user.FULLNAME)
             if (user.PASSWORD === data.password) {
-             let todayTime = new Date().toLocaleString('en-US', { hour12: false, timeZone: 'Asia/Kolkata' });
-            console.log(todayTime)
+            let today = new Date();
+            let date = today.toLocaleDateString('en-GB', { timeZone: 'Asia/Kolkata' });
+            let time = today.toLocaleTimeString('en-US', { hour12: false, timeZone: 'Asia/Kolkata' });
+            
+            let todayDateTime = `${date} ${time}`;
                 let updateSql = "UPDATE users SET LAST_LOGIN = ? WHERE id = ?";
-                connection.query(updateSql, [todayTime,user.ID], (err, updateResult) => {
+                connection.query(updateSql, [todayDateTime,user.ID], (err, updateResult) => {
                     if (err) {
                         let { statusCode = 500, message = "Something went wrong" } = err;
                 return res.render("error.ejs", { statusCode, message });
