@@ -106,7 +106,7 @@ const showTables = async (req, res, next) => {
 
         // Filter the tables to include only those containing "questions"
         const tablesWithQuestions = results
-            .map(({ Tables_in_bzz7v1gtfroo7mlhxerk: tableName }) => {
+            .map(({ Tables_in_sql12738219: tableName }) => {
                 const splitTableName = tableName.split('_');
                 return {
                     originalTableName: tableName,
@@ -457,14 +457,14 @@ app.get("/uploadQuestions",wrapAsync(async(req, res ) => {
             const filteredTables = results
                 .map(table => {
                     // Split the table name by underscore
-                    const splitTableName = table.Tables_in_bzz7v1gtfroo7mlhxerk.split('_');
+                    const splitTableName = table.Tables_in_sql12738219.split('_');
 
                     // Check if "questions" is part of the split table name
                     const containsQuestions = splitTableName.includes("questions");
 
                     // Return both the original table name and whether it contains "questions"
                     return { 
-                        originalTableName: table.Tables_in_bzz7v1gtfroo7mlhxerk, 
+                        originalTableName: table.Tables_in_sql12738219, 
                         splitTableName, 
                         containsQuestions 
                     };
@@ -543,10 +543,10 @@ app.get("/manageQuestions",wrapAsync(async(req, res ) => {
             // Process the results from the first query
             const filteredTables = tablesResults
                 .map(table => {
-                    const splitTableName = table.Tables_in_bzz7v1gtfroo7mlhxerk.split('_');
+                    const splitTableName = table.Tables_in_sql12738219.split('_');
                     const containsQuestions = splitTableName.includes("questions");
                     return { 
-                        originalTableName: table.Tables_in_bzz7v1gtfroo7mlhxerk, 
+                        originalTableName: table.Tables_in_sql12738219, 
                         splitTableName, 
                         containsQuestions 
                     };
@@ -588,10 +588,10 @@ app.get("/filtermanageQuestions", wrapAsync(async (req, res) => {
             // Process the results from the first query
             const filteredTables = tablesResults
                 .map(table => {
-                    const splitTableName = table.Tables_in_bzz7v1gtfroo7mlhxerk.split('_');
+                    const splitTableName = table.Tables_in_sql12738219.split('_');
                     const containsQuestions = splitTableName.includes("questions");
                     return { 
-                        originalTableName: table.Tables_in_bzz7v1gtfroo7mlhxerk, 
+                        originalTableName: table.Tables_in_sql12738219, 
                         splitTableName, 
                         containsQuestions 
                     };
@@ -712,10 +712,10 @@ app.get("/manageSubjects", wrapAsync(async (req, res) => {
             // Process the results from the first query
             const filteredTables = tablesResults
                 .map(table => {
-                    const splitTableName = table.Tables_in_bzz7v1gtfroo7mlhxerk.split('_');
+                    const splitTableName = table.Tables_in_sql12738219.split('_');
                     const containsQuestions = splitTableName.includes("subject") && splitTableName.includes("questions");
                     return { 
-                        originalTableName: table.Tables_in_bzz7v1gtfroo7mlhxerk, 
+                        originalTableName: table.Tables_in_sql12738219, 
                         splitTableName, 
                         containsQuestions 
                     };
