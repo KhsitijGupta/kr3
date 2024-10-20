@@ -45,31 +45,22 @@ app.use(express.json()); // To handle JSON data
 app.use('/uploads', express.static('uploads'));
 
 // MySQL database connection using environment variables
-// const connection = mysql.createConnection({
-//     waitForConnections: true,
-//     host: process.env.DB_HOST,
-//     user: process.env.DB_USER,
-//     password: process.env.DB_PASSWORD,
-//     database: process.env.DB_NAME,
-//     port: process.env.DB_PORT
-// });
-function getConnection() {
-    return mysql.createConnection({
-      waitForConnections: true,
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      port: process.env.DB_PORT
-  });
-  }
-// connection.connect((err ) => {
-//     if (err) {
-//         console.error('Error connecting: ' + err.stack);
-//         }
-//     console.log('Connected to the database');
+const connection = mysql.createConnection({
+    waitForConnections: true,
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT
+});
+
+connection.connect((err ) => {
+    if (err) {
+        console.error('Error connecting: ' + err.stack);
+        }
+    console.log('Connected to the database');
     
-// });
+});
 
 
 
@@ -96,20 +87,9 @@ const validateTableName=(req ,res ,next)=>{
 
 
 const showTables = async (req, res, next) => {
-    let connection;
 
     try {
-        connection = getConnection();
-
-        await new Promise((resolve, reject) => {
-            connection.connect((err) => {
-                if (err) {
-                    let { statusCode = 500, message = "Connection error" } = err;
-                    return reject({ statusCode, message });
-                }
-                resolve();
-            });
-        });
+        
 
         const query = "SHOW TABLES";
 
@@ -141,37 +121,17 @@ const showTables = async (req, res, next) => {
         next(); // Pass control to the next middleware
 
     } catch (error) {
-        //console.error("Error in showTables:", error);
         const { statusCode = 500, message = "Something went wrong" } = error;
         return res.render("error.ejs", { statusCode, message });
-    } finally {
-        if (connection) {
-            connection.end((err) => {
-                if (err) {
-                    console.error('Error closing connection:', err.stack);
-                } else {
-                    console.log('Connection closed');
-                }
-            });
-        }
-    }
+    } 
 };
 
 
 
 app.get("/",async(req,res)=>{
     if ( req.session.userId){
-        let connection;
         try{
-            await new Promise((resolve, reject) => {
-                connection.connect((err) => {
-                    if (err) {
-                        let { statusCode = 500, message = "Connection error" } = err;
-                        return reject({ statusCode, message });
-                    }
-                    resolve();
-                });
-            });
+            
 
             let sql = "SELECT * FROM users WHERE Id = ?";
             connection.query(sql, req.session.userId , (err, result) => {
@@ -189,18 +149,7 @@ app.get("/",async(req,res)=>{
     //console.error("Error in showTables:", error);
     const { statusCode = 500, message = "Something went wrong" } = error;
     return res.render("error.ejs", { statusCode, message });
-}
-// finally {
-//     if (connection) {
-//         connection.end((err) => {
-//             if (err) {
-//                 console.error('Error closing connection:', err.stack);
-//             } else {
-//                 console.log('Connection closed');
-//             }
-//         });
-//     }
-// }
+} 
     }
     else{
         res.render("home.ejs");
@@ -229,17 +178,8 @@ app.post('/register', wrapAsync(async (req, res) => {
     let sql = "INSERT INTO users(FULLNAME, EMAIL, PASSWORD) VALUES (?,?,?)";
     let values = [data.name, data.email, data.password];
 
-    let connection = getConnection();
         try{
-            await new Promise((resolve, reject) => {
-                connection.connect((err) => {
-                    if (err) {
-                        let { statusCode = 500, message = "Connection error" } = err;
-                        return reject({ statusCode, message });
-                    }
-                    resolve();
-                });
-            });
+            
         connection.query(sql, values, (err, result) => {
             if (err) {
                 let { statusCode = 500, message = "Something went wrong" } = err;
@@ -249,10 +189,9 @@ app.post('/register', wrapAsync(async (req, res) => {
             res.redirect("/login");
         });
     } catch (error) {
-        //console.error("Error in showTables:", error);
         const { statusCode = 500, message = "Something went wrong" } = error;
         return res.render("error.ejs", { statusCode, message });
-    }  
+    } 
 }));
 
 
@@ -266,17 +205,8 @@ app.post('/login',wrapAsync(async(req, res) => {
     let sql = "SELECT * FROM users WHERE EMAIL = ?";
     let values = [data.email];
 
-   let connection=getConnection();
         try{
-            await new Promise((resolve, reject) => {
-                connection.connect((err) => {
-                    if (err) {
-                        let { statusCode = 500, message = "Connection error" } = err;
-                        return reject({ statusCode, message });
-                    }
-                    resolve();
-                });
-            });
+            
             
             connection.query(sql, values, (err, result) => {
                 if (err) {
@@ -331,17 +261,7 @@ app.post('/adminLogin', wrapAsync(async(req, res) => {
     let data = req.body;
     let sql = "SELECT * FROM admin_profile WHERE username = ?";
     let values = [data.username];
-    let connection=getConnection();
-    try{
-        await new Promise((resolve, reject) => {
-            connection.connect((err) => {
-                if (err) {
-                    let { statusCode = 500, message = "Connection error" } = err;
-                    return reject({ statusCode, message });
-                }
-                resolve();
-            });
-        });
+    
     connection.query(sql, values, (err, result) => {
         if (err) {
             console.log(err);
@@ -371,12 +291,6 @@ app.post('/adminLogin', wrapAsync(async(req, res) => {
             return res.status(400).send('Invalid username or password');
         }
     });
-}
-catch (error) {
-    const { statusCode = 500, message = "Something went wrong" } = error;
-    return res.render("error.ejs", { statusCode, message });
-
-}
 }));
 
 
@@ -416,17 +330,6 @@ app.get('/logout', (req, res) => {
 
 app.get('/contest', wrapAsync(async (req, res) => {
     if(req.session.userId){
-        let connection=getConnection();
-        try{
-            await new Promise((resolve, reject) => {
-                connection.connect((err) => {
-                    if (err) {
-                        let { statusCode = 500, message = "Connection error" } = err;
-                        return reject({ statusCode, message });
-                    }
-                    resolve();
-                });
-            });  
         let ContestTableName;
         // Getting today date
         // let todayDate = new Date(Date.now()).toLocaleDateString('en-CA');
@@ -507,10 +410,6 @@ app.get('/contest', wrapAsync(async (req, res) => {
             // Render the questions in the test.ejs template
             res.render("tests/test.ejs", { questions: results });
         });
-    }catch (error) {
-        const { statusCode = 500, message = "Something went wrong" } = error;
-        return res.render("error.ejs", { statusCode, message });
-    }
     }
     else{
         res.redirect('/')
@@ -520,17 +419,6 @@ app.get('/contest', wrapAsync(async (req, res) => {
 
 app.get('/test', showTables, wrapAsync(async (req, res) => {
     if(req.session.userId){
-        let connection=getConnection();
-    try{
-        await new Promise((resolve, reject) => {
-            connection.connect((err) => {
-                if (err) {
-                    let { statusCode = 500, message = "Connection error" } = err;
-                    return reject({ statusCode, message });
-                }
-                resolve();
-            });
-        });
         const sql = "SELECT * FROM aptitude_subject_questions ORDER BY RAND() LIMIT 25"; 
     
         // Access the filtered tables from req object
@@ -546,10 +434,6 @@ app.get('/test', showTables, wrapAsync(async (req, res) => {
             // Render the questions in the test.ejs template
             res.render("tests/test.ejs", { questions: results });
         });
-    }catch(err) {
-        let { statusCode = 500, message = "Something went wrong" } = err;
-        return res.render("error.ejs", { statusCode, message });
-    }
     }
     else{
         res.redirect('/')
@@ -561,17 +445,6 @@ app.get('/test', showTables, wrapAsync(async (req, res) => {
 app.get("/uploadQuestions",wrapAsync(async(req, res ) => {
     // Check if the user is an admin
     if (req.session && req.session.admin) {
-        let connection=getConnection();
-    try{
-        await new Promise((resolve, reject) => {
-            connection.connect((err) => {
-                if (err) {
-                    let { statusCode = 500, message = "Connection error" } = err;
-                    return reject({ statusCode, message });
-                }
-                resolve();
-            });
-        });
         const query = "SHOW TABLES";
 
         connection.query(query, (err, results) => {
@@ -602,10 +475,6 @@ app.get("/uploadQuestions",wrapAsync(async(req, res ) => {
 
             res.render("admin/uploadQuestions.ejs", { tables: tablesWithQuestions });
         });
-    }catch(err) {
-        let { statusCode = 500, message = "Something went wrong" } = err;
-        return res.render("error.ejs", { statusCode, message });
-    }
     } else {
         res.redirect("/adminLogin"); 
     }
@@ -613,21 +482,7 @@ app.get("/uploadQuestions",wrapAsync(async(req, res ) => {
 
 app.post('/uploadQuestions', validatequestion , async(req, res) => {
     const query = "SHOW TABLES";
-    let connection=getConnection();
-    try{
-        await new Promise((resolve, reject) => {
-            connection.connect((err) => {
-                if (err) {
-                    let { statusCode = 500, message = "Connection error" } = err;
-                    return reject({ statusCode, message });
-                }
-                resolve();
-            });
-        });
-    }catch(err) {
-        let { statusCode = 500, message = "Connection error" } = err;
-        return reject({ statusCode, message });
-    }
+
         connection.query(query, (err, results) => {
             if (err) {
                 let { statusCode = 500, message = "Something went wrong" } = err;
