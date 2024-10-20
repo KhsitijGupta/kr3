@@ -58,7 +58,7 @@ connection.connect((err ) => {
     if (err) {
         console.error('Error connecting: ' + err.stack);
         }
-    console.log('Connected to the database');
+    console.log('mysql Connected to the database');
     
 });
 
