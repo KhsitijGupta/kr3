@@ -252,10 +252,15 @@ app.post('/adminLogin', wrapAsync(async(req, res) => {
             const admin = result[0];
             if (admin.password === data.password) {
                 req.session.admin = admin; // Set session for admin
-                let todayTime = new Date().toLocaleTimeString('en-US', { hour12: false, timeZone: 'Asia/Kolkata' });
-
+            let today = new Date();
+            let year = today.getFullYear();
+            let month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+            let day = String(today.getDate()).padStart(2, '0');
+            let time = today.toLocaleTimeString('en-US', { hour12: false, timeZone: 'Asia/Kolkata' });
+            
+            let todayDateTime = `${year}/${month}/${day} ${time}`;
                 let updateSql = "UPDATE admin_profile SET last_login = ? WHERE id = ?";
-                connection.query(updateSql, [todayTime,admin.id], (err, updateResult) => {
+                connection.query(updateSql, [todayDateTime,admin.id], (err, updateResult) => {
                     if (err) throw err;
                     res.redirect("/adminDashboard");
                 });
