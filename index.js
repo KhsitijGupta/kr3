@@ -47,10 +47,12 @@ app.use('/uploads', express.static('uploads'));
 // MySQL database connection using environment variables
 function connectWithRetry() {
   const connection = mysql.createConnection({
-    host: 'your-host',
-    user: 'your-username',
-    password: 'your-password',
-    database: 'your-database'
+     waitForConnections: true,
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT
   });
 
   connection.connect((err) => {
