@@ -60,7 +60,7 @@ function connectWithRetry() {
       console.error('Error connecting:', err);
       setTimeout(connectWithRetry, 5000);  // Retry after 5 seconds
     } else {
-      console.log('Connected!');
+      console.log('Database Connected!');
     }
   });
 }
