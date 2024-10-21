@@ -45,23 +45,24 @@ app.use(express.json()); // To handle JSON data
 app.use('/uploads', express.static('uploads'));
 
 // MySQL database connection using environment variables
-const connection = mysql.createConnection({
-    waitForConnections: true,
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    port: process.env.DB_PORT
-});
+function connectWithRetry() {
+  const connection = mysql.createConnection({
+    host: 'your-host',
+    user: 'your-username',
+    password: 'your-password',
+    database: 'your-database'
+  });
 
-connection.connect((err ) => {
+  connection.connect((err) => {
     if (err) {
-        console.error('Error connecting: ' + err.stack);
-        }
-    console.log('Connected to the database');
-    
-});
-
+      console.error('Error connecting:', err);
+      setTimeout(connectWithRetry, 5000);  // Retry after 5 seconds
+    } else {
+      console.log('Connected!');
+    }
+  });
+}
+connectWithRetry();
 
 
 const validatequestion=(req ,res ,next)=>{
