@@ -58,7 +58,7 @@ connection.connect((err ) => {
     if (err) {
         console.error('Error connecting: ' + err.stack);
         }
-    console.log('mysql Connected to the database');
+    console.log('Connected to the database');
     
 });
 
@@ -408,7 +408,8 @@ app.get('/contest', wrapAsync(async (req, res) => {
             }
         
             // Render the questions in the test.ejs template
-            res.render("tests/test.ejs", { questions: results });
+            // console.log(timeResults[0].Duration)
+            res.render("tests/test.ejs", { questions: results, duration: timeResults[0].Duration || null });
         });
     }
     else{
@@ -432,7 +433,7 @@ app.get('/test', showTables, wrapAsync(async (req, res) => {
             }
             
             // Render the questions in the test.ejs template
-            res.render("tests/test.ejs", { questions: results });
+            res.render("tests/test.ejs", { questions: results, duration: null });
         });
     }
     else{
@@ -645,7 +646,7 @@ app.get("/manageQuestions/:id/edit", wrapAsync(async(req,res)=>{
        const sql = "SELECT * from  aptitude_subject_questions where question_id = ?"; 
     
     connection.query(sql,[id], (err, result) => {
-        console.log(result);
+        // console.log(result);
         if (err) {
             let { statusCode = 500, message = "Something went wrong" } = err;
             return res.render("error.ejs", { statusCode, message });
@@ -661,7 +662,7 @@ app.get("/manageQuestions/:id/edit", wrapAsync(async(req,res)=>{
 app.put("/manageQuestions/:id",wrapAsync(async(req,res)=>{
     let {id} =req.params;
     let data = req.body;
-    console.log([id])
+    // console.log([id])
     if (req.session && req.session.admin) {     
         let updateSql = "UPDATE aptitude_subject_questions SET question_text = ?, option_a = ?, option_b = ?, option_c = ?, option_d = ?, correct_option = ?, difficulty_level = ? WHERE question_id = ? ";
         connection.query(updateSql, [data.question_text, data.option_a, data.option_b, data.option_c, data.option_d, data.correct_option, data.difficulty_level , id], (err, updateResult) => {
@@ -685,7 +686,7 @@ app.delete("/manageQuestions/:id",wrapAsync(async(req,res)=>{
                         let { statusCode = 500, message = "Something went wrong" } = err;
                         return res.render("error.ejs", { statusCode, message });
                     }
-                    console.log(deletedResult);
+                    // console.log(deletedResult);
                     res.redirect("/manageQuestions");
      });
     }
@@ -865,7 +866,7 @@ app.get('/manageTests', async (req, res) => {
                 let { statusCode = 500, message = "Something went wrong" } = err;
                 return res.render("error.ejs", { statusCode, message });
             }
-            console.log(results[0])
+            // console.log(results[0])
             res.render("admin/manageTests.ejs",{results : results});
         });
     }catch (err) {
