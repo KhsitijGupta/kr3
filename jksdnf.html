@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome Back - Login</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            height: 100%;
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #ff6b6b, #6b6bff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 20px;
+            width: 80%;
+            max-width: 1000px;
+            display: flex;
+            overflow: hidden;
+        }
+        .login-section {
+            flex: 1;
+            padding: 40px;
+            color: white;
+        }
+        .testimonial-section {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 40px;
+            color: white;
+            position: relative;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        .sign-in-btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 20px;
+            background: linear-gradient(to right, #ff6b6b, #ff8e8e);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .social-login {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .social-icon {
+            width: 30px;
+            height: 30px;
+            margin: 0 10px;
+            background: white;
+            border-radius: 50%;
+        }
+        .testimonial-card {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .nav-buttons {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+        }
+        .nav-btn {
+            padding: 5px 10px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .cta-card {
+            background: rgba(255, 192, 203, 0.2);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .avatar-group {
+            display: flex;
+            margin-top: 10px;
+        }
+        .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: gray;
+            margin-right: -10px;
+            border: 2px solid white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="login-section">
+            <h1>Welcome back</h1>
+            <p>Please Enter your Account details</p>
+            <form>
+                <input type="email" placeholder="Johndoe@gmail.com" required>
+                <input type="password" placeholder="••••••••" required>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                    <label><input type="checkbox"> Keep me logged in</label>
+                    <a href="#" style="color: white;">Forgot Password</a>
+                </div>
+                <button class="sign-in-btn">Sign in</button>
+            </form>
+            <div class="social-login">
+                <div class="social-icon"></div>
+                <div class="social-icon"></div>
+                <div class="social-icon"></div>
+            </div>
+        </div>
+        <div class="testimonial-section">
+            <h2>What's our Jobseekers Said.</h2>
+            <div class="testimonial-card">
+                <p>"Search and find your dream job is now easier than ever. Just browse a job and apply if you need to."</p>
+                <p><strong>Mas Parjono</strong><br>UI Designer at Google</p>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn">←</button>
+                <button class="nav-btn">→</button>
+            </div>
+            <div class="cta-card">
+                <h3>Get your right job and right place apply now</h3>
+                <p>Be among the first founders to experience the easiest way to start run a business.</p>
+                <div class="avatar-group">
+                    <div class="avatar"></div>
+                    <div class="avatar"></div>
+                    <div class="avatar"></div>
+                    <div class="avatar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
