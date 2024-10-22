@@ -16,7 +16,7 @@ const fs = require('fs');
 const multer = require('multer');
 
 // Use session configuration with secret from .env
-app.use(session({
+app.use(session ({
     secret: process.env.SESSION_SECRET   , // Loaded from .env
     saveUninitialized: true,
     resave: false,
