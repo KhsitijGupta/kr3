@@ -16,7 +16,7 @@ const fs = require('fs');
 const multer = require('multer');
 
 // Use session configuration with secret from .env
-app.use(session ({
+app.use(session({
     secret: process.env.SESSION_SECRET   , // Loaded from .env
     saveUninitialized: true,
     resave: false,
@@ -45,7 +45,6 @@ app.use(express.json()); // To handle JSON data
 app.use('/uploads', express.static('uploads'));
 
 // MySQL database connection using environment variables
-function connectWithRetry() {
   const connection = mysql.createConnection({
      waitForConnections: true,
     host: process.env.DB_HOST,
@@ -63,8 +62,7 @@ function connectWithRetry() {
       console.log('Database Connected!');
     }
   });
-}
-connectWithRetry();
+
 
 
 const validatequestion=(req ,res ,next)=>{
