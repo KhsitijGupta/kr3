@@ -417,6 +417,31 @@ app.get('/contest', wrapAsync(async (req, res) => {
         res.redirect('/')
     }
 }));
+app.post('/test', showTables, wrapAsync(async (req, res) => {
+    console.log(req.body);
+    if(req.session.userId ){
+    if(req.body.category &&  req.body.duration &&  req.body.level ){
+        const sql = "SELECT * FROM aptitude_subject_questions ORDER BY RAND() LIMIT 25"; 
+    
+        // Access the filtered tables from req object
+        // console.log(req.tablesWithQuestions[2].originalTableName);
+    
+        // Execute the query for the questions
+        connection.query(sql, (err, results) => {
+            if (err) {
+                let { statusCode = 500, message = "Something went wrong" } = err;
+                return res.render("error.ejs", { statusCode, message });
+            }
+            
+            // Render the questions in the test.ejs template
+            res.render("tests/test.ejs", { questions: results, duration: null });
+        });
+    }
+}
+    else{
+        res.redirect('/login')
+    }
+}));
 
 
 app.get('/test', showTables, wrapAsync(async (req, res) => {

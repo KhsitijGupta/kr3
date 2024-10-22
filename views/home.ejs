@@ -18,37 +18,42 @@
         <source src="/videos/search_course.mp4">
     </video>
     <div class="searchCourse">
-        <h1>Search For Courses</h1>
-        <h5>Fill the fields to seek for courses</h5>
-        <div class="courseBox">
-            <select name="" id="courseOptions">
-                <option value="">Categories</option>
-                <option value="upsc">UPSC</option>
-                <option value="ssc_jee">SSC JEE</option>
-            </select>
-            <select name="" id="courseOptions">
-                <option value="">Duration</option>
-                <option value="upsc">UPSC</option>
-                <option value="ssc_jee">SSC JEE</option>
-            </select>
-            <select name="" id="courseOptions">
-                <option value="">Level</option>
-                <option value="upsc">UPSC</option>
-                <option value="ssc_jee">SSC JEE</option>
-            </select>
-            <select name="" id="courseOptions">
-                <option value="">Location</option>
-                <option value="upsc">UPSC</option>
-                <option value="ssc_jee">SSC JEE</option>
-            </select>
-            <select name="" id="courseOptions">
-                <option value="">Keywords</option>
-                <option value="upsc">UPSC</option>
-                <option value="ssc_jee">SSC JEE</option>
-            </select>
-        </div>
-        <button class="btn bg-warning px-5"><b>Search</b></button>
-    </div>
+      <form action="/test" method="POST">
+          <h1>Search For Courses</h1>
+          <h5>Fill the fields to seek for courses</h5>
+          <div class="courseBox">
+              <select name="category" id="courseOptions" required>
+                  <option value="">Categories</option>
+                  <option value="upsc">UPSC</option>
+                  <option value="ssc">SSC</option>
+                  <option value="jee"> JEE</option>
+              </select>
+              <select name="duration" id="courseOptions" required>
+                  <option value="">Duration</option>
+                  <option value="upsc">10 min</option>
+                  <!-- <option value="ssc_jee">SSC JEE</option> -->
+              </select>
+              <select name="level" id="courseOptions" required>
+                  <option value="">Level</option>
+                  <option value="hard">Hard</option>
+                  <option value="intermediate">Intermediate</option>
+                  <option value="beginner">Beginner</option>
+              </select>
+              
+              <!-- <select name="location" id="courseOptions" required>
+                  <option value="">Location</option>
+                  <option value="upsc">UPSC</option>
+                  <option value="ssc_jee">SSC JEE</option>
+              </select> -->
+              <!-- <select name="keywords" id="courseOptions" required>
+                  <option value="">Keywords</option>
+                  <option value="upsc">UPSC</option>
+                  <option value="ssc_jee">SSC JEE</option>
+              </select> -->
+          </div>
+          <button type="submit" class="btn bg-warning px-5"><b>Search</b></button>
+      </form>
+  </div>
     <!-- <iframe   height="300px" width="100%" autoplay="autoplay" muted></iframe> -->
 </section>
 
