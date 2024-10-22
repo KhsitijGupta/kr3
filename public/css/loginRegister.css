@@ -8,12 +8,12 @@
     font-family: 'Poppins', sans-serif;
     
 }
-body{
-    background-image: url("/images/loginBackground.png");
+/* body{
+    background-image: url("/images/loginBackground.jpg");
     background-size: cover;
     height: 97vh;
-}
- .nav{
+} */
+ /* .nav{
     margin-top:1rem;
     padding: 0 2rem;
     display: flex;
@@ -26,7 +26,7 @@ body{
 
 }
 .pages ul{
-    /* margin-right:80px; */
+    /* margin-right:80px; 
     display: flex;
     list-style: none; 
     flex-wrap: wrap;
@@ -171,7 +171,7 @@ h1{
 .container1{
     width:310;
     height:500px;
-}
+} 
 
 @media((max-width: 600px)){
     .pages ul li {
@@ -184,4 +184,132 @@ h1{
             width: 80px;
             height: 30px;
         }
+}*/
+body{
+    width: 100%;
+    font-family: Arial, sans-serif;
+    height: 100vh;
+    background: linear-gradient(45deg, #ff00ff, #00ffff, #ff6b6b, #6b6bff);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.container {
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 20px;
+    width: 65%;
+    max-width: 1000px;
+    display: flex;
+    overflow: hidden;
+}
+.login-section {
+    flex: 1;
+    color: white;
+}
+#loginNav {
+    width: 100%;
+    list-style: none;
+    display: flex;
+    text-align: center;
+}
+#loginNav li {
+    width: 50%;
+    padding: 5px;
+    cursor: pointer;
+    background-image: linear-gradient(to right, #ff6b6b, #ff8e8e);
+    /* border: 1px solid red; */
+}
+#loginNav li:hover {
+    background-image: none;
+}
+.tabActive {
+    background-image: none !important;
+    /* border: none; */
+}
+.userLoginControl, .instituteLoginControl {
+    /* display: none; */
+    padding: 40px;
+}
+.testimonial-section {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 40px;
+    color: white;
+    position: relative;
+}
+h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+p {
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+form>input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.sign-in-btn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 20px;
+    background: linear-gradient(to right, #ff6b6b, #ff8e8e);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+.social-login {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+.social-icon {
+    width: 30px;
+    height: 30px;
+    margin: 0 10px;
+    background: white;
+    border-radius: 50%;
+}
+.testimonial-card {
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 20px;
+}
+.nav-buttons {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+}
+.nav-btn {
+    padding: 5px 10px;
+    margin-left: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.cta-card {
+    background: rgba(255, 192, 203, 0.2);
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 20px;
+}
+.avatar-group {
+    display: flex;
+    margin-top: 10px;
+}
+.avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: gray;
+    margin-right: -10px;
+    border: 2px solid white;
 }
