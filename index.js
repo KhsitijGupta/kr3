@@ -296,7 +296,7 @@ app.post('/login',wrapAsync(async(req, res) => {
                      req.session.loggedIn = true;
 
 
-                    res.render("loginhome.ejs",{user});
+                    return res.render("loginhome.ejs",{user});
                 });
             } else {
                 return res.status(400).send('Invalid email or password');
