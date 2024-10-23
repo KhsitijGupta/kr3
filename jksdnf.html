@@ -154,5 +154,30 @@
             </div>
         </div>
     </div>
+    <script>
+        window.onload = () => {
+            let allCookieAvailable = document.cookie.split('; ');
+            for(i=0; i<allCookieAvailable.length; i++) {
+                if(allCookieAvailable[i] === "logined=email"){
+                    window.location.href = "/";
+                    break;
+                }
+            }
+        }
+        
+        // set cookie
+        let loginForm = document.getElementById('loginForm');
+        let rememberMe = document.getElementById('rememberMe');
+        loginForm.addEventListener('submit', () => {
+            if(rememberMe.checked){
+                document.cookie = "logined=email; path=/;"
+                loginForm.setAttribute("action", "/login");
+                loginForm.setAttribute("method", "POST");
+            } else {
+                loginForm.setAttribute("action", "/login");
+                loginForm.setAttribute("method", "POST");
+            }
+        })        
+    </script>
 </body>
 </html>
