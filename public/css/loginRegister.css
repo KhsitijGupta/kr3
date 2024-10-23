@@ -150,6 +150,9 @@ form>input, #regEmail input {
     margin-right: -10px;
     border: 2px solid white;
 }
+.avatar img{
+    width: 100%; 
+}
 
 /* media query for mobile */
 @media screen and (max-width: 675px) {
