@@ -14,6 +14,8 @@ const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
 const fs = require('fs');
 const multer = require('multer');
+const cookieParser = require('cookie-parser');
+
 
 // Use session configuration with secret from .env
 app.use(session({
@@ -44,7 +46,11 @@ app.use(express.json()); // To handle JSON data
 // Serve the uploads folder publicly to serve the uploaded files
 app.use('/uploads', express.static('uploads'));
 
+// Use cookie-parser middleware
+app.use(cookieParser());
+
 // MySQL database connection using environment variables
+
   const connection = mysql.createConnection({
      waitForConnections: true,
     host: process.env.DB_HOST,
@@ -62,6 +68,7 @@ app.use('/uploads', express.static('uploads'));
       console.log('Database Connected!');
     }
   });
+
 
 
 
@@ -92,6 +99,7 @@ const showTables = async (req, res, next) => {
     try {
         
 
+
         const query = "SHOW TABLES";
 
         // Execute the query to get the tables
@@ -108,6 +116,7 @@ const showTables = async (req, res, next) => {
         // Filter the tables to include only those containing "questions"
         const tablesWithQuestions = results
             .map(({ Tables_in_kr3database_db: tableName }) => {
+
                 const splitTableName = tableName.split('_');
                 return {
                     originalTableName: tableName,
@@ -125,17 +134,16 @@ const showTables = async (req, res, next) => {
         const { statusCode = 500, message = "Something went wrong" } = error;
         return res.render("error.ejs", { statusCode, message });
     } 
+
 };
 
 
 
 app.get("/",async(req,res)=>{
-    if ( req.session.userId){
+    if (req.cookies['name']){
         try{
-            
-
-            let sql = "SELECT * FROM users WHERE Id = ?";
-            connection.query(sql, req.session.userId , (err, result) => {
+            let sql = "SELECT * FROM users WHERE EMAIL = ?";
+            connection.query(sql, req.cookies['name'] , (err, result) => {
         if (err) {
             let { statusCode = 500, message = "Something went wrong" } = err;
                 return res.render("error.ejs", { statusCode, message });
@@ -151,6 +159,7 @@ app.get("/",async(req,res)=>{
     const { statusCode = 500, message = "Something went wrong" } = error;
     return res.render("error.ejs", { statusCode, message });
 } 
+
     }
     else{
         res.render("home.ejs");
@@ -158,12 +167,20 @@ app.get("/",async(req,res)=>{
 })
 
 app.get('/userlogout', (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
+    try {
+        res.clearCookie('name'); // Clear the cookie
+        res.redirect('/');
+    } catch (err) {
+        let { statusCode = 500, message = "Something went wrong" } = err;
+        res.render("error.ejs", { statusCode, message });
+    }
+    res.session.destroy((err)=>{
+        if(err){
             let { statusCode = 500, message = "Something went wrong" } = err;
-            return res.render("error.ejs", { statusCode, message });        }
-        res.redirect('/'); 
-    });
+            res.render("error.ejs", { statusCode, message });
+        }
+        res.redirect('/');
+    })
 });
 
 app.post('/register', wrapAsync(async (req, res) => {
@@ -181,6 +198,7 @@ app.post('/register', wrapAsync(async (req, res) => {
 
         try{
             
+
         connection.query(sql, values, (err, result) => {
             if (err) {
                 let { statusCode = 500, message = "Something went wrong" } = err;
@@ -193,22 +211,39 @@ app.post('/register', wrapAsync(async (req, res) => {
         const { statusCode = 500, message = "Something went wrong" } = error;
         return res.render("error.ejs", { statusCode, message });
     } 
+
 }));
 
 
+
+
+
 app.get("/login",(req, res ) => {
-    
+    if(req.cookies['name']){
+        return res.redirect('/');
+    }
     res.render("login.ejs");
 });
 
 app.post('/login',wrapAsync(async(req, res) => {
     let data = req.body;
+    if(data.rememberMe && !req.cookies['name'] ){
+       
+        try{
+            // res.cookie('name',data.email,{: 3 * 24 * 60 * 60 * 1000, httpOnly: true });
+        res.cookie('name',data.email,{ maxAge: 259200000, httpOnly: true });
+    }
+        catch (error) {
+            const { statusCode = 500, message = "Something went wrong" } = error;
+            return res.render("error.ejs", { statusCode, message });   
+        }
+    }
     let sql = "SELECT * FROM users WHERE EMAIL = ?";
     let values = [data.email];
 
         try{
             
-            
+
             connection.query(sql, values, (err, result) => {
                 if (err) {
                     let { statusCode = 500, message = "Something went wrong" } = err;
@@ -262,7 +297,8 @@ app.post('/adminLogin', wrapAsync(async(req, res) => {
     let data = req.body;
     let sql = "SELECT * FROM admin_profile WHERE username = ?";
     let values = [data.username];
-    
+    try{
+       
     connection.query(sql, values, (err, result) => {
         if (err) {
             console.log(err);
@@ -292,6 +328,12 @@ app.post('/adminLogin', wrapAsync(async(req, res) => {
             return res.status(400).send('Invalid username or password');
         }
     });
+}
+catch (error) {
+    const { statusCode = 500, message = "Something went wrong" } = error;
+    return res.render("error.ejs", { statusCode, message });
+
+}
 }));
 
 
@@ -320,7 +362,7 @@ app.get("/adminLogin",(req, res ) => {
 });
 
 
-app.get('/logout', (req, res) => {
+app.get('/adminlogout', (req, res) => {
     req.session.destroy(err => {
         if (err) {
             return res.status(500).send('Failed to clear session');
@@ -328,7 +370,6 @@ app.get('/logout', (req, res) => {
         res.redirect('/');  
     });
 });
-
 app.get('/contest', wrapAsync(async (req, res) => {
     if(req.session.userId){
         let ContestTableName;
@@ -1179,4 +1220,3 @@ app.use((err, req, res,next )=>{
 app.listen(3000, () => {
     console.log(`App is listening on port 3000`)
 });
-
