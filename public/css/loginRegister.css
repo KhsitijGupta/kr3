@@ -5,190 +5,14 @@
     padding: 0;
     margin: 0;
     color:white;
-    font-family: 'Poppins', sans-serif;
-    
-}
-/* body{
-    background-image: url("/images/loginBackground.jpg");
-    background-size: cover;
-    height: 97vh;
-} */
- /* .nav{
-    margin-top:1rem;
-    padding: 0 2rem;
-    display: flex;
-    justify-content: space-between;
- }
- .brand p{
-    font-family: "Kaushan Script";
-    padding: 1rem;
-    font-size: 2em;
-
-}
-.pages ul{
-    /* margin-right:80px; 
-    display: flex;
-    list-style: none; 
-    flex-wrap: wrap;
-}
-.pages ul li{
-    margin: 1rem 1.9rem;
-    padding: 0 1rem;
-    font-size: 1.4rem;
-}
-.pages ul li:hover{
-    border-radius: 20px;
-    border-bottom: 3px solid #068af0;
+    font-family: 'Poppins', sans-serif;   
 }
 
-.containerlgn{
-    position: relative;
-    max-width: 410px !important;
-    height: 450px !important;
-    background-color: transparent !important;
-    border: 2px solid rgba(11, 95, 190, 0.5);
-    border-radius: 20px;
-    backdrop-filter: blur(20px);
-    box-shadow: 0 0 30px rgba(0, 0, 0, .5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 7rem auto; 
-    overflow: hidden; 
-    transform: scale(1);
-    transition: transform .5s ease, height .2s ease;
-} 
-.containerreg{
-    position: relative;
-    max-width: 410px !important;
-    height: 550px !important;
-    background-color: transparent !important;
-    border: 2px solid rgba(11, 95, 190, 0.5);
-    border-radius: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 5rem auto; 
-    overflow: hidden; 
-    transform: scale(0);
-    transition: transform .5s ease, height .2s ease;
-    backdrop-filter: blur(20px);
-    box-shadow: 0 0 30px rgba(0, 0, 0, .5);
-} 
-.card{
-    width: 100%;
-    padding: 40px;
-    backdrop-filter: blur(20px);
-    background-color: transparent !important;
-    box-shadow: 0 0 30px rgba(0, 0, 0, .5);
-}
-h1{
-    text-align: center;
-    color:#f2f2f2 !important;
- }
- .inp_box{
-    width: 100%;
-    height: 50px;
-    border-bottom: 2px solid #1d669e;
-    margin: 30px 0;
-}
-.inp_box input{
-    width: 100%;
-    height: 100%;
-    background: transparent;
-    border: none;
-    outline: none;
-    font-size: 1em;
-    color: rgb(200,200,200);
-    font-weight: 600;
-}
-.inp_box input::placeholder{
-    color: rgb(211, 211, 211);
-}
-.btn-login{
-    width: 100%;
-    height: 45px;
-    background: #162938;
-    border: none;
-    outline: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1em;
-    color: #ffffff;
-    font-weight: 500;
-}
-.btn-login:hover{
-    background-color: #068af0;
-}
-.rememberme{
-    display: flex;
-    justify-content: space-between;
-    margin:1rem 0rem;
-    font-size: 15px;
-}
-.rememberme label, .rememberme a{
-    text-decoration: none;
-    color: rgb(190,190,190);
-}
-
-.register{
-    text-align: center;
-    margin-top:15px;
-}
-.register p{
-    color: #068af0;
-}
-.register p a{
-    text-decoration: none;
-    color: rgb(200,200,200);
-}
-.termsAndConditions a {
-    text-decoration: none;
-    color: #068af0;
-}
-.register p a:hover{
-    text-decoration: underline;
-    color: #fff;
-}
-.btnLoginPopup{
-    margin:0.7rem 0;
-    width: 130px;
-    height: 50px;
-    background: transparent;
-    border: 2px solid #ffffff;
-    outline: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1.2em;
-    color: #ffffff;
-    font-weight: 500;
-    transition: .5s;
-}
-.btnLoginPopup:hover{
-    background: #ffffff;
-    color: #1776d6;
-}
-.container1{
-    width:310;
-    height:500px;
-} 
-
-@media((max-width: 600px)){
-    .pages ul li {
-        margin: 10px 12px;
-        padding:0;
-        font-size: small;
-    }
-    .btnLoginPopup{
-            font-size: small;
-            width: 80px;
-            height: 30px;
-        }
-}*/
 body{
     width: 100%;
     font-family: Arial, sans-serif;
     height: 100vh;
+    /* background-image: url("/images/loginBackground.jpg"); */
     background: linear-gradient(45deg, #ff00ff, #00ffff, #ff6b6b, #6b6bff);
     display: flex;
     justify-content: center;
@@ -197,7 +21,7 @@ body{
 .container {
     background: rgba(0, 0, 0, 0.6);
     border-radius: 20px;
-    width: 65%;
+    width: 60%;
     max-width: 1000px;
     display: flex;
     overflow: hidden;
@@ -227,11 +51,24 @@ body{
     /* border: none; */
 }
 .userLoginControl, .instituteLoginControl {
-    /* display: none; */
     padding: 40px;
 }
+.switchToRegister, .termsAndCondition {
+    color: #068af0;
+    margin: 10px 0;
+    text-decoration: none;
+}
+.switchToRegister a, .termsAndCondition a {
+    text-decoration: none;
+}
+::placeholder {
+    color: #ccc;
+}
+::-ms-input-placeholder {
+    color: #ccc;
+}
 .testimonial-section {
-    flex: 1;
+    width: 50%;
     background: rgba(0, 0, 0, 0.4);
     padding: 40px;
     color: white;
@@ -245,7 +82,7 @@ p {
     font-size: 14px;
     margin-bottom: 20px;
 }
-form>input {
+form>input, #regEmail input {
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
@@ -276,6 +113,10 @@ form>input {
     margin: 0 10px;
     background: white;
     border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
 }
 .testimonial-card {
     background: rgba(0, 0, 0, 0.6);
@@ -283,15 +124,11 @@ form>input {
     padding: 20px;
     margin-top: 20px;
 }
-.nav-buttons {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-}
 .nav-btn {
     padding: 5px 10px;
     margin-left: 10px;
-    border: none;
+    border: 1px solid #fff;
+    background-color: transparent;
     border-radius: 5px;
     cursor: pointer;
 }
@@ -312,4 +149,14 @@ form>input {
     background: gray;
     margin-right: -10px;
     border: 2px solid white;
+}
+
+/* media query for mobile */
+@media screen and (max-width: 675px) {
+    .container{
+        width: 100%;
+    }
+    .testimonial-section {
+        display: none;
+    }
 }

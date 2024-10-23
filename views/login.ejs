@@ -20,31 +20,48 @@
         <div class="login-section">
             <ul id="loginNav">
                 <li id="userAccount" class="tabActive">User Login</li>
-                <li id="instituteAccount">Institutes Login</li>
+                <li id="instituteAccount">Clients Login</li>
             </ul>
             <div class="userLoginControl">
-                <h1>Welcome back</h1>
-                <p>Please Enter your Account details</p>
-                <form action="/login" method="POST">
-                    <input name="email" type="email" placeholder="Enter email..." required>
-                    <input name="password"  type="password" placeholder="Enter password..." required>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                        <label><input name="rememberMe" type="checkbox"> <span>Keep me logged in</span></label>
-                        <a href="#" style="color: white;">Forgot Password</a>
+                <div class="loginPage">
+                    <h1>Welcome back</h1>
+                    <p>Please Enter your Account details</p>
+                    <form action="/login" method="POST">
+                        <input name="email" type="email" placeholder="Enter registered email..." required>
+                        <input name="password"  type="password" placeholder="Enter password..." required>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                            <label><input name="rememberMe" type="checkbox"> <span>Keep me logged in</span></label>
+                            <a href="#" style="color: white;">Forgot Password</a>
+                        </div>
+                        <button type="submit" class="sign-in-btn">Sign in</button>
+                    </form>
+                    <p align="center" class="switchToRegister">Don't have an account ?<a href="#" class="register-link"> Register</a></p>
+                    <p align="center" style="font-size: 15px; margin: 5px 0;">OR</p>
+                    <div class="social-login">
+                        <div class="social-icon"><i class="fab fa-google" style="color: #000;"></i></div>
+                        <div class="social-icon"><i class="fab fa-facebook" style="color: #000;"></i></div>
+                        <div class="social-icon"><i class="fab fa-linkedin-in" style="color: #000;"></i></div>
                     </div>
-                    <button type="submit" class="sign-in-btn">Sign in</button>
-                </form>
-                <div class="social-login">
-                    <div class="social-icon"></div>
-                    <div class="social-icon"></div>
-                    <div class="social-icon"></div>
+                </div>
+                <div class="registerPage" style="display: none;">
+                    <h1>Register yourself</h1>
+                    <p>Please enter your details for registration.</p>
+                    <form action="/register" method="POST">
+                        <label for="email" id="regEmail" style="position: relative;"><input name="email" type="email" placeholder="Enter valid email..." required><span style="position: absolute; right:15px; top:0px;"><i class="fas fa-paper-plane"></i></span></label>
+                        <input name="name" type="text" placeholder="Enter Full Name..." required>
+                        <input name="password"  type="password" placeholder="Enter new password..." required>
+                        <input name="con_password" type="password" placeholder="Enter password again" required>
+                        <label><input type="checkbox" required style="margin-bottom: 10px !important;"> I agree to the <a href="#" class="termsAndCondition">terms & conditions</a> </label>
+                        <button type="submit" class="sign-in-btn">Register</button>
+                        <p align="center" class="termsAndCondition">Do you have an account ?<a href="#" class="login-link"> login</a></p>
+                    </form>
                 </div>
             </div>
             <div class="instituteLoginControl" style="display: none;">
                 <h1>Welcome back</h1>
                 <p>Please Enter your Account details</p>
                 <form>
-                    <input type="email" placeholder="Johndoe@gmail.com" required>
+                    <input type="email" placeholder="example@gmail.com" required>
                     <input type="password" placeholder="••••••••" required>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
                         <label><input type="checkbox"> <span>Keep me logged in</span></label>
@@ -55,19 +72,19 @@
             </div>
         </div>
         <div class="testimonial-section">
-            <h2>What's our Jobseekers Said.</h2>
+            <h3>What's our aspirant Said.</h3>
             <div class="testimonial-card">
-                <p>"Search and find your dream job is now easier than ever. Just browse a job and apply if you need to."</p>
-                <p><strong>Mas Parjono</strong><br>UI Designer at Google</p>
-            </div>
-            <div class="nav-buttons">
-                <button class="nav-btn">←</button>
-                <button class="nav-btn">→</button>
+                <p>"Practise and more practise help you to get your dream job faster. Practise is one of the most important key of your success."</p>
+                <p><strong>Raushan Gupta</strong><br>UI Designer</p>
+                <div class="nav-buttons">
+                    <button class="nav-btn">←</button>
+                    <button class="nav-btn">→</button>
+                </div>
             </div>
             <div class="cta-card">
-                <h3>Get your right job and right place apply now</h3>
-                <p>Be among the first founders to experience the easiest way to start run a business.</p>
+                <h3>Be among top five toppers list.</h3>
                 <div class="avatar-group">
+                    <div class="avatar"></div>
                     <div class="avatar"></div>
                     <div class="avatar"></div>
                     <div class="avatar"></div>
@@ -76,64 +93,8 @@
             </div>
         </div>
     </div>
-    <!-- <div class="containerlgn">
-    <div class="card login">
-        <form  action="/login" method="POST">
-
-            <h1>Login</h1>
-            <div class="inp_box">
-                <input name="email" type="email" placeholder="Email">
-            </div>
-                
-            <div class="inp_box">
-                <input name="password" type="password" placeholder="password">
-            </div>
-            
-           
-            <div class="rememberme">
-                <label><input name="rememberMe" type="checkbox"> Remember me</label>
-                <a href="#">Forget Password ?</a>
-            </div>
-            <button type="submit" class="btn-login">LOGIN</button>
-            <div class="register">
-                <p>Don't have an account ?<a href="#" class="register-link"> Register</a></p>
-            </div>
-        </form>
-    </div>
-    </div>
-    <div class="containerreg container1">
-    <div class="card register">
-
-        <form a action="/register" method="POST">
-
-            <h1>Registation</h1>
-            <div class="inp_box">
-                <input name="name" type="text" placeholder="Full Name">
-            </div>
-
-            <div class="inp_box">
-                <input name="email" type="email" placeholder="Email">
-            </div>
-                
-            <div class="inp_box">
-                <input name="password" type="password" placeholder="password">
-            </div>
-            <div class="inp_box">
-                <input name="con_password" type="password" placeholder="Enter password again">
-            </div>
-            
-            <div class="rememberme termsAndConditions">
-                <label><input type="checkbox" required> I agree to the <a href="#">terms & conditions</a> </label>
-            </div>
-            <button type="submit" class="btn-login">Register</button>
-            <div class="register-link">
-                <p>Do you have a account ?<a href="#" class="login-link"> login</a></p>
-            </div>
-        </form>
-    </div>
-    </div> -->
-<script src="/js/loginRegister.js"></script>
-<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <script src="/js/loginRegister.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 </body>
 </html>
