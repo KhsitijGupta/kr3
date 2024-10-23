@@ -1,5 +1,5 @@
 {
-  "name": "new-folder",
+  "name": "kr3ExamPractice",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,10 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "kr3",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.20.3",
+    "cookie-parser": "^1.4.7",
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "ejs-mate": "^4.0.0",
