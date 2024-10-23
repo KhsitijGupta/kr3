@@ -60,14 +60,36 @@ app.use(cookieParser());
     port: process.env.DB_PORT
   });
 
-  connection.connect((err) => {
+  // connection.connect((err) => {
+  //   if (err) {
+  //     console.error('Error connecting:', err);
+  //     setTimeout(connectWithRetry, 5000);  // Retry after 5 seconds
+  //   } else {
+  //     console.log('Database Connected!');
+  //   }
+  // });
+function handleDisconnect() {
+  connection.connect(function(err) {
     if (err) {
-      console.error('Error connecting:', err);
-      setTimeout(connectWithRetry, 5000);  // Retry after 5 seconds
+      let { statusCode = 500, message = "Something went wrong" } = error;
+      res.render("error.ejs", { statusCode, message });
+      setTimeout(handleDisconnect, 2000); // Reconnect after 2 seconds
     } else {
-      console.log('Database Connected!');
+      console.log('Connected to database');
     }
   });
+
+  connection.on('error', function(err) {
+    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+      handleDisconnect(); // Reconnect on connection loss
+    } else {
+         let { statusCode = 500, message = "Something went wrong" } = error;
+      return res.render("error.ejs", { statusCode, message });
+    }
+  });
+}
+
+handleDisconnect();
 
 
 
