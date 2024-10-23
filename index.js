@@ -45,6 +45,7 @@ app.use(express.json()); // To handle JSON data
 app.use('/uploads', express.static('uploads'));
 
 // MySQL database connection using environment variables
+
   const connection = mysql.createConnection({
      waitForConnections: true,
     host: process.env.DB_HOST,
@@ -62,6 +63,7 @@ app.use('/uploads', express.static('uploads'));
       console.log('Database Connected!');
     }
   });
+
 
 
 
@@ -92,6 +94,7 @@ const showTables = async (req, res, next) => {
     try {
         
 
+
         const query = "SHOW TABLES";
 
         // Execute the query to get the tables
@@ -108,6 +111,7 @@ const showTables = async (req, res, next) => {
         // Filter the tables to include only those containing "questions"
         const tablesWithQuestions = results
             .map(({ Tables_in_kr3database_db: tableName }) => {
+
                 const splitTableName = tableName.split('_');
                 return {
                     originalTableName: tableName,
@@ -125,6 +129,7 @@ const showTables = async (req, res, next) => {
         const { statusCode = 500, message = "Something went wrong" } = error;
         return res.render("error.ejs", { statusCode, message });
     } 
+
 };
 
 
@@ -133,6 +138,7 @@ app.get("/",async(req,res)=>{
     if ( req.session.userId){
         try{
             
+
 
             let sql = "SELECT * FROM users WHERE Id = ?";
             connection.query(sql, req.session.userId , (err, result) => {
@@ -151,6 +157,7 @@ app.get("/",async(req,res)=>{
     const { statusCode = 500, message = "Something went wrong" } = error;
     return res.render("error.ejs", { statusCode, message });
 } 
+
     }
     else{
         res.render("home.ejs");
@@ -181,6 +188,7 @@ app.post('/register', wrapAsync(async (req, res) => {
 
         try{
             
+
         connection.query(sql, values, (err, result) => {
             if (err) {
                 let { statusCode = 500, message = "Something went wrong" } = err;
@@ -193,6 +201,7 @@ app.post('/register', wrapAsync(async (req, res) => {
         const { statusCode = 500, message = "Something went wrong" } = error;
         return res.render("error.ejs", { statusCode, message });
     } 
+
 }));
 
 
@@ -208,7 +217,7 @@ app.post('/login',wrapAsync(async(req, res) => {
 
         try{
             
-            
+
             connection.query(sql, values, (err, result) => {
                 if (err) {
                     let { statusCode = 500, message = "Something went wrong" } = err;
@@ -262,7 +271,17 @@ app.post('/adminLogin', wrapAsync(async(req, res) => {
     let data = req.body;
     let sql = "SELECT * FROM admin_profile WHERE username = ?";
     let values = [data.username];
-    
+    let connection=getConnection();
+    try{
+        await new Promise((resolve, reject) => {
+            connection.connect((err) => {
+                if (err) {
+                    let { statusCode = 500, message = "Connection error" } = err;
+                    return reject({ statusCode, message });
+                }
+                resolve();
+            });
+        });
     connection.query(sql, values, (err, result) => {
         if (err) {
             console.log(err);
@@ -292,6 +311,12 @@ app.post('/adminLogin', wrapAsync(async(req, res) => {
             return res.status(400).send('Invalid username or password');
         }
     });
+}
+catch (error) {
+    const { statusCode = 500, message = "Something went wrong" } = error;
+    return res.render("error.ejs", { statusCode, message });
+
+}
 }));
 
 
@@ -331,6 +356,17 @@ app.get('/logout', (req, res) => {
 
 app.get('/contest', wrapAsync(async (req, res) => {
     if(req.session.userId){
+        let connection=getConnection();
+        try{
+            await new Promise((resolve, reject) => {
+                connection.connect((err) => {
+                    if (err) {
+                        let { statusCode = 500, message = "Connection error" } = err;
+                        return reject({ statusCode, message });
+                    }
+                    resolve();
+                });
+            });  
         let ContestTableName;
         // Getting today date
         // let todayDate = new Date(Date.now()).toLocaleDateString('en-CA');
@@ -412,6 +448,10 @@ app.get('/contest', wrapAsync(async (req, res) => {
             // console.log(timeResults[0].Duration)
             res.render("tests/test.ejs", { questions: results, duration: timeResults[0].Duration || null });
         });
+    }catch (error) {
+        const { statusCode = 500, message = "Something went wrong" } = error;
+        return res.render("error.ejs", { statusCode, message });
+    }
     }
     else{
         res.redirect('/')
@@ -446,6 +486,17 @@ app.post('/test', showTables, wrapAsync(async (req, res) => {
 
 app.get('/test', showTables, wrapAsync(async (req, res) => {
     if(req.session.userId){
+        let connection=getConnection();
+    try{
+        await new Promise((resolve, reject) => {
+            connection.connect((err) => {
+                if (err) {
+                    let { statusCode = 500, message = "Connection error" } = err;
+                    return reject({ statusCode, message });
+                }
+                resolve();
+            });
+        });
         const sql = "SELECT * FROM aptitude_subject_questions ORDER BY RAND() LIMIT 25"; 
     
         // Access the filtered tables from req object
@@ -461,6 +512,10 @@ app.get('/test', showTables, wrapAsync(async (req, res) => {
             // Render the questions in the test.ejs template
             res.render("tests/test.ejs", { questions: results, duration: null });
         });
+    }catch(err) {
+        let { statusCode = 500, message = "Something went wrong" } = err;
+        return res.render("error.ejs", { statusCode, message });
+    }
     }
     else{
         res.redirect('/')
@@ -472,6 +527,17 @@ app.get('/test', showTables, wrapAsync(async (req, res) => {
 app.get("/uploadQuestions",wrapAsync(async(req, res ) => {
     // Check if the user is an admin
     if (req.session && req.session.admin) {
+        let connection=getConnection();
+    try{
+        await new Promise((resolve, reject) => {
+            connection.connect((err) => {
+                if (err) {
+                    let { statusCode = 500, message = "Connection error" } = err;
+                    return reject({ statusCode, message });
+                }
+                resolve();
+            });
+        });
         const query = "SHOW TABLES";
 
         connection.query(query, (err, results) => {
@@ -502,6 +568,10 @@ app.get("/uploadQuestions",wrapAsync(async(req, res ) => {
 
             res.render("admin/uploadQuestions.ejs", { tables: tablesWithQuestions });
         });
+    }catch(err) {
+        let { statusCode = 500, message = "Something went wrong" } = err;
+        return res.render("error.ejs", { statusCode, message });
+    }
     } else {
         res.redirect("/adminLogin"); 
     }
@@ -509,7 +579,21 @@ app.get("/uploadQuestions",wrapAsync(async(req, res ) => {
 
 app.post('/uploadQuestions', validatequestion , async(req, res) => {
     const query = "SHOW TABLES";
-
+    let connection=getConnection();
+    try{
+        await new Promise((resolve, reject) => {
+            connection.connect((err) => {
+                if (err) {
+                    let { statusCode = 500, message = "Connection error" } = err;
+                    return reject({ statusCode, message });
+                }
+                resolve();
+            });
+        });
+    }catch(err) {
+        let { statusCode = 500, message = "Connection error" } = err;
+        return reject({ statusCode, message });
+    }
         connection.query(query, (err, results) => {
             if (err) {
                 let { statusCode = 500, message = "Something went wrong" } = err;
