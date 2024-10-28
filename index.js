@@ -15,6 +15,7 @@ const ExpressError = require("./utils/ExpressError.js");
 const fs = require('fs');
 const multer = require('multer');
 const cookieParser = require('cookie-parser');
+// const sendingMail = require("./views/sendMail.js");
 
 
 // Use session configuration with secret from .env
@@ -187,6 +188,9 @@ app.get("/",async(req,res)=>{
         res.render("home.ejs");
         }
 })
+
+// sending mail
+// app.get('/sendMail', sendMail());
 
 app.get('/userlogout', (req, res) => {
     try {
@@ -618,10 +622,10 @@ app.get("/allUsres",wrapAsync(async(req, res ) => {
     }
 }));
 
-app.get("/manageQuestions",wrapAsync(async(req, res ) => {
+app.get("/manageQuestions", wrapAsync(async (req, res) => {
     if (req.session && req.session.admin) {
         const query = "SHOW TABLES";
-        let tablesWithQuestions;
+        
         try {
             const tablesResults = await new Promise((resolve, reject) => {
                 connection.query(query, (err, results) => {
@@ -643,25 +647,33 @@ app.get("/manageQuestions",wrapAsync(async(req, res ) => {
                 });
             
             // Filter tables containing 'questions'
-             tablesWithQuestions = filteredTables.filter(table => table.containsQuestions);
-        } catch {
-            let { statusCode = 500, message = "Something went wrong" } = err;
+            const tablesWithQuestions = filteredTables.filter(table => table.containsQuestions);
+
+            // Fetch all questions from each table
+            const allQuestions = await Promise.all(tablesWithQuestions.map(async (currTable) => {
+                const sql = `SELECT * FROM ${currTable.originalTableName}`;
+                return new Promise((resolve, reject) => {
+                    connection.query(sql, (err, results) => {
+                        if (err) reject(err);
+                        else resolve(results);
+                    });
+                });
+            }));
+
+            // Flatten the results array and render
+            const questions = allQuestions.flat();
+            res.render("admin/manageQuestions.ejs", { questions, tables: tablesWithQuestions });
+
+        } catch (err) {
+            const { statusCode = 500, message = "Something went wrong" } = err;
             return res.render("error.ejs", { statusCode, message });
         }
 
-        const sql = "SELECT * FROM aptitude_subject_questions"; // Query to select all aptitude questions
-        connection.query(sql, (err, results) => {
-            if (err) {
-                let { statusCode = 500, message = "Something went wrong" } = err;
-                return res.render("error.ejs", { statusCode, message });
-            }
-            
-            res.render("admin/manageQuestions.ejs", { questions: results, tables : tablesWithQuestions });
-        });
     } else {
-        res.redirect("/adminLogin"); 
+        res.redirect("/adminLogin");
     }
 }));
+
 
 app.get("/filtermanageQuestions", wrapAsync(async (req, res) => {
     if (req.session && req.session.admin) {
@@ -729,7 +741,7 @@ app.get("/filtermanageQuestions", wrapAsync(async (req, res) => {
 
 
 
-app.get("/manageQuestions/:id/edit", wrapAsync(async(req,res)=>{
+app.get("/filtermanageQuestions/:id/edit", wrapAsync(async(req,res)=>{
     let {id} = req.params;
         if (req.session && req.session.admin) {
        const sql = "SELECT * from  aptitude_subject_questions where question_id = ?"; 
