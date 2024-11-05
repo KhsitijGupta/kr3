@@ -82,7 +82,7 @@ p {
     font-size: 14px;
     margin-bottom: 20px;
 }
-form>input, #regEmail input {
+form>input, #regEmail input, #otpBox input {
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;

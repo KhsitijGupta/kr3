@@ -1,8 +1,5 @@
-// import sendEmail from "./sendMail";
-// const sendEmail = require("../../views/sendMail.js")
-import { sendEmail } from './sendMail.js';
-
-// const sendEmail = require("./sendMail");
+// const otps = require("./sendMail")
+// import { otp } from "./sendMail";
 
 /*Login box management.*/
 let userAccount = document.getElementById('userAccount');
@@ -39,38 +36,65 @@ loginLink.addEventListener("click",()=>{
 });
 
 // Sending registration otp
-const nodemailer = require("nodemailer");
 
-// // Function to generate a random OTP
+// Function to generate a random OTP
 function generateOTP() {
     return Math.floor(100000 + Math.random() * 900000); // Generates a 6-digit OTP
 }
 
+const otp = generateOTP(); // Generate an OTP
+function sendEmail(to) {
+    (function(){
+        emailjs.init({
+          publicKey: "9USFHTj0JSE6W61sx",
+        });
+     })();
 
-    const otp = generateOTP(); // Generate an OTP
-    const transporter = nodemailer.createTransport({
-        secure: true,
-        host: "smtp.gmail.com", // Use 'service' for Gmail (simplifies the config)
-        auth: {
-            user: "songsplaylists2021@gmail.com", // Replace with your Gmail address
-            pass: "upqvwipjdnbkeazv",     // Replace with your app password, NOT your Gmail password
-        },
+     var params = {
+        sendername: "KR3",
+        to: to,
+        subject: "Registration One-Time-Password (OTP)",
+        replyto: "kg221688@gmail.com",
+        message: `
+        Hii Dear,
+
+        Your One-Time-Password (OTP) is ${otp}. Do not share with anyone.`
+     };
+
+     var serviceID = "service_3uqfgys";
+     var templateID = "template_a3y7md1";
+
+     emailjs.send(serviceID, templateID, params)
+     .then( res => {
+        alert("Email send successfully !")
+     })
+     .catch(function (error) {
+        alert("Failed to send email: " + error);
     });
+}
 
-    function sendEmail(to) {
-        transporter.sendMail({
-            from: '"Raushan Gupta" <kg221688@gmail.com>', // Sender's email address
-            to: to, // Replace with the receiver's email
-            subject: "Registration One-Time-Password (OTP).",
-            text: `Your OTP is: ${otp}`, // Plain text OTP
-            html: `<p>Your OTP is: <b>${otp}</b></p>`, // HTML formatted OTP
-        })
-        console.log("Email send!")
+let sendMailForm = document.getElementById("sendMailForm");
+let regUserEmail = document.getElementById("regUserEmail");
+let otpBox = document.getElementById("otpBox");
+let formSubmitBtn = document.querySelector("#regEmail button");
+let userOtpInput = document.getElementById("userOtpInput");
+let userEmail = document.getElementById("userEmail");
+let otpBtn = document.getElementById("otpBtn");
+
+sendMailForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    sendEmail(regUserEmail.value.replace(/ /g, '').toLowerCase());
+    otpBox.style.display = "block";
+    formSubmitBtn.innerHTML = '<i class="fas fa-check-circle" style="color: green;"></i>';
+});
+
+otpBtn.addEventListener('click', () => {
+    if(userOtpInput.value == otp){
+        sendMailForm.style.display = "none";
+        otpBox.style.display = "none";
+        userEmail.style.display = "block";
+        userEmail.value = regUserEmail.value.replace(/ /g, '').toLowerCase()
+    } else {
+        alert("Wrong Otp !");
     }
-    // sendEmail("biharifun6@gmail.com");
-
-let sendMailBtn = document.getElementById("sendMailBtn");
-sendMailBtn.addEventListener('click', () => {
-    sendEmail("biharifun6@gmail.com");
-    
 });

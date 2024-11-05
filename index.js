@@ -15,8 +15,6 @@ const ExpressError = require("./utils/ExpressError.js");
 const fs = require('fs');
 const multer = require('multer');
 const cookieParser = require('cookie-parser');
-// const sendingMail = require("./views/sendMail.js");
-
 
 // Use session configuration with secret from .env
 app.use(session({
@@ -61,14 +59,6 @@ app.use(cookieParser());
     port: process.env.DB_PORT
   });
 
-  // connection.connect((err) => {
-  //   if (err) {
-  //     console.error('Error connecting:', err);
-  //     setTimeout(connectWithRetry, 5000);  // Retry after 5 seconds
-  //   } else {
-  //     console.log('Database Connected!');
-  //   }
-  // });
 function handleDisconnect() {
   connection.connect(function(err) {
     if (err) {
@@ -89,11 +79,7 @@ function handleDisconnect() {
     }
   });
 }
-
 handleDisconnect();
-
-
-
 
 const validatequestion=(req ,res ,next)=>{
     let {error} = questionSchema.validate(req.body);
@@ -120,9 +106,6 @@ const validateTableName=(req ,res ,next)=>{
 const showTables = async (req, res, next) => {
 
     try {
-        
-
-
         const query = "SHOW TABLES";
 
         // Execute the query to get the tables
@@ -157,10 +140,7 @@ const showTables = async (req, res, next) => {
         const { statusCode = 500, message = "Something went wrong" } = error;
         return res.render("error.ejs", { statusCode, message });
     } 
-
 };
-
-
 
 app.get("/",async(req,res)=>{
     if (req.cookies['name']){
@@ -189,9 +169,6 @@ app.get("/",async(req,res)=>{
         }
 })
 
-// sending mail
-// app.get('/sendMail', sendMail());
-
 app.get('/userlogout', (req, res) => {
     try {
         res.clearCookie('name'); // Clear the cookie
@@ -211,20 +188,34 @@ app.get('/userlogout', (req, res) => {
 
 app.post('/register', wrapAsync(async (req, res) => {
     let data = req.body;
+    let password=data.password;
+        // Regular expressions for different criteria
+        const lengthRegex = /.{8,}/; // Minimum length of 8 characters
+        const uppercaseRegex = /[A-Z]/; // At least one uppercase letter
+        const lowercaseRegex = /[a-z]/; // At least one lowercase letter
+        const digitRegex = /\d/; // At least one digit
+        const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/; // At least one special character
+    
+        // Check each condition
+        const isValidLength = lengthRegex.test(password);
+        const hasUppercase = uppercaseRegex.test(password);
+        const hasLowercase = lowercaseRegex.test(password);
+        const hasDigit = digitRegex.test(password);
+        const hasSpecialChar = specialCharRegex.test(password);
 
-    if (data.password !== data.con_password) {
-        return res.render("error.ejs", {
-            statusCode: 400,
-            message: "Passwords do not match."
+    if(isValidLength && hasUppercase && hasLowercase && hasDigit && hasSpecialChar){
+
+    
+    if ( data.password !== data.con_password ) {
+        return res.render("alert.ejs", {
+            message: "Invalid password !."
         });
     }
 
     let sql = "INSERT INTO users(FULLNAME, EMAIL, PASSWORD) VALUES (?,?,?)";
     let values = [data.name, data.email, data.password];
 
-        try{
-            
-
+    try{
         connection.query(sql, values, (err, result) => {
             if (err) {
                 let { statusCode = 500, message = "Something went wrong" } = err;
@@ -237,26 +228,25 @@ app.post('/register', wrapAsync(async (req, res) => {
         const { statusCode = 500, message = "Something went wrong" } = error;
         return res.render("error.ejs", { statusCode, message });
     } 
-
+}else{
+    return res.render("alert.ejs", {
+        message: "Weak password !."
+    });
+}
 }));
-
-
-
-
 
 app.get("/login",(req, res ) => {
     if(req.cookies['name']){
         return res.redirect('/');
     }
-    res.render("login.ejs");
+    res.render("login.ejs", {otp:null});
 });
 
 app.post('/login',wrapAsync(async(req, res) => {
     let data = req.body;
     if(data.rememberMe && !req.cookies['name'] ){
        
-        try{
-            // res.cookie('name',data.email,{: 3 * 24 * 60 * 60 * 1000, httpOnly: true });
+    try{
         res.cookie('name',data.email,{ maxAge: 259200000, httpOnly: true });
     }
         catch (error) {
@@ -268,12 +258,10 @@ app.post('/login',wrapAsync(async(req, res) => {
     let values = [data.email];
 
         try{
-            
-
             connection.query(sql, values, (err, result) => {
-                if (err) {
-                    let { statusCode = 500, message = "Something went wrong" } = err;
-                    return res.render("error.ejs", { statusCode, message });
+            if (err) {
+                let { statusCode = 500, message = "Something went wrong" } = err;
+                return res.render("error.ejs", { statusCode, message });
         }
 
         if (result.length > 0) {
@@ -737,9 +725,6 @@ app.get("/filtermanageQuestions", wrapAsync(async (req, res) => {
         res.redirect("/adminLogin");
     }
 }));
-
-
-
 
 app.get("/filtermanageQuestions/:id/edit", wrapAsync(async(req,res)=>{
     let {id} = req.params;
