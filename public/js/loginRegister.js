@@ -36,13 +36,22 @@ loginLink.addEventListener("click",()=>{
 });
 
 // Sending registration otp
+let sendMailForm = document.getElementById("sendMailForm");
+let regUserEmail = document.getElementById("regUserEmail");
+let otpBox = document.getElementById("otpBox");
+let formSubmitBtn = document.querySelector("#regEmail button");
+let userOtpInput = document.getElementById("userOtpInput");
+let userEmail = document.getElementById("userEmail");
+let otpBtn = document.getElementById("otpBtn");
+let isFormDisable = document.querySelectorAll(".isFormDisable");
 
 // Function to generate a random OTP
 function generateOTP() {
     return Math.floor(100000 + Math.random() * 900000); // Generates a 6-digit OTP
 }
+const otp = generateOTP(); // Generated OTP
 
-const otp = generateOTP(); // Generate an OTP
+// function to send otp
 function sendEmail(to) {
     (function(){
         emailjs.init({
@@ -57,7 +66,6 @@ function sendEmail(to) {
         replyto: "kg221688@gmail.com",
         message: `
         Hii Dear,
-
         Your One-Time-Password (OTP) is ${otp}. Do not share with anyone.`
      };
 
@@ -73,19 +81,11 @@ function sendEmail(to) {
     });
 }
 
-let sendMailForm = document.getElementById("sendMailForm");
-let regUserEmail = document.getElementById("regUserEmail");
-let otpBox = document.getElementById("otpBox");
-let formSubmitBtn = document.querySelector("#regEmail button");
-let userOtpInput = document.getElementById("userOtpInput");
-let userEmail = document.getElementById("userEmail");
-let otpBtn = document.getElementById("otpBtn");
-
 sendMailForm.addEventListener('submit', (e) => {
     e.preventDefault();
     sendEmail(regUserEmail.value.replace(/ /g, '').toLowerCase());
     otpBox.style.display = "block";
-    formSubmitBtn.innerHTML = '<i class="fas fa-check-circle" style="color: green;"></i>';
+    formSubmitBtn.innerHTML = '<i class="fas fa-check-circle" style="color: #05aa4f;"></i>';
 });
 
 otpBtn.addEventListener('click', () => {
@@ -93,6 +93,9 @@ otpBtn.addEventListener('click', () => {
         sendMailForm.style.display = "none";
         otpBox.style.display = "none";
         userEmail.style.display = "block";
+        isFormDisable.forEach((oneByOne) => {
+            oneByOne.removeAttribute("disabled");
+        });
         userEmail.value = regUserEmail.value.replace(/ /g, '').toLowerCase()
     } else {
         alert("Wrong Otp !");

@@ -51,22 +51,22 @@
                     <form id="sendMailForm" method="POST">
                         <label for="email" id="regEmail" style="position: relative;">
                             <input id="regUserEmail" name="email" type="email" placeholder="Enter valid email..." required>
-                            <button type="submit" style="position: absolute; right:15px; top:0px; background-color:transparent; border:none; cursor:pointer;">
+                            <button title="Send Email" type="submit" style="position: absolute; right:15px; top:0px; background-color:transparent; border:none; cursor:pointer;">
                                 <i class="fas fa-paper-plane" ></i>
                             </button>
                         </label>
                     </form>
                     <label for="otp" id="otpBox" style="position: relative; display:none;">
                         <input id="userOtpInput" name="otp" type="text" placeholder="Enter valid otp..." required>
-                        <button style="position: absolute; right:15px; top:10px; background-color:transparent; border:none; cursor:pointer;" id="otpBtn">check</button>
+                        <button title="Check valid otp" style="position: absolute; right:15px; top:10px; background-color:transparent; border:none; cursor:pointer;" id="otpBtn">check</button>
                     </label>
-                    <form method="POST" action="/register" id="regForm">
+                    <form method="POST" action="/register" id="regForm" autocomplete="off">
                         <input name="email" type="email" readonly id="userEmail" style="display: none;">
-                        <input name="name" type="text" placeholder="Enter Full Name..." required>
-                        <input id="pass" name="password"  type="password" placeholder="Enter new password..." required>
-                        <input name="con_password" type="password" placeholder="Enter password again" required>
+                        <input name="name" type="text" placeholder="Enter Full Name..." required disabled class="isFormDisable">
+                        <input  name="password"  type="password" placeholder="Enter new password..." required disabled class="isFormDisable">
+                        <input name="con_password" type="password" placeholder="Enter password again" required disabled class="isFormDisable">
                         <label><input type="checkbox" required style="margin-bottom: 10px !important;"> I agree to the <a href="#" class="termsAndCondition">terms & conditions</a> </label>
-                        <button type="submit" class="sign-in-btn">Register</button>
+                        <button type="submit" class="sign-in-btn" disabled class="isFormDisable">Register</button>
                         <p align="center" class="termsAndCondition">Do you have an account ?<a href="#" class="login-link"> login</a></p>
                     </form>
                 </div>
