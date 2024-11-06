@@ -15,6 +15,7 @@ const ExpressError = require("./utils/ExpressError.js");
 const fs = require('fs');
 const multer = require('multer');
 const cookieParser = require('cookie-parser');
+const { render } = require('ejs');
 
 // Use session configuration with secret from .env
 app.use(session({
@@ -304,7 +305,45 @@ app.post('/login',wrapAsync(async(req, res) => {
 }
 }));
 
+app.get('/forgetPassword', (req, res) => {
+    res.render('forgetPassword.ejs');
+});
 
+app.put("/forgetPassword",wrapAsync(async(req,res)=>{
+    let data = req.body;
+
+    let password=data.password;
+        // Regular expressions for different criteria
+        const lengthRegex = /.{8,}/; // Minimum length of 8 characters
+        const uppercaseRegex = /[A-Z]/; // At least one uppercase letter
+        const lowercaseRegex = /[a-z]/; // At least one lowercase letter
+        const digitRegex = /\d/; // At least one digit
+        const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/; // At least one special character
+    
+        // Check each condition
+        const isValidLength = lengthRegex.test(password);
+        const hasUppercase = uppercaseRegex.test(password);
+        const hasLowercase = lowercaseRegex.test(password);
+        const hasDigit = digitRegex.test(password);
+        const hasSpecialChar = specialCharRegex.test(password);
+
+    if(isValidLength && hasUppercase && hasLowercase && hasDigit && hasSpecialChar){
+        if ( data.password !== data.con_password ) {
+            return res.render("alert.ejs", {
+                message: "Invalid password !."
+            });
+        }
+        let updateSql = "UPDATE users SET PASSWORD = ? WHERE EMAIL = ? ";
+        connection.query(updateSql, [data.password, data.email], (err, updateResult) => {
+            if (err) throw err;
+            res.redirect("/login");
+        });
+    } else {
+        return res.render("alert.ejs", {
+            message: "Weak password !."
+        });
+    }
+}));
 
 // Admin Login Route
 app.post('/adminLogin', wrapAsync(async(req, res) => {

@@ -1,6 +1,3 @@
-// const otps = require("./sendMail")
-// import { otp } from "./sendMail";
-
 /*Login box management.*/
 let userAccount = document.getElementById('userAccount');
 let instituteAccount = document.getElementById('instituteAccount');
@@ -42,6 +39,7 @@ let otpBox = document.getElementById("otpBox");
 let formSubmitBtn = document.querySelector("#regEmail button");
 let userOtpInput = document.getElementById("userOtpInput");
 let userEmail = document.getElementById("userEmail");
+let emailSendMsg = document.getElementById("emailSendMsg");
 let otpBtn = document.getElementById("otpBtn");
 let isFormDisable = document.querySelectorAll(".isFormDisable");
 
@@ -74,10 +72,20 @@ function sendEmail(to) {
 
      emailjs.send(serviceID, templateID, params)
      .then( res => {
-        alert("Email send successfully !")
+        emailSendMsg.style.display = "block";
+        emailSendMsg.style.color = "#05aa4f";
+        emailSendMsg.innerHTML = '<i class="fas fa-check-circle" style="color: #05aa4f;"></i> Email send successfully ! ';
+        setTimeout(() => {
+            emailSendMsg.style.display = "none";
+        },3000);
      })
      .catch(function (error) {
-        alert("Failed to send email: " + error);
+        emailSendMsg.style.display = "block";
+        emailSendMsg.style.color = "#ff6b6b";
+        emailSendMsg.innerHTML = '<i class="fas fa-times-circle" style="color: #ff6b6b;"></i> Failed to send email: ' + error;
+        setTimeout(() => {
+            emailSendMsg.style.display = "none";
+        },3000);
     });
 }
 
@@ -98,6 +106,11 @@ otpBtn.addEventListener('click', () => {
         });
         userEmail.value = regUserEmail.value.replace(/ /g, '').toLowerCase()
     } else {
-        alert("Wrong Otp !");
+        emailSendMsg.style.display = "block";
+        emailSendMsg.style.color = "#ff6b6b";
+        emailSendMsg.innerHTML = '<i class="fas fa-times-circle" style="color: #ff6b6b;"></i> Wrong Otp ! ';
+        setTimeout(() => {
+            emailSendMsg.style.display = "none";
+        },3000);
     }
 });
