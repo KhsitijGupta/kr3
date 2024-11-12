@@ -31,7 +31,7 @@
                         <input name="password"  type="password" placeholder="Enter password..." required>
                         <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
                             <label><input name="rememberMe" type="checkbox"> <span>Keep me logged in</span></label>
-                            <a href="#" style="color: white;">Forgot Password</a>
+                            <a href="/forgetPassword" style="color: white;">Forgot Password</a>
                         </div>
                         <button type="submit" class="sign-in-btn">Sign in</button>
                     </form>
@@ -46,13 +46,26 @@
                 <div class="registerPage" style="display: none;">
                     <h1>Register yourself</h1>
                     <p>Please enter your details for registration.</p>
-                    <form action="/register" method="POST">
-                        <label for="email" id="regEmail" style="position: relative;"><input name="email" type="email" placeholder="Enter valid email..." required><span style="position: absolute; right:15px; top:0px;"><i class="fas fa-paper-plane" id="sendMailBtn"></i></span></label>
-                        <input name="name" type="text" placeholder="Enter Full Name..." required>
-                        <input name="password"  type="password" placeholder="Enter new password..." required>
-                        <input name="con_password" type="password" placeholder="Enter password again" required>
+                    <form id="sendMailForm" method="POST">
+                        <label for="email" id="regEmail" style="position: relative;">
+                            <input id="regUserEmail" name="email" type="email" placeholder="Enter valid email..." required>
+                            <button title="Send Email" type="submit" style="position: absolute; right:15px; top:0px; background-color:transparent; border:none; cursor:pointer;">
+                                <i class="fas fa-paper-plane" style="color: #ff6b6b;"></i>
+                            </button>
+                        </label>
+                    </form>
+                    <p id="emailSendMsg" style="display: none;"></p>
+                    <label for="otp" id="otpBox" style="position: relative; display:none;">
+                        <input id="userOtpInput" name="otp" type="text" placeholder="Enter valid otp..." required>
+                        <button title="Check valid otp" style="position: absolute; right:15px; top:10px; background-color:transparent; border:none; cursor:pointer;" id="otpBtn">check</button>
+                    </label>
+                    <form method="POST" action="/register" id="regForm" autocomplete="off">
+                        <input name="email" type="email" readonly id="userEmail" style="display: none;">
+                        <input name="name" type="text" placeholder="Enter Full Name..." required disabled class="isFormDisable">
+                        <input  name="password"  type="password" placeholder="Enter new password..." required disabled class="isFormDisable">
+                        <input name="con_password" type="password" placeholder="Enter password again" required disabled class="isFormDisable">
                         <label><input type="checkbox" required style="margin-bottom: 10px !important;"> I agree to the <a href="#" class="termsAndCondition">terms & conditions</a> </label>
-                        <button type="submit" class="sign-in-btn">Register</button>
+                        <button type="submit" class="sign-in-btn isFormDisable" disabled>Register</button>
                         <p align="center" class="termsAndCondition">Do you have an account ?<a href="#" class="login-link"> login</a></p>
                     </form>
                 </div>
@@ -94,7 +107,9 @@
             </div>
         </div>
     </div>
-    <script src="/js/loginRegister.js"></script>
+    <script type="text/javascript" src="/js/loginRegister.js"></script>
+    <!-- cdn for sending email -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 </body>

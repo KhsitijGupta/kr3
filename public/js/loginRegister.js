@@ -1,9 +1,3 @@
-// import sendEmail from "./sendMail";
-// const sendEmail = require("../../views/sendMail.js")
-import { sendEmail } from './sendMail.js';
-
-// const sendEmail = require("./sendMail");
-
 /*Login box management.*/
 let userAccount = document.getElementById('userAccount');
 let instituteAccount = document.getElementById('instituteAccount');
@@ -39,38 +33,84 @@ loginLink.addEventListener("click",()=>{
 });
 
 // Sending registration otp
-const nodemailer = require("nodemailer");
+let sendMailForm = document.getElementById("sendMailForm");
+let regUserEmail = document.getElementById("regUserEmail");
+let otpBox = document.getElementById("otpBox");
+let formSubmitBtn = document.querySelector("#regEmail button");
+let userOtpInput = document.getElementById("userOtpInput");
+let userEmail = document.getElementById("userEmail");
+let emailSendMsg = document.getElementById("emailSendMsg");
+let otpBtn = document.getElementById("otpBtn");
+let isFormDisable = document.querySelectorAll(".isFormDisable");
 
-// // Function to generate a random OTP
+// Function to generate a random OTP
 function generateOTP() {
     return Math.floor(100000 + Math.random() * 900000); // Generates a 6-digit OTP
 }
+const otp = generateOTP(); // Generated OTP
 
+// function to send otp
+function sendEmail(to) {
+    (function(){
+        emailjs.init({
+          publicKey: "9USFHTj0JSE6W61sx",
+        });
+     })();
 
-    const otp = generateOTP(); // Generate an OTP
-    const transporter = nodemailer.createTransport({
-        secure: true,
-        host: "smtp.gmail.com", // Use 'service' for Gmail (simplifies the config)
-        auth: {
-            user: "songsplaylists2021@gmail.com", // Replace with your Gmail address
-            pass: "upqvwipjdnbkeazv",     // Replace with your app password, NOT your Gmail password
-        },
+     var params = {
+        sendername: "KR3",
+        to: to,
+        subject: "Registration One-Time-Password (OTP)",
+        replyto: "kg221688@gmail.com",
+        message: `
+        Hii Dear,
+        Your One-Time-Password (OTP) is ${otp}. Do not share with anyone.`
+     };
+
+     var serviceID = "service_3uqfgys";
+     var templateID = "template_a3y7md1";
+
+     emailjs.send(serviceID, templateID, params)
+     .then( res => {
+        emailSendMsg.style.display = "block";
+        emailSendMsg.style.color = "#05aa4f";
+        emailSendMsg.innerHTML = '<i class="fas fa-check-circle" style="color: #05aa4f;"></i> Email send successfully ! ';
+        setTimeout(() => {
+            emailSendMsg.style.display = "none";
+        },3000);
+     })
+     .catch(function (error) {
+        emailSendMsg.style.display = "block";
+        emailSendMsg.style.color = "#ff6b6b";
+        emailSendMsg.innerHTML = '<i class="fas fa-times-circle" style="color: #ff6b6b;"></i> Failed to send email: ' + error;
+        setTimeout(() => {
+            emailSendMsg.style.display = "none";
+        },3000);
     });
+}
 
-    function sendEmail(to) {
-        transporter.sendMail({
-            from: '"Raushan Gupta" <kg221688@gmail.com>', // Sender's email address
-            to: to, // Replace with the receiver's email
-            subject: "Registration One-Time-Password (OTP).",
-            text: `Your OTP is: ${otp}`, // Plain text OTP
-            html: `<p>Your OTP is: <b>${otp}</b></p>`, // HTML formatted OTP
-        })
-        console.log("Email send!")
+sendMailForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    sendEmail(regUserEmail.value.replace(/ /g, '').toLowerCase());
+    otpBox.style.display = "block";
+    formSubmitBtn.innerHTML = '<i class="fas fa-check-circle" style="color: #05aa4f;"></i>';
+});
+
+otpBtn.addEventListener('click', () => {
+    if(userOtpInput.value == otp){
+        sendMailForm.style.display = "none";
+        otpBox.style.display = "none";
+        userEmail.style.display = "block";
+        isFormDisable.forEach((oneByOne) => {
+            oneByOne.removeAttribute("disabled");
+        });
+        userEmail.value = regUserEmail.value.replace(/ /g, '').toLowerCase()
+    } else {
+        emailSendMsg.style.display = "block";
+        emailSendMsg.style.color = "#ff6b6b";
+        emailSendMsg.innerHTML = '<i class="fas fa-times-circle" style="color: #ff6b6b;"></i> Wrong Otp ! ';
+        setTimeout(() => {
+            emailSendMsg.style.display = "none";
+        },3000);
     }
-    // sendEmail("biharifun6@gmail.com");
-
-let sendMailBtn = document.getElementById("sendMailBtn");
-sendMailBtn.addEventListener('click', () => {
-    sendEmail("biharifun6@gmail.com");
-    
 });
