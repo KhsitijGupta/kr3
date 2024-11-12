@@ -31,3 +31,86 @@ loginLink.addEventListener("click",()=>{
     registerPage.style="display:none;"
     loginPage.style="transform:scale(1);"
 });
+
+// Sending registration otp
+let sendMailForm = document.getElementById("sendMailForm");
+let regUserEmail = document.getElementById("regUserEmail");
+let otpBox = document.getElementById("otpBox");
+let formSubmitBtn = document.querySelector("#regEmail button");
+let userOtpInput = document.getElementById("userOtpInput");
+let userEmail = document.getElementById("userEmail");
+let emailSendMsg = document.getElementById("emailSendMsg");
+let otpBtn = document.getElementById("otpBtn");
+let isFormDisable = document.querySelectorAll(".isFormDisable");
+
+// Function to generate a random OTP
+function generateOTP() {
+    return Math.floor(100000 + Math.random() * 900000); // Generates a 6-digit OTP
+}
+const otp = generateOTP(); // Generated OTP
+
+// function to send otp
+function sendEmail(to) {
+    (function(){
+        emailjs.init({
+          publicKey: "9USFHTj0JSE6W61sx",
+        });
+     })();
+
+     var params = {
+        sendername: "KR3",
+        to: to,
+        subject: "Registration One-Time-Password (OTP)",
+        replyto: "kg221688@gmail.com",
+        message: `
+        Hii Dear,
+        Your One-Time-Password (OTP) is ${otp}. Do not share with anyone.`
+     };
+
+     var serviceID = "service_3uqfgys";
+     var templateID = "template_a3y7md1";
+
+     emailjs.send(serviceID, templateID, params)
+     .then( res => {
+        emailSendMsg.style.display = "block";
+        emailSendMsg.style.color = "#05aa4f";
+        emailSendMsg.innerHTML = '<i class="fas fa-check-circle" style="color: #05aa4f;"></i> Email send successfully ! ';
+        setTimeout(() => {
+            emailSendMsg.style.display = "none";
+        },3000);
+     })
+     .catch(function (error) {
+        emailSendMsg.style.display = "block";
+        emailSendMsg.style.color = "#ff6b6b";
+        emailSendMsg.innerHTML = '<i class="fas fa-times-circle" style="color: #ff6b6b;"></i> Failed to send email: ' + error;
+        setTimeout(() => {
+            emailSendMsg.style.display = "none";
+        },3000);
+    });
+}
+
+sendMailForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    sendEmail(regUserEmail.value.replace(/ /g, '').toLowerCase());
+    otpBox.style.display = "block";
+    formSubmitBtn.innerHTML = '<i class="fas fa-check-circle" style="color: #05aa4f;"></i>';
+});
+
+otpBtn.addEventListener('click', () => {
+    if(userOtpInput.value == otp){
+        sendMailForm.style.display = "none";
+        otpBox.style.display = "none";
+        userEmail.style.display = "block";
+        isFormDisable.forEach((oneByOne) => {
+            oneByOne.removeAttribute("disabled");
+        });
+        userEmail.value = regUserEmail.value.replace(/ /g, '').toLowerCase()
+    } else {
+        emailSendMsg.style.display = "block";
+        emailSendMsg.style.color = "#ff6b6b";
+        emailSendMsg.innerHTML = '<i class="fas fa-times-circle" style="color: #ff6b6b;"></i> Wrong Otp ! ';
+        setTimeout(() => {
+            emailSendMsg.style.display = "none";
+        },3000);
+    }
+});
