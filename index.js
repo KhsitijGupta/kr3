@@ -11,6 +11,7 @@ const { log } = require("console");
 const questionSchema = require("./questionSchema");
 const wrapAsync = require("./utils/wrapAsync.js");
 const deletetableSchema = require("./deletetableSchema");
+const generateRandomId = require("./public/js/generateid.js");
 const ExpressError = require("./utils/ExpressError.js");
 const fs = require('fs');
 const multer = require('multer');
@@ -81,6 +82,9 @@ function handleDisconnect() {
   });
 }
 handleDisconnect();
+
+
+
 
 const validatequestion=(req ,res ,next)=>{
     let {error} = questionSchema.validate(req.body);
@@ -344,7 +348,32 @@ app.put("/forgetPassword",wrapAsync(async(req,res)=>{
         });
     }
 }));
-
+// contest registaion
+app.get("/contestregistaion", (req, res , ) => {
+    if(req.session.userId){
+        res.render("tests/contestregistation.ejs");
+    }
+});
+app.post("/contestregistaion", (req, res , ) => {
+    if(req.session.userId){
+        
+        const sql = `INSERT INTO contestRegistaion (fullname, email, gender, dob, phone, city, country) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+        const { fullname, email, gender, dob, phone, city, country } = req.body;
+        let values =  [fullname, email, gender, dob, phone, city, country];
+        try{
+            connection.query(sql, values, (err, result) => {
+                if (err) {
+                    let { statusCode = 500, message = "Something went wrong" } = err;
+                    return res.render("error.ejs", { statusCode, message });
+                }
+                // Redirect only if there are no errors
+                res.render("success.ejs");
+            });
+        } catch (error) {
+            const { statusCode = 500, message = "Something went wrong" } = error;
+            return res.render("error.ejs", { statusCode, message });
+        }     }
+});
 // Admin Login Route
 app.post('/adminLogin', wrapAsync(async(req, res) => {
     let data = req.body;
@@ -611,12 +640,13 @@ app.post('/uploadQuestions', validatequestion , async(req, res) => {
             }
         });
     let data =  req.body;
-    // console.log(data)
-    let sqlQuery = "INSERT INTO "+data.subjects+" (question_text, option_a, option_b, option_c, option_d, correct_option, difficulty_level) VALUES(?,?,?,?,?,?,?)";
-    let val = [data.questionText, data.optionA, data.optionB, data.optionC, data.optionD, data.correctOption, data.difficultyLevel];
+    let question_id=generateRandomId().toString();
+    let sqlQuery = "INSERT INTO "+data.subjects+" (question_id , question_text, option_a, option_b, option_c, option_d, correct_option, difficulty_level) VALUES(?,?,?,?,?,?,?,?)";
+    let val = [question_id, data.questionText, data.optionA, data.optionB, data.optionC, data.optionD, data.correctOption, data.difficultyLevel];
     try{
-    connection.query(sqlQuery, val,(err,result)=>{
+        connection.query(sqlQuery, val,(err,result)=>{
         if (err) {
+            console.log(err)
             let { statusCode = 500, message = "Something went wrong" } = err;
             return res.render("error.ejs", { statusCode, message });
         }
@@ -649,6 +679,57 @@ app.get("/allUsres",wrapAsync(async(req, res ) => {
     }
 }));
 
+// app.get("/manageQuestions", wrapAsync(async (req, res) => {
+//     if (req.session && req.session.admin) {
+//         const query = "SHOW TABLES";
+        
+//         try {
+//             const tablesResults = await new Promise((resolve, reject) => {
+//                 connection.query(query, (err, results) => {
+//                     if (err) reject(err);
+//                     else resolve(results);
+//                 });
+//             });
+
+//             // Process the results from the first query
+//             const filteredTables = tablesResults
+//                 .map(table => {
+//                     const splitTableName = table.Tables_in_kr3database_db.split('_');
+//                     const containsQuestions = splitTableName.includes("questions");
+//                     return { 
+//                         originalTableName: table.Tables_in_kr3database_db, 
+//                         splitTableName, 
+//                         containsQuestions 
+//                     };
+//                 });
+            
+//             // Filter tables containing 'questions'
+//             const tablesWithQuestions = filteredTables.filter(table => table.containsQuestions);
+
+//             // Fetch all questions from each table
+//             const allQuestions = await Promise.all(tablesWithQuestions.map(async (currTable) => {
+//                 const sql = `SELECT * FROM ${currTable.originalTableName}`;
+//                 return new Promise((resolve, reject) => {
+//                     connection.query(sql, (err, results) => {
+//                         if (err) reject(err);
+//                         else resolve(results);
+//                     });
+//                 });
+//             }));
+
+//             // Flatten the results array and render
+//             const questions = allQuestions.flat();
+//             res.render("admin/manageQuestions.ejs", { questions, tables: tablesWithQuestions });
+
+//         } catch (err) {
+//             const { statusCode = 500, message = "Something went wrong" } = err;
+//             return res.render("error.ejs", { statusCode, message });
+//         }
+
+//     } else {
+//         res.redirect("/adminLogin");
+//     }
+// }));
 app.get("/manageQuestions", wrapAsync(async (req, res) => {
     if (req.session && req.session.admin) {
         const query = "SHOW TABLES";
@@ -700,7 +781,6 @@ app.get("/manageQuestions", wrapAsync(async (req, res) => {
         res.redirect("/adminLogin");
     }
 }));
-
 
 app.get("/filtermanageQuestions", wrapAsync(async (req, res) => {
     if (req.session && req.session.admin) {
@@ -765,24 +845,45 @@ app.get("/filtermanageQuestions", wrapAsync(async (req, res) => {
     }
 }));
 
-app.get("/filtermanageQuestions/:id/edit", wrapAsync(async(req,res)=>{
-    let {id} = req.params;
-        if (req.session && req.session.admin) {
-       const sql = "SELECT * from  aptitude_subject_questions where question_id = ?"; 
-    
-    connection.query(sql,[id], (err, result) => {
-        // console.log(result);
-        if (err) {
-            let { statusCode = 500, message = "Something went wrong" } = err;
-            return res.render("error.ejs", { statusCode, message });
-        }
+
+// app.get("/manageQuestions/:id/edit", wrapAsync(async(req,res)=>{
+//     let {id} = req.params;
+//         if (req.session && req.session.admin) {
+//             let searchId =req.params;
+//             const [tables] = await connection.query("SHOW TABLES");
+//             const results = [];
         
-        res.render("admin/editQuestions.ejs",{result: result[0]});
-    });
-} else {
-    res.redirect("/adminLogin"); 
-}
-}));
+//             for (const tableObj of tables) {
+//                 const tableName = Object.values(tableObj)[0];
+//                 const [columns] = await connection.query(`SHOW COLUMNS FROM \`${tableName}\``);
+        
+//                 for (const column of columns) {
+//                     const columnName = column.Field;
+//                     const [rows] = await connection.query(`SELECT '${tableName}' AS TableName, '${columnName}' AS ColumnName FROM \`${tableName}\` WHERE \`${columnName}\` = ?`, [searchId]);
+                    
+//                     if (rows.length > 0) {
+//                         results.push(...rows);
+//                     }
+//                 }
+//             }
+        
+//             console.log( results);
+//        const sql = "SELECT * from  aptitude_subject_questions where question_id = ?"; 
+    
+//     connection.query(sql,[id], (err, result) => {
+//         // console.log(result);
+//         if (err) {
+            
+//             let { statusCode = 500, message = "Something went wrong" } = err;
+//             return res.render("error.ejs", { statusCode, message });
+//         }
+        
+//         res.render("admin/editQuestions.ejs",{result: result[0]});
+//     });
+// } else {
+//     res.redirect("/adminLogin"); 
+// }
+// }));
 
 app.put("/manageQuestions/:id",wrapAsync(async(req,res)=>{
     let {id} =req.params;
@@ -951,7 +1052,7 @@ app.post('/manageSubjects', wrapAsync(async(req, res) => {
             // Ensure the 'newTable' key exists in the data
             if (Object.keys(data).includes("newTable")) {
                 let createQuery = `CREATE TABLE ${reqData} (
-                    question_id INT AUTO_INCREMENT PRIMARY KEY,
+                    question_id VARCHAR(255) PRIMARY KEY,
                     question_text VARCHAR(255) NOT NULL,
                     option_a VARCHAR(100) NOT NULL,
                     option_b VARCHAR(100) NOT NULL,
@@ -1102,7 +1203,7 @@ app.post('/admin/contest/create', (req, res) => {
                }
     });
     let createQuery = `CREATE TABLE ${contestNameTable} (
-        question_id INT AUTO_INCREMENT PRIMARY KEY,
+        question_id VARCHAR(255) PRIMARY KEY,
         question_text VARCHAR(255) NOT NULL,
         option_a VARCHAR(100) NOT NULL,
         option_b VARCHAR(100) NOT NULL,
@@ -1266,6 +1367,7 @@ else{
 }
   });
   
+
 app.get("*", (req, res , next) => {
     next(new ExpressError(404,"Page not found"));
 });
