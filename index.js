@@ -16,13 +16,7 @@ const ExpressError = require("./utils/ExpressError.js");
 const fs = require('fs');
 const multer = require('multer');
 const cookieParser = require('cookie-parser');
-<<<<<<< HEAD
-
-// const sendingMail = require("./views/sendMail.js");
-
-=======
 const { render } = require('ejs');
->>>>>>> 1e66acc2812a4f1a8ba7404e3185d52da5053788
 
 // Use session configuration with secret from .env
 app.use(session({
@@ -89,39 +83,9 @@ function handleDisconnect() {
 }
 handleDisconnect();
 
-<<<<<<< HEAD
-
-async function searchIdInAllTables(searchId) {
-    const [tables] = await connection.query("SHOW TABLES");
-    const results = [];
-
-    for (const tableObj of tables) {
-        const tableName = Object.values(tableObj)[0]; // Get the table name
-        
-        // Get the columns of the current table
-        const [columns] = await connection.query(`SHOW COLUMNS FROM \`${tableName}\``);
-
-        for (const column of columns) {
-            const columnName = column.Field; // Get the column name
-
-            // Query to check if searchId exists in the current column of the current table
-            const [rows] = await connection.query(
-                `SELECT '${tableName}' AS TableName, '${columnName}' AS ColumnName FROM \`${tableName}\` WHERE \`${columnName}\` = ?`,
-                [searchId]
-            );
-
-            if (rows.length > 0) {
-                results.push(...rows); // Add found rows to results
-            }
-        }
-    }
-
-    return results; // Return all results found
-}
 
 
-=======
->>>>>>> 1e66acc2812a4f1a8ba7404e3185d52da5053788
+
 const validatequestion=(req ,res ,next)=>{
     let {error} = questionSchema.validate(req.body);
         if(error){
@@ -384,7 +348,32 @@ app.put("/forgetPassword",wrapAsync(async(req,res)=>{
         });
     }
 }));
-
+// contest registaion
+app.get("/contestregistaion", (req, res , ) => {
+    if(req.session.userId){
+        res.render("tests/contestregistation.ejs");
+    }
+});
+app.post("/contestregistaion", (req, res , ) => {
+    if(req.session.userId){
+        
+        const sql = `INSERT INTO contestRegistaion (fullname, email, gender, dob, phone, city, country) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+        const { fullname, email, gender, dob, phone, city, country } = req.body;
+        let values =  [fullname, email, gender, dob, phone, city, country];
+        try{
+            connection.query(sql, values, (err, result) => {
+                if (err) {
+                    let { statusCode = 500, message = "Something went wrong" } = err;
+                    return res.render("error.ejs", { statusCode, message });
+                }
+                // Redirect only if there are no errors
+                res.render("success.ejs");
+            });
+        } catch (error) {
+            const { statusCode = 500, message = "Something went wrong" } = error;
+            return res.render("error.ejs", { statusCode, message });
+        }     }
+});
 // Admin Login Route
 app.post('/adminLogin', wrapAsync(async(req, res) => {
     let data = req.body;
@@ -856,10 +845,6 @@ app.get("/filtermanageQuestions", wrapAsync(async (req, res) => {
     }
 }));
 
-<<<<<<< HEAD
-
-
-
 
 // app.get("/manageQuestions/:id/edit", wrapAsync(async(req,res)=>{
 //     let {id} = req.params;
@@ -867,19 +852,6 @@ app.get("/filtermanageQuestions", wrapAsync(async (req, res) => {
 //             let searchId =req.params;
 //             const [tables] = await connection.query("SHOW TABLES");
 //             const results = [];
-=======
-app.get("/filtermanageQuestions/:id/edit", wrapAsync(async(req,res)=>{
-    let {id} = req.params;
-        if (req.session && req.session.admin) {
-       const sql = "SELECT * from  aptitude_subject_questions where question_id = ?"; 
-    
-    connection.query(sql,[id], (err, result) => {
-        // console.log(result);
-        if (err) {
-            let { statusCode = 500, message = "Something went wrong" } = err;
-            return res.render("error.ejs", { statusCode, message });
-        }
->>>>>>> 1e66acc2812a4f1a8ba7404e3185d52da5053788
         
 //             for (const tableObj of tables) {
 //                 const tableName = Object.values(tableObj)[0];
@@ -1395,10 +1367,6 @@ else{
 }
   });
   
-app.get("/random", (req, res , ) => {
-    let abc=generateRandomId();
-    res.send(abc);
-});
 
 app.get("*", (req, res , next) => {
     next(new ExpressError(404,"Page not found"));
