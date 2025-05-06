@@ -72,11 +72,11 @@ function handleDisconnect() {
     }
   });
 
-  connection.on(error, function(err) {
+  connection.on('error', function(err) {
     if (err.code === 'PROTOCOL_CONNECTION_LOST') {
       handleDisconnect(); // Reconnect on connection loss
     } else {
-         let { statusCode = 500, message = "Something went wrong" } = error;
+         let { statusCode = 500, message = "Something went wrong" } ;
       return res.render("error.ejs", { statusCode, message });
     }
   });
